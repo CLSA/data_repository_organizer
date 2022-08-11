@@ -49,18 +49,17 @@ foreach( glob( sprintf( '%s/*.gt3x', ACTIGRAPH_BASE_PATH ) ) as $filename )
   $uid = $study_uid_lookup[$study_id];
 
   $destination_directory = sprintf(
-    '%s/raw/%s/%s/actigraph/%s (%s)',
+    '%s/raw/%s/%s/actigraph/%s',
     BASE_DATA_DIRECTORY,
     STUDY_NAME,
     STUDY_PHASE,
-    $uid,
-    $date
+    $uid
   );
 
   // make sure the directory exists (recursively)
   if( !is_dir( $destination_directory ) ) mkdir( $destination_directory, 0755, true );
 
-  $destination = sprintf( '%s/data.gt3x', $destination_directory );
+  $destination = sprintf( '%s/%s.gt3x', $destination_directory, $date );
   $copy = TEST_ONLY ? true : copy( $filename, $destination );
   if( $copy )
   {
