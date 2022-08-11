@@ -30,13 +30,14 @@ $actigraph_file_count = 0;
 foreach( glob( sprintf( '%s/*.gt3x', ACTIGRAPH_BASE_PATH ) ) as $filename )
 {
   $matches = [];
-  if( false === preg_match( '#/(.*)\.gt3x$#', $filename, $matches ) )
+  if( false === preg_match( '#/(.*) \(([0-9]{4}-[0-9]{2}-[0-9]{2})\)\.gt3x$#', $filename, $matches ) )
   {
     output( sprintf( 'Ignoring invalid actigraph file: "%s"', $filename ) );
     continue;
   }
 
   $study_id = $matches[1];
+  $date = $matches[2];
   if( !array_key_exists( $study_id, $study_uid_lookup ) )
   {
     output( sprintf(
@@ -48,11 +49,12 @@ foreach( glob( sprintf( '%s/*.gt3x', ACTIGRAPH_BASE_PATH ) ) as $filename )
   $uid = $study_uid_lookup[$study_id];
 
   $destination_directory = sprintf(
-    '%s/raw/%s/%s/actigraph/%s',
+    '%s/raw/%s/%s/actigraph/%s (%s)',
     BASE_DATA_DIRECTORY,
     STUDY_NAME,
     STUDY_PHASE,
-    $uid
+    $uid,
+    $date
   );
 
   // make sure the directory exists (recursively)
