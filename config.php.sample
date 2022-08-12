@@ -3,9 +3,17 @@
 define( 'TEST_ONLY', true );
 define( 'VERBOSE', true );
 
-define( 'BASE_DATA_DIRECTORY', 'data' );
-define( 'STUDY_NAME', 'clsa' );
-define( 'STUDY_PHASE', '4' );
-
+// The base directory to search for actigraph files which are ready for transfer (origin)
 define( 'ACTIGRAPH_BASE_PATH', 'actigraph' );
+
+// The base directory to search for ticwatch files which are ready for transfer (origin)
 define( 'TICWATCH_BASE_PATH', 'ticwatch' );
+
+// The base directory of the data repository to transfer files to (destination)
+define( 'BASE_DATA_DIRECTORY', 'data' );
+
+// Which study the files belong to (in the data repository)
+define( 'STUDY_NAME', 'clsa' );
+
+// Which phase of the study the files belong to
+define( 'STUDY_PHASE', '4' );
