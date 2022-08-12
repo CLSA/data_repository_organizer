@@ -9,14 +9,36 @@ function output( $message )
   printf( "%s> %s\n", date( 'Y-m-d (D) H:i:s' ), $message );
 }
 
+function fatal_error( $message, $code )
+{
+  output( sprintf( 'ERROR: %s', $message ) );
+  exit( $code );
+}
+
 // move to the scripts root directory
 chdir( dirname( __FILE__ ) );
 
 require_once 'config.php';
 
+// Make sure the destination drive exists and is accessible
+if( !is_dir( BASE_DATA_DIRECTORY ) )
+{
+  fatal_error( sprintf( 'Base data directory, "%s", not found', BASE_DATA_DIRECTORY ), 1 );
+}
+
+if( !is_writable( BASE_DATA_DIRECTORY ) )
+{
+  fatal_error( sprintf( 'Cannot write to base data directory, "%s"', BASE_DATA_DIRECTORY ), 2 );
+}
+
 // Read the id_lookup.csv file for converting study IDs to CLSA UIDs
 $study_uid_lookup = [];
 $handle = fopen( 'id_lookup.csv', 'r' );
+if( false === $handle )
+{
+  fatal_error( sprintf( 'Unable to read id_lookup.csv file', BASE_DATA_DIRECTORY ), 3 );
+}
+
 while( ( $data = fgetcsv( $handle, 1000, ',' ) ) !== FALSE )
 {
   if( 'uid' != $data[0] ) $study_uid_lookup[$data[1]] = $data[0];
@@ -219,3 +241,5 @@ if( !TEST_ONLY )
 {
   array_map( 'remove_dir', glob( sprintf( '%s/*', TICWATCH_BASE_PATH ), GLOB_ONLYDIR ) );
 }
+
+exit( 0 );
