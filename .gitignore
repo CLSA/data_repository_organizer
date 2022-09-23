@@ -1,1 +1,6 @@
 *.swp
+id_lookup.csv
+config.php
+actigraph
+ticwatch
+data

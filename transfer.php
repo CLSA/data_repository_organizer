@@ -9,14 +9,36 @@ function output( $message )
   printf( "%s> %s\n", date( 'Y-m-d (D) H:i:s' ), $message );
 }
 
+function fatal_error( $message, $code )
+{
+  output( sprintf( 'ERROR: %s', $message ) );
+  exit( $code );
+}
+
 // move to the scripts root directory
 chdir( dirname( __FILE__ ) );
 
 require_once 'config.php';
 
+// Make sure the destination drive exists and is accessible
+if( !is_dir( BASE_DATA_DIRECTORY ) )
+{
+  fatal_error( sprintf( 'Base data directory, "%s", not found', BASE_DATA_DIRECTORY ), 1 );
+}
+
+if( !is_writable( BASE_DATA_DIRECTORY ) )
+{
+  fatal_error( sprintf( 'Cannot write to base data directory, "%s"', BASE_DATA_DIRECTORY ), 2 );
+}
+
 // Read the id_lookup.csv file for converting study IDs to CLSA UIDs
 $study_uid_lookup = [];
 $handle = fopen( 'id_lookup.csv', 'r' );
+if( false === $handle )
+{
+  fatal_error( sprintf( 'Unable to read id_lookup.csv file', BASE_DATA_DIRECTORY ), 3 );
+}
+
 while( ( $data = fgetcsv( $handle, 1000, ',' ) ) !== FALSE )
 {
   if( 'uid' != $data[0] ) $study_uid_lookup[$data[1]] = $data[0];
@@ -30,13 +52,14 @@ $actigraph_file_count = 0;
 foreach( glob( sprintf( '%s/*.gt3x', ACTIGRAPH_BASE_PATH ) ) as $filename )
 {
   $matches = [];
-  if( false === preg_match( '#/(.*)\.gt3x$#', $filename, $matches ) )
+  if( false === preg_match( '#/(.*) \(([0-9]{4}-[0-9]{2}-[0-9]{2})\)\.gt3x$#', $filename, $matches ) )
   {
     output( sprintf( 'Ignoring invalid actigraph file: "%s"', $filename ) );
     continue;
   }
 
   $study_id = $matches[1];
+  $date = $matches[2];
   if( !array_key_exists( $study_id, $study_uid_lookup ) )
   {
     output( sprintf(
@@ -58,7 +81,7 @@ foreach( glob( sprintf( '%s/*.gt3x', ACTIGRAPH_BASE_PATH ) ) as $filename )
   // make sure the directory exists (recursively)
   if( !is_dir( $destination_directory ) ) mkdir( $destination_directory, 0755, true );
 
-  $destination = sprintf( '%s/data.gt3x', $destination_directory );
+  $destination = sprintf( '%s/%s.gt3x', $destination_directory, $date );
   $copy = TEST_ONLY ? true : copy( $filename, $destination );
   if( $copy )
   {
@@ -218,3 +241,5 @@ if( !TEST_ONLY )
 {
   array_map( 'remove_dir', glob( sprintf( '%s/*', TICWATCH_BASE_PATH ), GLOB_ONLYDIR ) );
 }
+
+exit( 0 );
