@@ -21,14 +21,14 @@ chdir( dirname( __FILE__ ) );
 require_once 'config.php';
 
 // Make sure the destination drive exists and is accessible
-if( !is_dir( BASE_DATA_DIRECTORY ) )
+if( !is_dir( LOCAL_DATA_REPOSITORY ) )
 {
-  fatal_error( sprintf( 'Base data directory, "%s", not found', BASE_DATA_DIRECTORY ), 1 );
+  fatal_error( sprintf( 'Base data directory, "%s", not found', LOCAL_DATA_REPOSITORY ), 1 );
 }
 
-if( !is_writable( BASE_DATA_DIRECTORY ) )
+if( !is_writable( LOCAL_DATA_REPOSITORY ) )
 {
-  fatal_error( sprintf( 'Cannot write to base data directory, "%s"', BASE_DATA_DIRECTORY ), 2 );
+  fatal_error( sprintf( 'Cannot write to base data directory, "%s"', LOCAL_DATA_REPOSITORY ), 2 );
 }
 
 // Read the id_lookup.csv file for converting study IDs to CLSA UIDs
@@ -36,7 +36,7 @@ $study_uid_lookup = [];
 $handle = fopen( 'id_lookup.csv', 'r' );
 if( false === $handle )
 {
-  fatal_error( sprintf( 'Unable to read id_lookup.csv file', BASE_DATA_DIRECTORY ), 3 );
+  fatal_error( sprintf( 'Unable to read id_lookup.csv file', LOCAL_DATA_REPOSITORY ), 3 );
 }
 
 while( ( $data = fgetcsv( $handle, 1000, ',' ) ) !== FALSE )
@@ -57,6 +57,11 @@ foreach( glob( sprintf( '%s/*.gt3x', ACTIGRAPH_BASE_PATH ) ) as $filename )
     output( sprintf( 'Ignoring invalid actigraph file: "%s"', $filename ) );
     continue;
   }
+  else if( 3 != count( $matches ) )
+  {
+    output( sprintf( 'Ignoring invalid actigraph file: "%s"', $filename ) );
+    continue;
+  }
 
   $study_id = $matches[1];
   $date = $matches[2];
@@ -72,7 +77,7 @@ foreach( glob( sprintf( '%s/*.gt3x', ACTIGRAPH_BASE_PATH ) ) as $filename )
 
   $destination_directory = sprintf(
     '%s/raw/%s/%s/actigraph/%s',
-    BASE_DATA_DIRECTORY,
+    LOCAL_DATA_REPOSITORY,
     STUDY_NAME,
     STUDY_PHASE,
     $uid
@@ -86,7 +91,7 @@ foreach( glob( sprintf( '%s/*.gt3x', ACTIGRAPH_BASE_PATH ) ) as $filename )
   if( $copy )
   {
     if( VERBOSE ) output( sprintf( '"%s" => "%s"', $filename, $destination ) );
-    if( !TEST_ONLY ) unlink( $filename );
+    if( !TEST_ONLY && !KEEP_FILES ) unlink( $filename );
     $actigraph_file_count++;
   }
   else
@@ -127,7 +132,7 @@ foreach( glob( sprintf( '%s/*/*', TICWATCH_BASE_PATH ), GLOB_ONLYDIR ) as $dirna
 
   $destination_directory = sprintf(
     '%s/raw/%s/%s/ticwatch/%s',
-    BASE_DATA_DIRECTORY,
+    LOCAL_DATA_REPOSITORY,
     STUDY_NAME,
     STUDY_PHASE,
     $uid
@@ -183,15 +188,15 @@ foreach( glob( sprintf( '%s/*/*', TICWATCH_BASE_PATH ), GLOB_ONLYDIR ) as $dirna
   }
 
   // delete the local files if the are not newer than existing files
-  if( !is_null( $latest_existing_date ) && $latest_date < $latest_existing_date )
+  if( !is_null( $latest_existing_date ) && $latest_date <= $latest_existing_date )
   {
     output( sprintf( 'Ignoring files in %s as there already exists more recent files', $dirname ) );
-    if( !TEST_ONLY ) array_map( 'unlink', glob( sprintf( '%s/*', $dirname ) ) );
+    if( !TEST_ONLY && !KEEP_FILES ) array_map( 'unlink', glob( sprintf( '%s/*', $dirname ) ) );
   }
   else
   {
     // otherwise remove any existing files
-    if( !TEST_ONLY ) array_map( 'unlink', glob( sprintf( '%s/*', $destination_directory ) ) );
+    if( !TEST_ONLY && !KEEP_FILES ) array_map( 'unlink', glob( sprintf( '%s/*', $destination_directory ) ) );
 
     // then copy the local files to their destinations (deleting them as we do)
     $success = true;
@@ -204,7 +209,7 @@ foreach( glob( sprintf( '%s/*/*', TICWATCH_BASE_PATH ), GLOB_ONLYDIR ) as $dirna
         {
           output( sprintf( '"%s" => "%s"', $file_pair['source'], $file_pair['destination'] ) );
         }
-        if( !TEST_ONLY ) unlink( $file_pair['source'] );
+        if( !TEST_ONLY && !KEEP_FILES ) unlink( $file_pair['source'] );
         $ticwatch_file_count++;
       }
       else
@@ -237,9 +242,70 @@ function remove_dir( $dir )
   if( 0 == count( glob( sprintf( '%s/*', $dir ) ) ) ) rmdir( $dir );
 }
 
-if( !TEST_ONLY )
+if( !TEST_ONLY && !KEEP_FILES )
 {
   array_map( 'remove_dir', glob( sprintf( '%s/*', TICWATCH_BASE_PATH ), GLOB_ONLYDIR ) );
+}
+
+// now rsync the remote data directory with the local one, and if successful delete all files in the local
+exec(
+  sprintf( 'find %s -type f | wc -l', LOCAL_DATA_REPOSITORY ),
+  $file_total,
+  $code
+);
+if( 0 != $code )
+{
+  fatal_error( 'Unable to count the number of files in the local data repository', $code );
+}
+
+if( 0 == current( $file_total ) )
+{
+  output( 'Skipping remote synchronization, no local files found' );
+}
+else
+{
+  output( 'Synchronizing remote data repository with local data repository' );
+  $output = array();
+  exec(
+    sprintf(
+      'rsync -avcz%s %s/* %s/',
+      TEST_ONLY ? ' --dry-run' : '',
+      LOCAL_DATA_REPOSITORY,
+      REMOTE_DATA_REPOSITORY
+    ),
+    $output,
+    $code
+  );
+  if( 0 != $code )
+  {
+    fatal_error( 'rsync failed to complete', $code );
+  }
+
+  if( VERBOSE )
+  {
+    foreach( $output as $line )
+    {
+      if( $line ) output( $line );
+    }
+  }
+
+  if( TEST_ONLY || KEEP_FILES )
+  {
+    output( 'Not cleaning up local data repository' );
+  }
+  else
+  {
+    output( 'Cleaning up local data repository' );
+    exec(
+      sprintf( 'rm -rf %s/*', LOCAL_DATA_REPOSITORY ),
+      $output,
+      $code
+    );
+    if( 0 != $code )
+    {
+      fatal_error( sprintf( 'Unable to delete files in local data repository (%s)', LOCAL_DATA_REPOSITORY ) );
+    }
+  }
 }
 
 exit( 0 );
