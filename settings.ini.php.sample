@@ -1,0 +1,23 @@
+<?php
+// set TEST_ONLY, VERBOSE, and KEEP_FILES to false for production
+define( 'TEST_ONLY', true );
+define( 'VERBOSE', true );
+define( 'KEEP_FILES', true );
+
+// The base directory to search for new actigraph files that need to be organized
+define( 'ACTIGRAPH_BASE_PATH', '/data/temporary/actigraph' );
+
+// The base directory to search for new ticwatch files that need to be organized
+define( 'TICWATCH_BASE_PATH', '/data/temporary/ticwatch' );
+
+// The base directory to search for new cognitive recording files that need to be organized
+define( 'RECORDINGS_BASE_PATH', '/data/temporary/recordings' );
+
+// The base directory of the data repository to transfer files to
+define( 'DATA_REPOSITORY', '/data' );
+
+// Which study the files belong to (in the data repository)
+define( 'STUDY_NAME', 'clsa' );
+
+// Which phase of the study the files belong to
+define( 'STUDY_PHASE', '4' );
