@@ -1,4 +1,4 @@
-CLSA Data Repository Organizer
+CLSA Data Repository Librarian
 ==============================
 
 Script used to organize raw data files into a standardized directory structure.

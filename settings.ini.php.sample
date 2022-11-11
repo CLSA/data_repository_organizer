@@ -4,20 +4,26 @@ define( 'TEST_ONLY', true );
 define( 'VERBOSE', true );
 define( 'KEEP_FILES', true );
 
-// The base directory to search for new actigraph files that need to be organized
-define( 'ACTIGRAPH_BASE_PATH', '/data/temporary/actigraph' );
-
-// The base directory to search for new ticwatch files that need to be organized
-define( 'TICWATCH_BASE_PATH', '/data/temporary/ticwatch' );
-
-// The base directory to search for new cognitive recording files that need to be organized
-define( 'RECORDINGS_BASE_PATH', '/data/temporary/recordings' );
+// The connection details for the CENOZO database
+define( 'CENOZO_DB_HOSTNAME', '' );
+define( 'CENOZO_DB_USERNAME', '' );
+define( 'CENOZO_DB_PASSWORD', '' );
+define( 'CENOZO_DB_DATABASE', '' );
 
 // The base directory of the data repository to transfer files to
-define( 'DATA_REPOSITORY', '/data' );
+define( 'DATA_REPOSITORY', '/path/to/data_repository' );
 
-// Which study the files belong to (in the data repository)
-define( 'STUDY_NAME', 'clsa' );
+// The base directory to search for new actigraph files that need to be organized
+define( 'ACTIGRAPH_BASE_PATH', '/path/to/actigraph' );
+define( 'ACTIGRAPH_IDENTIFIER_NAME', '' );
+define( 'ACTIGRAPH_STUDY_NAME', '' );
+define( 'ACTIGRAPH_STUDY_PHASE', '' );
 
-// Which phase of the study the files belong to
-define( 'STUDY_PHASE', '4' );
+// The base directory to search for new ticwatch files that need to be organized
+define( 'TICWATCH_BASE_PATH', '/path/to/ticwatch' );
+define( 'TICWATCH_IDENTIFIER_NAME', '' );
+define( 'TICWATCH_STUDY_NAME', '' );
+define( 'TICWATCH_STUDY_PHASE', '' );
+
+// The base directory to search for new cognitive recording files that need to be organized
+define( 'RECORDINGS_BASE_PATH', '/path/to/recordings' );
