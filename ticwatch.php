@@ -1,51 +1,54 @@
-#!/usr/bin/php
 <?php
 require_once 'common.php';
 
+define( 'BASE_DIR', sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR ) );
 $study_uid_lookup = get_study_uid_lookup( TICWATCH_IDENTIFIER_NAME );
 
 // Process all Ticwatch files
-// Each site has their own directory, and in each site directory there are multiple files per participant,
-// all found in the directory format "<site>/<study_id>/<serial>"
-output( sprintf( 'Processing ticwatch directories in "%s"', TICWATCH_BASE_PATH ) );
+// Each site has their own directory, and in each site directory there are sub-directories for
+// each modality (actigraph, ticwatch, etc).  Within those directory there are directories named
+// after the participant's study_id, and another sub-directory with the serial number.
+// For example: "temporary/XXX/ticwatch/<study_id>/<serial>"
+output( sprintf( 'Processing ticwatch directories in "%s"', BASE_DIR ) );
 $ticwatch_dir_count = 0;
 $ticwatch_file_count = 0;
-foreach( glob( sprintf( '%s/*/*/*', TICWATCH_BASE_PATH ), GLOB_ONLYDIR ) as $dirname )
+foreach( glob( sprintf( '%s/[A-Z][A-Z][A-Z]/ticwatch/*/*', BASE_DIR ), GLOB_ONLYDIR ) as $serial_dirname )
 {
+  $study_dirname = preg_replace( '#/[^/]+$#', '', $serial_dirname );
   $matches = [];
-  if( false === preg_match( '#/([^/]+)/([^/]+)$#', $dirname, $matches ) )
+  if( false === preg_match( '#/([^/]+)/([^/]+)$#', $serial_dirname, $matches ) )
   {
-    output( sprintf( 'Ignoring invalid ticwatch directory: "%s"', $filename ) );
-    continue;
+    fatal_error( sprintf( 'Error while processing directory "%s"', $serial_dirname ) );
   }
 
-  $study_id = strtoupper( trim( $matches[1] ) );
+  $original_study_id = $matches[1];
+  $study_id = strtoupper( trim( $original_study_id ) );
   if( !array_key_exists( $study_id, $study_uid_lookup ) )
   {
-    output( sprintf(
-      'Cannot transfer ticwatch directory due to missing UID lookup: "%s" from file "%s"',
-      $study_id,
-      $dirname
+    if( VERBOSE ) output( sprintf(
+      'Cannot transfer ticwatch directory due to missing UID lookup for study ID "%s"',
+      $study_id
     ) );
+    if( !TEST_ONLY && !KEEP_FILES ) move_dir_from_temporary_to_invalid( $study_dirname ); 
     continue;
   }
   $uid = $study_uid_lookup[$study_id];
 
   $destination_directory = sprintf(
     '%s/raw/%s/%s/ticwatch/%s',
-    DATA_REPOSITORY,
+    DATA_DIR,
     TICWATCH_STUDY_NAME,
     TICWATCH_STUDY_PHASE,
     $uid
   );
 
   // make sure the directory exists (recursively)
-  if( !is_dir( $destination_directory ) ) mkdir( $destination_directory, 0755, true );
+  if( !TEST_ONLY && !is_dir( $destination_directory ) ) mkdir( $destination_directory, 0755, true );
 
   // make a list of all files to be copied and note the latest date
   $latest_date = NULL;
   $file_pair_list = [];
-  foreach( glob( sprintf( '%s/*', $dirname ) ) as $filename )
+  foreach( glob( sprintf( '%s/*', $serial_dirname ) ) as $filename )
   {
     $destination_filename = substr( $filename, strrpos( $filename, '/' )+1 );
 
@@ -63,7 +66,10 @@ foreach( glob( sprintf( '%s/*/*/*', TICWATCH_BASE_PATH ), GLOB_ONLYDIR ) as $dir
       if( is_null( $latest_date ) || $date > $latest_date ) $latest_date = $date;
     }
 
-    $destination = sprintf( '%s/%s', $destination_directory, $destination_filename );
+    // remove the unneeded filename details
+    $destination = str_replace( 'TicWatch Pro 3 Ultra GPS_', '', $destination_filename );
+    $destination = str_replace( sprintf( '%s_', $original_study_id ), '', $destination );
+    $destination = sprintf( '%s/%s', $destination_directory, $destination );
 
     $file_pair_list[] = [
       'source' => $filename,
@@ -88,16 +94,19 @@ foreach( glob( sprintf( '%s/*/*/*', TICWATCH_BASE_PATH ), GLOB_ONLYDIR ) as $dir
     }
   }
 
-  // delete the local files if the are not newer than existing files
+  // delete the local files if they are not newer than existing files
   if( !is_null( $latest_existing_date ) && $latest_date <= $latest_existing_date )
   {
-    output( sprintf( 'Ignoring files in %s as there already exists more recent files', $dirname ) );
-    if( !TEST_ONLY && !KEEP_FILES ) array_map( 'unlink', glob( sprintf( '%s/*', $dirname ) ) );
+    if( VERBOSE ) output( sprintf(
+      'Ignoring files in %s as there already exists more recent files',
+      $study_dirname
+    ) );
+    if( !TEST_ONLY && !KEEP_FILES ) remove_dir( $study_dirname );
   }
   else
   {
     // otherwise remove any existing files
-    if( !TEST_ONLY && !KEEP_FILES ) array_map( 'unlink', glob( sprintf( '%s/*', $destination_directory ) ) );
+    if( !TEST_ONLY ) array_map( 'remove_dir', glob( sprintf( '%s/*', $destination_directory ) ) );
 
     // then copy the local files to their destinations (deleting them as we do)
     $success = true;
@@ -106,10 +115,7 @@ foreach( glob( sprintf( '%s/*/*/*', TICWATCH_BASE_PATH ), GLOB_ONLYDIR ) as $dir
       $copy = TEST_ONLY ? true : copy( $file_pair['source'], $file_pair['destination'] );
       if( $copy )
       {
-        if( VERBOSE )
-        {
-          output( sprintf( '"%s" => "%s"', $file_pair['source'], $file_pair['destination'] ) );
-        }
+        if( VERBOSE ) output( sprintf( '"%s" => "%s"', $file_pair['source'], $file_pair['destination'] ) );
         if( !TEST_ONLY && !KEEP_FILES ) unlink( $file_pair['source'] );
         $ticwatch_file_count++;
       }
@@ -123,6 +129,20 @@ foreach( glob( sprintf( '%s/*/*/*', TICWATCH_BASE_PATH ), GLOB_ONLYDIR ) as $dir
         $success = false;
       }
     }
+
+    if( !TEST_ONLY && !KEEP_FILES )
+    {
+      if( $success )
+      {
+        // we can now delete the directory as all files were successfully moved
+        remove_dir( $study_dirname );
+      }
+      else
+      {
+        // move the remaining files to the invalid directory
+        move_dir_from_temporary_to_invalid( $study_dirname ); 
+      }
+    }
   }
   $ticwatch_dir_count++;
 }
@@ -132,10 +152,5 @@ output( sprintf(
   TEST_ONLY ? 'would be ' : '',
   $ticwatch_dir_count
 ) );
-
-if( !TEST_ONLY && !KEEP_FILES )
-{
-  array_map( 'remove_dir', glob( sprintf( '%s/*', TICWATCH_BASE_PATH ), GLOB_ONLYDIR ) );
-}
 
 exit( 0 );

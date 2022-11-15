@@ -1,4 +1,3 @@
-#!/usr/bin/php
 <?php
 ini_set( 'display_errors', '0' );
 error_reporting( E_ALL | E_STRICT );
@@ -18,6 +17,29 @@ function fatal_error( $message, $code )
 function get_cenozo_db()
 {
   return new \mysqli( CENOZO_DB_HOSTNAME, CENOZO_DB_USERNAME, CENOZO_DB_PASSWORD, CENOZO_DB_DATABASE );
+}
+
+function move_dir( $source, $destination )
+{
+  printf( "\n%s\n%s\n\n", $source, $destination );
+
+  // make sure the destination directory exists
+  mkdir( $destination, 0755, true );
+
+  // move the directory
+  rename( $source, $destination );
+}
+
+function move_dir_from_temporary_to_invalid( $dir )
+{
+  move_dir(
+    $dir,
+    preg_replace(
+      sprintf( '#/%s/#', TEMPORARY_DIR ),
+      sprintf( '/%s/', INVALID_DIR ),
+      $dir
+    )
+  );
 }
 
 // find and remove all empty directories
@@ -61,13 +83,15 @@ chdir( dirname( __FILE__ ) );
 
 require_once 'settings.ini.php';
 
-// Make sure the destination drive exists and is accessible
-if( !is_dir( DATA_REPOSITORY ) )
+// Make sure the destination directories exist
+$test_dir_list = array(
+  DATA_DIR,
+  sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR ),
+  sprintf( '%s/%s', DATA_DIR, CLEANED_DIR ),
+  sprintf( '%s/%s', DATA_DIR, INVALID_DIR )
+);
+foreach( $test_dir_list as $dir )
 {
-  fatal_error( sprintf( 'Base data directory, "%s", not found', DATA_REPOSITORY ), 1 );
-}
-
-if( !is_writable( DATA_REPOSITORY ) )
-{
-  fatal_error( sprintf( 'Cannot write to base data directory, "%s"', DATA_REPOSITORY ), 2 );
+  if( !is_dir( $dir ) ) fatal_error( sprintf( 'Expected directory, "%s", not found', $dir ), 1 );
+  if( !TEST_ONLY && !is_writable( $dir ) ) fatal_error( sprintf( 'Cannot write to directory "%s"', $dir ), 2 );
 }
