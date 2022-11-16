@@ -1,18 +1,18 @@
 <?php
 require_once 'common.php';
 
-define( 'BASE_DIR', sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR ) );
+$base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
 $study_uid_lookup = get_study_uid_lookup( TICWATCH_IDENTIFIER_NAME );
 
 // Process all Ticwatch files
 // Each site has their own directory, and in each site directory there are sub-directories for
-// each modality (actigraph, ticwatch, etc).  Within those directory there are directories named
-// after the participant's study_id, and another sub-directory with the serial number.
+// each modality (actigraph, ticwatch, etc).  Within the ticwatch directory there are directories
+// named after the participant's study_id, and another sub-directory with the serial number.
 // For example: "temporary/XXX/ticwatch/<study_id>/<serial>"
-output( sprintf( 'Processing ticwatch directories in "%s"', BASE_DIR ) );
-$ticwatch_dir_count = 0;
-$ticwatch_file_count = 0;
-foreach( glob( sprintf( '%s/[A-Z][A-Z][A-Z]/ticwatch/*/*', BASE_DIR ), GLOB_ONLYDIR ) as $serial_dirname )
+output( sprintf( 'Processing ticwatch directories in "%s"', $base_dir ) );
+$dir_count = 0;
+$file_count = 0;
+foreach( glob( sprintf( '%s/[A-Z][A-Z][A-Z]/ticwatch/*/*', $base_dir ), GLOB_ONLYDIR ) as $serial_dirname )
 {
   $study_dirname = preg_replace( '#/[^/]+$#', '', $serial_dirname );
   $matches = [];
@@ -29,7 +29,7 @@ foreach( glob( sprintf( '%s/[A-Z][A-Z][A-Z]/ticwatch/*/*', BASE_DIR ), GLOB_ONLY
       'Cannot transfer ticwatch directory due to missing UID lookup for study ID "%s"',
       $study_id
     ) );
-    if( !TEST_ONLY && !KEEP_FILES ) move_dir_from_temporary_to_invalid( $study_dirname ); 
+    if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $study_dirname ); 
     continue;
   }
   $uid = $study_uid_lookup[$study_id];
@@ -117,7 +117,7 @@ foreach( glob( sprintf( '%s/[A-Z][A-Z][A-Z]/ticwatch/*/*', BASE_DIR ), GLOB_ONLY
       {
         if( VERBOSE ) output( sprintf( '"%s" => "%s"', $file_pair['source'], $file_pair['destination'] ) );
         if( !TEST_ONLY && !KEEP_FILES ) unlink( $file_pair['source'] );
-        $ticwatch_file_count++;
+        $file_count++;
       }
       else
       {
@@ -140,17 +140,17 @@ foreach( glob( sprintf( '%s/[A-Z][A-Z][A-Z]/ticwatch/*/*', BASE_DIR ), GLOB_ONLY
       else
       {
         // move the remaining files to the invalid directory
-        move_dir_from_temporary_to_invalid( $study_dirname ); 
+        move_from_temporary_to_invalid( $study_dirname ); 
       }
     }
   }
-  $ticwatch_dir_count++;
+  $dir_count++;
 }
 output( sprintf(
   'Done, %d files %stransferred from %d directories',
-  $ticwatch_file_count,
+  $file_count,
   TEST_ONLY ? 'would be ' : '',
-  $ticwatch_dir_count
+  $dir_count
 ) );
 
 exit( 0 );

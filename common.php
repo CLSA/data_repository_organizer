@@ -19,27 +19,24 @@ function get_cenozo_db()
   return new \mysqli( CENOZO_DB_HOSTNAME, CENOZO_DB_USERNAME, CENOZO_DB_PASSWORD, CENOZO_DB_DATABASE );
 }
 
-function move_dir( $source, $destination )
+function move_from_temporary_to_invalid( $file_or_dir )
 {
-  printf( "\n%s\n%s\n\n", $source, $destination );
+  // make sure the parent directory exists
+  $rename_from = $file_or_dir;
+  $rename_to = preg_replace(
+    sprintf( '#/%s/#', TEMPORARY_DIR ),
+    sprintf( '/%s/', INVALID_DIR ),
+    $file_or_dir
+  );
+  $destination_dir = is_file( $file_or_dir )
+                   ? preg_replace( '#/[^/]+$#', '', $rename_to )
+                   : $rename_to;
 
   // make sure the destination directory exists
-  mkdir( $destination, 0755, true );
+  if( !is_dir( $destination_dir ) ) mkdir( $destination_dir, 0755, true );
 
-  // move the directory
-  rename( $source, $destination );
-}
-
-function move_dir_from_temporary_to_invalid( $dir )
-{
-  move_dir(
-    $dir,
-    preg_replace(
-      sprintf( '#/%s/#', TEMPORARY_DIR ),
-      sprintf( '/%s/', INVALID_DIR ),
-      $dir
-    )
-  );
+  // move the file
+  rename( $rename_from, $rename_to );
 }
 
 // find and remove all empty directories
