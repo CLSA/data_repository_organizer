@@ -101,12 +101,12 @@ foreach( glob( sprintf( '%s/[A-Z][A-Z][A-Z]/ticwatch/*/*', $base_dir ), GLOB_ONL
       'Ignoring files in %s as there already exists more recent files',
       $study_dirname
     ) );
-    if( !TEST_ONLY && !KEEP_FILES ) remove_dir( $study_dirname );
+    if( !TEST_ONLY && !KEEP_FILES ) exec( sprintf( 'rm -rf %s', $study_dirname ) );
   }
   else
   {
     // otherwise remove any existing files
-    if( !TEST_ONLY ) array_map( 'remove_dir', glob( sprintf( '%s/*', $destination_directory ) ) );
+    if( !TEST_ONLY ) exec( sprintf( 'rm -rf %s/*', $destination_directory ) );
 
     // then copy the local files to their destinations (deleting them as we do)
     $success = true;

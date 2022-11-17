@@ -10,20 +10,24 @@ define( 'CENOZO_DB_USERNAME', '' );
 define( 'CENOZO_DB_PASSWORD', '' );
 define( 'CENOZO_DB_DATABASE', '' );
 
-// The base directory of the data repository to transfer files to
-define( 'DATA_REPOSITORY', '/path/to/data_repository' );
+// The absolute base directory of the data repository to transfer files to
+define( 'DATA_DIR', '/data' );
 
-// The base directory to search for new actigraph files that need to be organized
-define( 'ACTIGRAPH_BASE_PATH', '/path/to/actigraph' );
+// The relative directory to look for files to be sorted
+define( 'TEMPORARY_DIR', 'temporary' );
+
+// The relative directory to look for cleaned files to be re-sorted
+define( 'CLEANED_DIR', 'cleaned' );
+
+// THe relative directory to move files which cannot be sorted
+define( 'INVALID_DIR', 'invalid' );
+
+// Details concerning actigraph files
 define( 'ACTIGRAPH_IDENTIFIER_NAME', '' );
 define( 'ACTIGRAPH_STUDY_NAME', '' );
 define( 'ACTIGRAPH_STUDY_PHASE', '' );
 
-// The base directory to search for new ticwatch files that need to be organized
-define( 'TICWATCH_BASE_PATH', '/path/to/ticwatch' );
+// Details concerning ticwatch files
 define( 'TICWATCH_IDENTIFIER_NAME', '' );
 define( 'TICWATCH_STUDY_NAME', '' );
 define( 'TICWATCH_STUDY_PHASE', '' );
-
-// The base directory to search for new cognitive recording files that need to be organized
-define( 'RECORDINGS_BASE_PATH', '/path/to/recordings' );

@@ -28,12 +28,13 @@ function move_from_temporary_to_invalid( $file_or_dir )
     sprintf( '/%s/', INVALID_DIR ),
     $file_or_dir
   );
-  $destination_dir = is_file( $file_or_dir )
-                   ? preg_replace( '#/[^/]+$#', '', $rename_to )
-                   : $rename_to;
+  $destination_dir = preg_replace( '#/[^/]+$#', '', $rename_to );
 
   // make sure the destination directory exists
   if( !is_dir( $destination_dir ) ) mkdir( $destination_dir, 0755, true );
+
+  // if the rename_to file or dir already exists then delete it
+  if( file_exists( $rename_to ) ) exec( sprintf( 'rm -rf %s', $rename_to ) );
 
   // move the file
   rename( $rename_from, $rename_to );
