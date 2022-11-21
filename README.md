@@ -190,8 +190,7 @@ Opal BL: clsa-dcs / Spirometry / Measure.RES_FLOW_VALUES (repeated)
 Opal F1: clsa-dcs-f1 / Spirometry / Measure.RES_FLOW_VALUES (repeated)
 Opal F2: clsa-dcs-f2 / Spirometry / Measure.RES_FLOW_VALUES (repeated)
 file-type: txt
-path: /raw/clsa/<PHASE>/spirometry/<UID>/spirometry-flow_trial_<T>_rank_<R>.txt
-notes: "trial_N_rank_N" indicated by Measure.OUTPUT_TRIAL_RANK
+path: /raw/clsa/<PHASE>/spirometry/<UID>/spirometry_flow_<N>.txt
 
 spirometry volume
 -----------------
@@ -199,8 +198,7 @@ Opal BL: clsa-dcs / Spirometry / Measure.RES_VOLUME_VALUES (repeated)
 Opal F1: clsa-dcs-f1 / Spirometry / Measure.RES_VOLUME_VALUES (repeated)
 Opal F2: clsa-dcs-f2 / Spirometry / Measure.RES_VOLUME_VALUES (repeated)
 file-type: txt
-path: /raw/clsa/<PHASE>/spirometry/<UID>/spirometry-volume_trial_<T>_rank_<R>.txt
-notes: "trial_N_rank_N" indicated by Measure.OUTPUT_TRIAL_RANK
+path: /raw/clsa/<PHASE>/spirometry/<UID>/spirometry_volume_<N>.txt
 
 spirometry report
 -----------------
@@ -208,8 +206,8 @@ Opal BL: does not exist
 Opal F1: clsa-dcs-f1 / Spirometry / Measure.RES_REPORT (repeated)
 Opal F2: clsa-dcs-f2 / Spirometry / Measure.RES_REPORT (repeated)
 file-type: pdf
-path: /raw/clsa/<PHASE>/spirometry/<UID>/spirometry-report.pdf
-notes: not actually repeated
+path: /raw/clsa/<PHASE>/spirometry/<UID>/spirometry_report.pdf
+notes: not actually repeat
 
 us cineloop [123]
 -----------------

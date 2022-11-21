@@ -98,7 +98,8 @@ function opal_send( $arguments, $file_handle = NULL )
   $postfix = array();
   foreach( $arguments as $key => $value )
   {   
-    if( in_array( $key, array( 'counts', 'offset', 'limit' ) ) ) $postfix[] = sprintf( '%s=%s', $key, $value );
+    if( in_array( $key, array( 'counts', 'offset', 'limit', 'pos', 'select' ) ) )
+      $postfix[] = sprintf( '%s=%s', $key, $value );
     else $url .= is_null( $value ) ? sprintf( '/%s', $key ) : sprintf( '/%s/%s', $key, rawurlencode( $value ) );
   }
 
