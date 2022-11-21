@@ -60,7 +60,7 @@ DIRECTORIES
     └── clsa
         ├── 1
         │   ├── choice_rt
-        │   ├── cognitive_recordings
+        │   ├── audio
         │   ├── dxa_hip
         │   ├── dxa_forearm
         │   ├── dxa_lateral
@@ -74,7 +74,7 @@ DIRECTORIES
         │   └── us_report
         ├── 2
         │   ├── choice_rt
-        │   ├── cognitive_recordings
+        │   ├── audio
         │   ├── dxa_hip
         │   ├── dxa_forearm
         │   ├── dxa_lateral
@@ -88,7 +88,7 @@ DIRECTORIES
         │   └── us_report
         └── 3
             ├── choice_rt
-            ├── cognitive_recordings
+            ├── audio
             ├── dxa_hip
             ├── dxa_forearm
             ├── dxa_lateral
@@ -157,7 +157,7 @@ Opal BL: clsa-dcs / NeuropsychologicalBattery / FAS_AREC_DCS
 Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / FAS_AREC_COF1
 Opal F2: clsa-dcs-f2 / StroopFAS / FAS_AREC_COF2
 file-type: wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-a_word_fluency.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-a_word_fluency.wav
 
 fas-f recording
 ---------------
@@ -165,7 +165,7 @@ Opal BL: clsa-dcs / NeuropsychologicalBattery / FAS_FREC_DCS
 Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / FAS_FREC_COF1
 Opal F2: clsa-dcs-f2 / StroopFAS / FAS_FREC_COF2
 file-type: wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-f_word_fluency.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-f_word_fluency.wav
 
 fas-s recording
 ---------------
@@ -173,7 +173,7 @@ Opal BL: clsa-dcs / NeuropsychologicalBattery / FAS_SREC_DCS
 Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / FAS_SREC_COF1
 Opal F2: clsa-dcs-f2 / StroopFAS / FAS_SREC_COF2
 file-type: wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-s_word_fluency.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-s_word_fluency.wav
 
 stroop dot recording
 --------------------
@@ -181,7 +181,7 @@ Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_DOTREC_DCS
 Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_DOTREC_COF1
 Opal F2: clsa-dcs-f2 / StroopFAS / STP_DOTREC_COF2
 file-type: wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-stroop_dot.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-stroop_dot.wav
 
 stroop word recording
 ---------------------
@@ -189,7 +189,7 @@ Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_WORREC_DCS
 Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_WORREC_COF1
 Opal F2: clsa-dcs-f2 / StroopFAS / STP_WORREC_COF2
 file-type: wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-stroop_word.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-stroop_word.wav
 
 stroop colour recording
 -----------------------
@@ -197,7 +197,7 @@ Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_COLREC_DCS
 Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_COLREC_COF1
 Opal F2: clsa-dcs-f2 / StroopFAS / STP_COLREC_COF2
 file-type: wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-stroop_colour.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-stroop_colour.wav
 
 spirometry flow
 ---------------
@@ -382,13 +382,13 @@ Opal BL: does not exist
 Opal F1: does not exist
 Opal F2: does not exist
 clsanfs BL: /data/tracking/sabretooth_bl-live/UID/<NN>-out.wav
-clsanfs BL: /data/tracking/sabretooth_bl-live/UID/<NN>-in.wav (operator recordings)
+clsanfs BL: /data/tracking/sabretooth_bl-live/UID/<NN>-in.wav (operator)
 clsanfs F1: /data/tracking/sabretooth_f1-live/UID/<NN>-out.wav
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/<NN>-in.wav (operator recordings)
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/<NN>-in.wav (operator)
 clsanfs F2: does not exist
 file-type: wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-<NN>.wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings_operator-<NN>.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-<NN>.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio_operator-<NN>.wav
 
 cog alphabet
 ------------
@@ -397,12 +397,12 @@ Opal F1: clsa-inhome / InHome_2 / COG_ALPTME_REC2_COF1
 Opal F2: clsa-inhome-f2 / InHome_2 / COG_ALPTME_REC2_COF2
 clsanfs BL: not available (files are not categorized)
 clsanfs F1: /data/tracking/sabretooth_f1-live/UID/Alphabet-out.wav
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/Alphabet-in.wav (operator recordings)
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/Alphabet-in.wav (operator)
 clsanfs F2: /data/tracking/sabretooth_f2-live/UID/Alphabet-out.wav
-clsanfs F2: /data/tracking/sabretooth_f2-live/UID/Alphabet-in.wav (operator recordings)
+clsanfs F2: /data/tracking/sabretooth_f2-live/UID/Alphabet-in.wav (operator)
 file-type: wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-alphabet.wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-alphabet_operator.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-alphabet.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-alphabet_operator.wav
 
 cog mental alternation
 ----------------------
@@ -411,12 +411,12 @@ Opal F1: clsa-inhome / InHome_2 / COG_ALTTME_REC_COF1
 Opal F2: clsa-inhome-f2 / InHome_2 / COG_ALTTME_REC_COF2
 clsanfs BL: not available (files are not categorized)
 clsanfs F1: /data/tracking/sabretooth_f1-live/UID/MAT Alternation-out.wav
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/MAT Alternation-in.wav (operator recordings)
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/MAT Alternation-in.wav (operator)
 clsanfs F2: /data/tracking/sabretooth_f2-live/UID/MAT Alternation-out.wav
-clsanfs F2: /data/tracking/sabretooth_f2-live/UID/MAT Alternation-in.wav (operator recordings)
+clsanfs F2: /data/tracking/sabretooth_f2-live/UID/MAT Alternation-in.wav (operator)
 file-type: wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-mental_alternation.wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-mental_alternation_operator.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-mental_alternation.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-mental_alternation_operator.wav
 
 cog animal list
 ---------------
@@ -425,12 +425,12 @@ Opal F1: clsa-inhome / InHome_2 / COG_ANMLLLIST_REC_COF1
 Opal F2: clsa-inhome-f2 / InHome_2 / COG_ANMLLLIST_REC_COF2
 clsanfs BL: not available (files are not categorized)
 clsanfs F1: /data/tracking/sabretooth_f1-live/<UID>/Animal List-out.wav
-clsanfs F1: /data/tracking/sabretooth_f1-live/<UID>/Animal List-in.wav (operator recordings)
+clsanfs F1: /data/tracking/sabretooth_f1-live/<UID>/Animal List-in.wav (operator)
 clsanfs F2: /data/tracking/sabretooth_f2-live/<UID>/Animal List-out.wav
-clsanfs F2: /data/tracking/sabretooth_f2-live/<UID>/Animal List-in.wav (operator recordings)
+clsanfs F2: /data/tracking/sabretooth_f2-live/<UID>/Animal List-in.wav (operator)
 file-type: wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-animal_fluency.wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-animal_fluency_operator.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-animal_fluency.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-animal_fluency_operator.wav
 
 cog counting
 ------------
@@ -439,12 +439,12 @@ Opal F1: clsa-inhome / InHome_2 / COG_CNTTMEREC_COF1
 Opal F2: clsa-inhome-f2 / InHome_2 / COG_CNTTMEREC_COF2
 clsanfs BL: not available (files are not categorized)
 clsanfs F1: /data/tracking/sabretooth_f1-live/UID/COUNTING to 20-out.wav
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/COUNTING to 20-in.wav (operator recordings)
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/COUNTING to 20-in.wav (operator)
 clsanfs F2: /data/tracking/sabretooth_f2-live/UID/COUNTING to 20-out.wav
-clsanfs F2: /data/tracking/sabretooth_f2-live/UID/COUNTING to 20-in.wav (operator recordings)
+clsanfs F2: /data/tracking/sabretooth_f2-live/UID/COUNTING to 20-in.wav (operator)
 file-type: wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-counting.wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-counting_operator.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-counting.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-counting_operator.wav
 
 cog delayed word list
 ---------------------
@@ -453,12 +453,12 @@ Opal F1: clsa-inhome / InHome_2 / COG_WRDLST2_REC_COF1
 Opal F2: clsa-inhome-f2 / InHome_2 / COG_WRDLST2_REC_COF2
 clsanfs BL: not available (files are not categorized)
 clsanfs F1: /data/tracking/sabretooth_f1-live/UID/REY II-out.wav
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/REY II-in.wav (operator recordings)
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/REY II-in.wav (operator)
 clsanfs F2: /data/tracking/sabretooth_f2-live/UID/REY II-out.wav
-clsanfs F2: /data/tracking/sabretooth_f2-live/UID/REY II-in.wav (operator recordings)
+clsanfs F2: /data/tracking/sabretooth_f2-live/UID/REY II-in.wav (operator)
 file-type: wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-delayed_word_list.wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-delayed_word_list_operator.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-delayed_word_list.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-delayed_word_list_operator.wav
 
 cog immediate word list
 -----------------------
@@ -467,12 +467,12 @@ Opal F1: clsa-inhome / InHome_2 / COG_WRDLSTREC_COF1
 Opal F2: clsa-inhome-f2 / InHome_2 / COG_WRDLSTREC_COF2
 clsanfs BL: not available (files are not categorized)
 clsanfs F1: /data/tracking/sabretooth_f1-live/UID/REY I-out.wav
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/REY I-in.wav (operator recordings)
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/REY I-in.wav (operator)
 clsanfs F2: /data/tracking/sabretooth_f2-live/UID/REY I-out.wav
-clsanfs F2: /data/tracking/sabretooth_f2-live/UID/REY I-in.wav (operator recordings)
+clsanfs F2: /data/tracking/sabretooth_f2-live/UID/REY I-in.wav (operator)
 file-type: wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-immediate_word_list.wav
-path: /raw/clsa/<PHASE>/cognitive_recordings/<UID>/<UID>-clsa-<PHASE>-cognitive_recordings-immediate_word_list_operator.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-immediate_word_list.wav
+path: /raw/clsa/<PHASE>/audio/<UID>/<UID>-clsa-<PHASE>-audio-immediate_word_list_operator.wav
 
 dxa hip recovery left
 ---------------------

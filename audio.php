@@ -10,7 +10,7 @@ $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
 output( sprintf( 'Processing audio files in "%s"', $base_dir ) );
 
 // start by deleting all non-live instances
-foreach( glob( sprintf( '%s/recordings/tracking/*', $base_dir ) ) as $dirname )
+foreach( glob( sprintf( '%s/*/audio/tracking/*', $base_dir ) ) as $dirname )
 {
   if( 0 === preg_match( '/-live$/', $dirname ) )
   {
@@ -32,9 +32,9 @@ foreach( glob( sprintf( '%s/recordings/tracking/*', $base_dir ) ) as $dirname )
   }
 }
 
-// start by going through files that are labelled by UID (valid recordings)
+// start by going through files that are labelled by UID (valid audio recordings)
 $file_count = 0;
-foreach( glob( sprintf( '%s/recordings/*/*/*/*.wav', $base_dir ) ) as $filename )
+foreach( glob( sprintf( '%s/*/audio/*/*/*/*.wav', $base_dir ) ) as $filename )
 {
   $matches = [];
   if( false === preg_match( '#/([^/]+)/([^/]+)/([^/]+)/([^/]+).wav$#', $filename, $matches ) )
@@ -176,13 +176,13 @@ foreach( glob( sprintf( '%s/recordings/*/*/*/*.wav', $base_dir ) ) as $filename 
 }
 
 // now remove all empty directories
-foreach( glob( sprintf( '%s/recordings/*/*', $base_dir ) ) as $dirname )
+foreach( glob( sprintf( '%s/*/audio/*/*', $base_dir ) ) as $dirname )
 {
   if( is_dir( $dirname ) ) remove_dir( $dirname );
 }
 
 // any remaining files are to be moved to the invalid directory for data cleaning
-foreach( glob( sprintf( '%s/recordings/*/*', $base_dir ) ) as $dirname )
+foreach( glob( sprintf( '%s/*/audio/*/*', $base_dir ) ) as $dirname )
 {
   move_from_temporary_to_invalid( $dirname );
 }
