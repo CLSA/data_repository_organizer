@@ -18,7 +18,7 @@ foreach( glob( sprintf( '%s/[A-Z][A-Z][A-Z]/ticwatch/*/*', $base_dir ), GLOB_ONL
   $matches = [];
   if( false === preg_match( '#/([^/]+)/([^/]+)$#', $serial_dirname, $matches ) )
   {
-    fatal_error( sprintf( 'Error while processing directory "%s"', $serial_dirname ) );
+    fatal_error( sprintf( 'Error while processing directory "%s"', $serial_dirname ), 4 );
   }
 
   $original_study_id = $matches[1];

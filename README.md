@@ -56,67 +56,48 @@ DIRECTORIES
 ├── anonymized
 │   └── clsa
 │       ├── 1
-│       │   └── dxa_hip
+│       │   ├── modality1
+│       │   ├── modality2
+│       │   └── etc...
 │       ├── 2
-│       │   └── dxa_hip
-│       └── 3
-│           └── dxa_hip
+│       │   ├── modality1
+│       │   ├── modality2
+│       │   └── etc...
+│       └── etc...
+│           ├── modality1
+│           ├── modality2
+│           └── etc...
 ├── supplementary
 │   └── clsa
 │       ├── 1
-│       │   ├── dxa_forearm
-│       │   └── ecg
+│       │   ├── modality1
+│       │   ├── modality2
+│       │   └── etc...
 │       ├── 2
-│       │   ├── dxa_forearm
-│       │   └── ecg
-│       └── 3
-│           ├── dxa_forearm
-│           └── ecg
+│       │   ├── modality1
+│       │   ├── modality2
+│       │   └── etc...
+│       └── etc...
+│           ├── modality1
+│           ├── modality2
+│           └── etc...
 └── raw
     └── clsa
         ├── 1
-        │   ├── choice_rt
-        │   ├── audio
-        │   ├── dxa_hip
-        │   ├── dxa_forearm
-        │   ├── dxa_lateral
-        │   ├── dxa_spine
-        │   ├── dxa_wbody
-        │   ├── ecg
-        │   ├── frax
-        │   ├── retinal
-        │   ├── spirometry
-        │   ├── us_cineloop
-        │   └── us_report
+        │   ├── modality1
+        │   ├── modality2
+        │   └── etc...
         ├── 2
-        │   ├── choice_rt
-        │   ├── audio
-        │   ├── dxa_hip
-        │   ├── dxa_forearm
-        │   ├── dxa_lateral
-        │   ├── dxa_spine
-        │   ├── dxa_wbody
-        │   ├── ecg
-        │   ├── frax
-        │   ├── retinal
-        │   ├── spirometry
-        │   ├── us_cineloop
-        │   └── us_report
-        └── 3
-            ├── choice_rt
-            ├── audio
-            ├── dxa_hip
-            ├── dxa_forearm
-            ├── dxa_lateral
-            ├── dxa_spine
-            ├── dxa_wbody
-            ├── ecg
-            ├── frax
-            ├── retinal
-            ├── spirometry
-            ├── us_cineloop
-            └── us_report
-
+        │   ├── modality1
+        │   ├── modality2
+        │   └── etc...
+        └── etc...
+            ├── modality1
+            ├── modality2
+            └── etc...
+ 
+Where modality1, modality2, etc, can be any of the following:
+choice_rt, audio, dxa_hip, dxa_forearm, dxa_lateral, dxa_spine, dxa_wbody, ecg, frax, retinal, spirometry, us_cineloop, us_report, actigraph, ticwatch, etc...
 
 OPAL AND CLSANFS DATA
 =====================
@@ -127,7 +108,7 @@ Opal BL: does not exist
 Opal F1: does not exist
 Opal F2: clsa-dcs-f2 / CDTT / RESULT_FILE
 file-type: xlsx
-path:
+path: /raw/clsa/<PHASE>/cdtt/<UID>/result_file.xls
 
 choice_rt
 ---------
@@ -135,7 +116,7 @@ Opal BL: clsa-dcs / CognitiveTest / RES_RESULT_FILE
 Opal F1: clsa-dcs-f1 / CognitiveTest / RES_RESULT_FILE
 Opal F2: clsa-dcs-f2 / CognitiveTest / RES_RESULT_FILE
 file-type: xlsx (but actually csv files)
-path: /raw/clsa/<PHASE>/choice_rt/<UID>/choice_rt.csv
+path: /raw/clsa/<PHASE>/choice_rt/<UID>/result_file.csv
 
 ecg
 ---

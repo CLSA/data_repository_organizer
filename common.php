@@ -75,6 +75,72 @@ function get_study_uid_lookup( $identifier_name )
   return $data;
 }
 
+/** 
+ * Sends a curl request to the opal server(s)
+ * 
+ * @param array(key->value) $arguments The url arguments as key->value pairs (value may be null)
+ * @return curl resource
+ * @access private
+ */
+function opal_send( $arguments, $file_handle = NULL )
+{
+  $curl = curl_init();
+
+  $code = 0;
+
+  // prepare cURL request
+  $headers = array(
+    sprintf( 'Authorization: X-Opal-Auth %s',
+             base64_encode( sprintf( '%s:%s', OPAL_USERNAME, OPAL_PASSWORD ) ) ),
+    'Accept: application/json' );
+
+  $url = sprintf( 'https://%s:%d/ws', OPAL_SERVER, OPAL_PORT );
+  $postfix = array();
+  foreach( $arguments as $key => $value )
+  {   
+    if( in_array( $key, array( 'counts', 'offset', 'limit' ) ) ) $postfix[] = sprintf( '%s=%s', $key, $value );
+    else $url .= is_null( $value ) ? sprintf( '/%s', $key ) : sprintf( '/%s/%s', $key, rawurlencode( $value ) );
+  }
+
+  if( 0 < count( $postfix ) ) $url .= sprintf( '?%s', implode( '&', $postfix ) );
+
+  // set URL and other appropriate options
+  curl_setopt( $curl, CURLOPT_URL, $url );
+  curl_setopt( $curl, CURLOPT_SSL_VERIFYPEER, false );
+  curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
+  curl_setopt( $curl, CURLOPT_CONNECTTIMEOUT, OPAL_TIMEOUT );
+
+  if( !is_null( $file_handle ) )
+  {   
+    //curl_setopt( $curl, CURLOPT_CUSTOMREQUEST, 'PUT' );
+    curl_setopt( $curl, CURLOPT_PUT, true );
+    curl_setopt( $curl, CURLOPT_INFILE, $file_handle );
+    curl_setopt( $curl, CURLOPT_INFILESIZE, fstat( $file_handle )['size'] );
+    $headers[] = 'Content-Type: application/json';
+  }
+
+  curl_setopt( $curl, CURLOPT_HTTPHEADER, $headers );
+
+  $response = curl_exec( $curl );
+  $code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+
+  if( array_key_exists( 'valueSet', $arguments ) && 404 == $code )
+  {
+    // ignore 404 and set response to null
+    $response = NULL;
+  }
+  else if( 200 != $code )
+  {
+    throw new \Exception( sprintf(
+      'Unable to connect to Opal service for url "%s" (code: %s)',
+      $url,
+      $code
+    ) );
+  }
+
+  return $response;
+}
+
 
 // move to the scripts root directory
 chdir( dirname( __FILE__ ) );
