@@ -62,18 +62,18 @@ foreach( glob( sprintf( '%s/*/audio/*/*/*/*.wav', $base_dir ) ) as $filename )
     $phase = intval( substr( $phase_name, 1, 1 ) ) + 1;
     $variable = preg_replace( '/_(COF[1-9]|DCS)$/', '', $name );
 
-    if( 'FAS_FREC' == $variable ) $destination_filename = 'f_word_fluency.wav';
-    else if( 'FAS_AREC' == $variable ) $destination_filename = 'a_word_fluency.wav';
-    else if( 'FAS_SREC' == $variable ) $destination_filename = 's_word_fluency.wav';
-    else if( 'STP_DOTREC' == $variable ) $destination_filename = 'stroop_dot.wav';
-    else if( 'STP_WORREC' == $variable ) $destination_filename = 'stroop_word.wav';
-    else if( 'STP_COLREC' == $variable ) $destination_filename = 'stroop_colour.wav';
-    else if( 'COG_ALPTME_REC2' == $variable ) $destination_filename = 'alphabet.wav';
-    else if( 'COG_ALTTME_REC' == $variable ) $destination_filename = 'mental_alternation.wav';
-    else if( 'COG_ANMLLLIST_REC' == $variable ) $destination_filename = 'animal_fluency.wav';
-    else if( 'COG_CNTTMEREC' == $variable ) $destination_filename = 'counting.wav';
-    else if( 'COG_WRDLST2_REC' == $variable ) $destination_filename = 'delayed_word_list.wav';
-    else if( 'COG_WRDLSTREC' == $variable ) $destination_filename = 'immediate_word_list.wav';
+    if( 'FAS_FREC' == $variable ) $destination_filename = 'f_word_fluency';
+    else if( 'FAS_AREC' == $variable ) $destination_filename = 'a_word_fluency';
+    else if( 'FAS_SREC' == $variable ) $destination_filename = 's_word_fluency';
+    else if( 'STP_DOTREC' == $variable ) $destination_filename = 'stroop_dot';
+    else if( 'STP_WORREC' == $variable ) $destination_filename = 'stroop_word';
+    else if( 'STP_COLREC' == $variable ) $destination_filename = 'stroop_colour';
+    else if( 'COG_ALPTME_REC2' == $variable ) $destination_filename = 'alphabet';
+    else if( 'COG_ALTTME_REC' == $variable ) $destination_filename = 'mental_alternation';
+    else if( 'COG_ANMLLLIST_REC' == $variable ) $destination_filename = 'animal_fluency';
+    else if( 'COG_CNTTMEREC' == $variable ) $destination_filename = 'counting';
+    else if( 'COG_WRDLST2_REC' == $variable ) $destination_filename = 'delayed_word_list';
+    else if( 'COG_WRDLSTREC' == $variable ) $destination_filename = 'immediate_word_list';
   }
   else if( 'tracking' == $cohort )
   {
