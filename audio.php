@@ -79,7 +79,7 @@ foreach( glob( sprintf( '%s/*/audio/*/*/*/*.wav', $base_dir ) ) as $filename )
   {
     // tracking phase names refer to the application, study phase and instance:
     // sabretooth_f1-live, sabretooth_f2-live, sabretooth_c1-live, etc
-    if( 0 === preg_match( '/sabretooth_(bl|cb|[bf][1-9])-live/', $phase_name, $matches ) )
+    if( 0 === preg_match( '/sabretooth_(bl|cb|[cf][1-9])-live/', $phase_name, $matches ) )
     {
       if( VERBOSE ) output( sprintf(
         'Ignoring invalid audio file: "%s"',
@@ -97,7 +97,7 @@ foreach( glob( sprintf( '%s/*/audio/*/*/*/*.wav', $base_dir ) ) as $filename )
       $phase = 'bl' == $code ? 1 : intval( substr( $code, 1, 1 ) ) + 1;
       $study = 'clsa';
     }
-    else if( 'cb' == $code || 'b' == substr( $code, 0, 1 ) )
+    else if( 'cb' == $code || 'c' == substr( $code, 0, 1 ) )
     {
       // cb is baseline (phase 1), otherwise c1, c2, etc...
       $phase = 'cb' == $code ? 1 : intval( substr( $code, 1, 1 ) ) + 1;
