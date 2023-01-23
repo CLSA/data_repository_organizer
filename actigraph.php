@@ -1,5 +1,5 @@
 <?php
-require_once 'common.php';
+require_once 'src/common.php';
 
 $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
 $study_uid_lookup = get_study_uid_lookup( ACTIGRAPH_IDENTIFIER_NAME );
@@ -8,7 +8,7 @@ $study_uid_lookup = get_study_uid_lookup( ACTIGRAPH_IDENTIFIER_NAME );
 // Each site has their own directory, and in each site directory there are sub-directories for
 // each modality (actigraph, ticwatch, etc).  Within the actigraph directory there is one file
 // per participant named after the participant's study_id and the date of the data:
-// For example: "temporary/XXX/actigraph/<study_id>.gt3x"
+// For example: "temporary/XXX/actigraph/<study_id> <date>.gt3x"
 output( sprintf( 'Processing actigraph files in "%s"', $base_dir ) );
 $file_count = 0;
 foreach( glob( sprintf( '%s/[A-Z][A-Z][A-Z]/actigraph/*', $base_dir ) ) as $filename )

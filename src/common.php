@@ -132,6 +132,7 @@ function opal_send( $arguments, $file_handle = NULL )
   }
   else if( 200 != $code )
   {
+    var_dump( $response );
     throw new \Exception( sprintf(
       'Unable to connect to Opal service for url "%s" (code: %s)',
       $url,
@@ -144,8 +145,7 @@ function opal_send( $arguments, $file_handle = NULL )
 
 
 // move to the scripts root directory
-chdir( dirname( __FILE__ ) );
-
+chdir( dirname( __FILE__ ).'/..' );
 require_once 'settings.ini.php';
 
 // Make sure the destination directories exist

@@ -1,9 +1,9 @@
 <?php
-require_once 'common.php';
+require_once 'src/common.php';
 
 $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
 
-// Process all Actigraph files
+// Process all audio recordings
 // There is a directory for each cohort, and a sub-directory for each phase named "f1", "f2", etc.
 // Each of these directories contain a directory based on the participant's CLSA ID, and in it multiple files.
 // Each file has the format: "<cohort>/<phase>/<uid>/<various>.wav"

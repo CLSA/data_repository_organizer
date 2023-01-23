@@ -128,8 +128,8 @@ Opal F2: clsa-dcs-f2 / ECG / RES_XML_FILE (done)
 Opal F3: clsa-dcs-f3 / ECG / RES_XML_FILE (done)
 file-type: xml
 path: /raw/clsa/<PHASE>/ecg/<UID>/ecg.xml
-path: /supplementary/clsa/<PHASE>/ecg/<UID>/ecg.xml (found in "sets", minor changes made)
-path: /supplementary/clsa/<PHASE>/ecg/<UID>/ecg.jpeg (found in "sets", generated from xml data)
+path: /supplementary/clsa/<PHASE>/ecg/<UID>/ecg.xml (found in "sets", minor changes made) (TODO)
+path: /supplementary/clsa/<PHASE>/ecg/<UID>/ecg.jpeg (found in "sets", generated from xml data) (done)
 
 frax (done)
 -----------
@@ -140,27 +140,27 @@ Opal F3: clsa-dcs-f3 / Frax / RES_RESULT_FILE (done)
 file-type: txt
 path: /raw/clsa/<PHASE>/frax/<UID>/frax.txt
 
-fas-a recording
+fas-a recording (done)
 ----------------------
-Opal BL: clsa-dcs / NeuropsychologicalBattery / FAS_AREC_DCS (TODO: download from Opal)
+Opal BL: clsa-dcs / NeuropsychologicalBattery / FAS_AREC_DCS (done)
 Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / FAS_AREC_COF1 (done)
 Opal F2: clsa-dcs-f2 / StroopFAS / FAS_AREC_COF2 (done)
 Opal F3: clsa-dcs-f3 / StroopFAS / FAS_AREC_COF3 (done)
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/a_word_fluency.wav
 
-fas-f recording
+fas-f recording (done)
 ----------------------
-Opal BL: clsa-dcs / NeuropsychologicalBattery / FAS_FREC_DCS (TODO: download from Opal)
+Opal BL: clsa-dcs / NeuropsychologicalBattery / FAS_FREC_DCS (done)
 Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / FAS_FREC_COF1 (done)
 Opal F2: clsa-dcs-f2 / StroopFAS / FAS_FREC_COF2 (done)
 Opal F3: clsa-dcs-f3 / StroopFAS / FAS_FREC_COF3 (done)
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/f_word_fluency.wav
 
-fas-s recording
+fas-s recording (done)
 ----------------------
-Opal BL: clsa-dcs / NeuropsychologicalBattery / FAS_SREC_DCS (TODO: download from Opal)
+Opal BL: clsa-dcs / NeuropsychologicalBattery / FAS_SREC_DCS (done)
 Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / FAS_SREC_COF1 (done)
 Opal F2: clsa-dcs-f2 / StroopFAS / FAS_SREC_COF2 (done)
 Opal F3: clsa-dcs-f3 / StroopFAS / FAS_SREC_COF3 (done)
@@ -170,7 +170,7 @@ path: /raw/clsa/<PHASE>/audio/<UID>/s_word_fluency.wav
 stroop dot recording
 --------------------
 Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_DOTREC_DCS (done)
-Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_DOTREC_COF1
+Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_DOTREC_COF1 (done)
 Opal F2: clsa-dcs-f2 / StroopFAS / STP_DOTREC_COF2
 Opal F3: clsa-dcs-f3 / StroopFAS / STP_DOTREC_COF3
 file-type: wav
@@ -334,7 +334,7 @@ Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.CINELOOP_1 (repeated)
 Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.CINELOOP_1 (repeated)
 Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.CINELOOP_1 (repeated)
 file-type: gz -> dcm
-path: /raw/clsa/<PHASE>/carotid_intima/<UID>/cineloop-[123]_<N>.dcm
+path: /raw/clsa/<PHASE>/carotid_intima/<UID>/cineloop[123]_<N>.dcm
 notes: either left or right as indicated by Measure.SIDE; "[123]_" for BL only
 
 plaque cineloop
@@ -364,7 +364,7 @@ Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.STILL_IMAGE_[123] (repeate
 Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.STILL_IMAGE_[123] (repeated)
 Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.STILL_IMAGE_[133] (repeated)
 file-type: gz -> dcm
-path: /raw/clsa/<PHASE>/carotid_intima/<UID>/still-[123]_<SIDE>_<N>.dcm
+path: /raw/clsa/<PHASE>/carotid_intima/<UID>/still[123]_<N>.dcm
 notes: either left or right as indicated by Measure.SIDE
 
 dxa dual hip
@@ -374,9 +374,10 @@ Opal F1: clsa-dcs-images-f1 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeat
 Opal F2: clsa-dcs-images-f2 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated)
 Opal F3: clsa-dcs-images-f3 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated)
 file-type: dicom
-path: /raw/clsa/<PHASE>/dxa_hip/<UID>/dxa_hip-<SIDE>_<N>.dcm
-path: /supplementary/clsa/<PHASE>/dxa_hip/<UID>/dxa_hip_reanalyzed-<SIDE>_<N>.dcm
-path: /supplementary/clsa/<PHASE>/dxa_hip/<UID>/dxa_hip-<SIDE>_<N>.jpeg
+path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_hip_<N>.dcm
+path: /anonymized/clsa/<PHASE>/dxa/<UID>/dxa_hip_<SIDE>.dcm (done)
+path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_hip_reanalyzed-<SIDE>_<N>.dcm (???)
+path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_hip-<SIDE>_<N>.jpeg (???)
 notes: either left or right as indicated by Measure.OUTPUT_HIP_SIDE
 
 dxa forearm
@@ -386,9 +387,10 @@ Opal F1: clsa-dcs-images-f1 / ForearmBoneDensity / RES_FA_DICOM
 Opal F2: clsa-dcs-images-f2 / ForearmBoneDensity / RES_FA_DICOM
 Opal F3: clsa-dcs-images-f3 / ForearmBoneDensity / RES_FA_DICOM
 file-type: dicom
-path: /raw/clsa/<PHASE>/dxa_forearm/<UID>/dxa_forearm_<SIDE>.dcm (SIDE defined by INPUT_FA_SIDE)
-path: /supplementary/ ... _reanalyzed.dcm
-path: /supplementary/clsa/<PHASE>/dxa_forearm/<UID>/dxa_forearm.jpeg (manually generated from dicom files using script)
+path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_forearm.dcm
+path: /supplementary/ ... _reanalyzed.dcm (???)
+path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_forearm.jpeg (manually generated from dicom using script) (done)
+notes: SIDE defined by INPUT_FA_SIDE
 
 dxa hip
 -------
@@ -407,8 +409,8 @@ Opal F1: clsa-dcs-images-f1 / LateralBoneDensity / RES_SEL_DICOM_MEASURE
 Opal F2: clsa-dcs-images-f2 / LateralBoneDensity / RES_SEL_DICOM_MEASURE
 Opal F3: clsa-dcs-images-f3 / LateralBoneDensity / RES_SEL_DICOM_MEASURE
 file-type: dicom
-path: /raw/clsa/<PHASE>/dxa_lateral/<UID>/dxa_lateral.dcm
-path: /supplementary/ ... .jpeg
+path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_lateral.dcm
+path: /supplementary/ ... .jpeg (TODO)
 
 dxa lateral ot
 --------------
@@ -417,7 +419,7 @@ Opal F1: clsa-dcs-images-f1 / LateralBoneDensity / RES_SEL_DICOM_OT
 Opal F2: clsa-dcs-images-f2 / LateralBoneDensity / RES_SEL_DICOM_OT
 Opal F3: clsa-dcs-images-f3 / LateralBoneDensity / RES_SEL_DICOM_OT
 file-type: dicom
-path: /raw/clsa/<PHASE>/dxa_lateral/<UID>/dxa_lateral_ot.dcm
+path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_lateral_ot.dcm
 notes: ot is "quantitative morphometry" but all data is empty (was not recorded)
 
 dxa lateral pr
@@ -427,7 +429,7 @@ Opal F1: clsa-dcs-images-f1 / LateralBoneDensity / RES_SEL_DICOM_PR
 Opal F2: clsa-dcs-images-f2 / LateralBoneDensity / RES_SEL_DICOM_PR
 Opal F3: clsa-dcs-images-f3 / LateralBoneDensity / RES_SEL_DICOM_PR
 file-type: dicom
-path: /raw/clsa/<PHASE>/dxa_lateral/<UID>/dxa_lateral_pr.dcm
+path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_lateral_pr.dcm
 notes: pr is "structured report file for vertebral markers"
 
 dxa spine
@@ -437,9 +439,9 @@ Opal F1: does not exist
 Opal F2: clsa-dcs-images-f2 / SpineBoneDensity / RES_SP_DICOM
 Opal F3: clsa-dcs-images-f3 / SpineBoneDensity / RES_SP_DICOM
 file-type: dicom
-path: /raw/clsa/<PHASE>/dxa_spine/<UID>/dxa_spine.dcm
-path: /supplementary/ ... _reanalyzed.dcm
-path: /supplementary/ ... .jpeg
+path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_spine.dcm
+path: /supplementary/ ... _reanalyzed.dcm (TODO)
+path: /supplementary/ ... .jpeg (TODO)
 
 dxa whole body 1
 ----------------
@@ -448,20 +450,21 @@ Opal F1: clsa-dcs-images-f1 / WholeBodyBoneDensity / RES_WB_DICOM_1
 Opal F2: clsa-dcs-images-f2 / WholeBodyBoneDensity / RES_WB_DICOM_1
 Opal F3: clsa-dcs-images-f3 / WholeBodyBoneDensity / RES_WB_DICOM_1
 file-type: dicom
-path: /raw/clsa/<PHASE>/dxa_wbody/<UID>/dxa_wbody.dcm
-path: /supplementary/ ... _reanalyzed.dcm
-path: /supplementary/ ... .jpeg
+path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_wbody.dcm
+path: /supplementary/ ... _reanalyzed.dcm (TODO)
+path: /supplementary/ ... .jpeg (TODO)
 
 dxa whole body 2
 ----------------
 Opal BL: clsa-dcs-images / WholeBodyBoneDensity / RES_WB_DICOM_2
 Opal F1: clsa-dcs-images-f1 / WholeBodyBoneDensity / RES_WB_DICOM_2
 Opal F2: clsa-dcs-images-f2 / WholeBodyBoneDensity / RES_WB_DICOM_2
-Opal F3: clsa-dcs-images-f3 / WholeBodyBoneDensity / RES_WB_DICOM_3
+Opal F3: clsa-dcs-images-f3 / WholeBodyBoneDensity / RES_WB_DICOM_2
 file-type: dicom
-path: /raw/clsa/<PHASE>/dxa_wbody/<UID>/dxa_wbody_bca.dcm
-path: /supplementary/ ... _reanalyzed.dcm
-path: /supplementary/ ... .jpeg
+path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bca.dcm
+path: /supplementary/ ... _reanalyzed.dcm (TODO)
+path: /supplementary/ ... .jpeg (TODO)
+notes: bca is "body composition analysis"
 
 retinal
 -------
@@ -470,8 +473,9 @@ Opal F1: does not exist
 Opal F2: does not exist
 Opal F3: does not exist
 file-type: jpeg
-path: /raw/clsa/<PHASE>/retinal/<UID>/retinal_<SIDE>_<N>.jpeg (SIDE defined by Measure.SIDE)
+path: /raw/clsa/<PHASE>/retinal/<UID>/retinal_<N>.jpeg
 notes: files need to be numbered since some might have multiple images per side
+notes: SIDE defined by Measure.SIDE
 
 retinal left
 ------------
@@ -480,8 +484,9 @@ Opal F1: clsa-dcs-images-f1 / RetinalScanLeft / EYE
 Opal F2: clsa-dcs-images-f2 / RetinalScanLeft / EYE
 Opal F3: clsa-dcs-images-f3 / RetinalScanLeft / EYE
 file-type: jpeg
-path: /raw/clsa/<PHASE>/retinal/<UID>/retinal_<SIDE>.dcm (SIDE defined by SIDE)
+path: /raw/clsa/<PHASE>/retinal/<UID>/retinal.dcm
 notes: figure out what the side variable is (so that opal points to the correct file)
+notes: SIDE defined by SIDE
 
 retinal right
 -------------
@@ -490,8 +495,9 @@ Opal F1: clsa-dcs-images-f1 / RetinalScanRight / EYE
 Opal F2: clsa-dcs-images-f2 / RetinalScanRight / EYE
 Opal F3: clsa-dcs-images-f3 / RetinalScanRight / EYE
 file-type: jpeg
-path: /raw/clsa/<PHASE>/retinal/<UID>/retinal_<SIDE>.dcm (SIDE defined by SIDE)
+path: /raw/clsa/<PHASE>/retinal/<UID>/retinal.dcm
 notes: figure out what the side variable is (so that opal points to the correct file)
+notes: SIDE defined by SIDE
 
 dxa hip recovery left
 ---------------------
@@ -500,8 +506,7 @@ Opal F1: clsa-dcs-images-f1 / HipRecoveryLeft / RES_HIP_DICOM
 Opal F2: does not exist
 Opal F3: does not exist
 file-type: dicom
-path:
-notes: recovery dxa data is to be reviewed by Dean
+path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_hip_left.dcm
 
 dxa hip recovery right
 ----------------------
@@ -510,8 +515,7 @@ Opal F1: clsa-dcs-images-f1 / HipRecoveryRight / RES_HIP_DICOM
 Opal F2: does not exist
 Opal F3: does not exist
 file-type: dicom
-path:
-notes: recovery dxa data is to be reviewed by Dean
+path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_hip_right.dcm
 
 dxa lateral recovery
 --------------------
@@ -520,8 +524,7 @@ Opal F1: clsa-dcs-images-f1 / LateralRecovery / RES_SEL_DICOM_MEASURE
 Opal F2: does not exist
 Opal F3: does not exist
 file-type: dicom
-path:
-notes: recovery dxa data is to be reviewed by Dean
+path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_lateral.dcm
 
 dxa whole body recovery
 -----------------------
@@ -530,8 +533,7 @@ Opal F1: clsa-dcs-images-f1 / WbodyRecovery / RES_WB_DICOM_1
 Opal F2: does not exist
 Opal F3: does not exist
 file-type: dicom
-path:
-notes: recovery dxa data is to be reviewed by Dean
+path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_wbody.dcm
 
 actigraph (done)
 ----------------

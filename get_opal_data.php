@@ -1,18 +1,10 @@
 <?php
-require_once 'common.php';
-require_once( 'opal_category_list.php' );
+require_once 'src/common.php';
+require_once( 'src/opal_category_list.php' );
 
-$base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
-
-function download_file( $uid, $phase, $params, &$count_list )
+function download_file( $uid, $base_dir, $params, &$count_list )
 {
-  $directory = sprintf(
-    '%s/raw/clsa/%d/%s/%s',
-    DATA_DIR,
-    $phase,
-    $params['name'],
-    $uid
-  );
+  $directory = sprintf( '%s/%s', $base_dir, $uid );
 
   // Ignore if the destination file already exists
   // Note that we use N=1 for repeated data, which means if the first file was downloaded then it
@@ -122,6 +114,13 @@ function download_file( $uid, $phase, $params, &$count_list )
   }
   else
   {
+    $output_filename = sprintf( '%s/%s', $directory, $params['filename'] );
+
+    if( array_key_exists( 'pre_download_function', $params ) )
+    {
+      $params['pre_download_function']( $output_filename );
+    }
+
     $response = opal_send( [
       'datasource' => $params['datasource'],
       'table' => $params['table'],
@@ -132,11 +131,13 @@ function download_file( $uid, $phase, $params, &$count_list )
 
     if( $response )
     {
-      file_put_contents(
-        sprintf( '%s/%s', $directory, $params['filename'] ),
-        $response
-      );
+      file_put_contents( $output_filename, $response );
       $count_list['download']++;
+
+      if( array_key_exists( 'post_download_function', $params ) )
+      {
+        $params['post_download_function']( $output_filename );
+      }
     }
     else
     {
@@ -161,11 +162,10 @@ if(
     'php://stderr',
     "Usage: php get_opal_data.php <phase> <category> (<offset|uid>)\n".
     "       where <phase> is the rank of the phase (1 is baseline, 2 is F1, etc)\n".
-    "       and <category> must be one of the following: ".
-    join( ', ', $possible_category_list )."\n".
-    "       and <offset> is an optional parameter that will start the download with the given offset\n",
-    "       and <uid> is the CLSA ID of a specific participant to download (must be A000000 format)\n",
-    5
+    "       and <category> must be one of the following:\n".
+    "         ".join( "\n         ", $possible_category_list )."\n".
+    "       and <offset> is an optional parameter that will start the download with the given offset\n".
+    "       and <uid> is the CLSA ID of a specific participant to download (must be A000000 format)\n"
   );
   exit;
 }
@@ -213,10 +213,17 @@ $count_list = array(
   'missing' => 0
 );
 
+$base_dir = sprintf(
+  '%s/raw/clsa/%d/%s',
+  DATA_DIR,
+  $phase,
+  $params['name']
+);
+
 if( !is_null( $initial_uid ) )
 {
   output( sprintf( 'Downloading %s data from Opal to %s (for UID %s only)', $category, $base_dir, $initial_uid ) );
-  download_file( $initial_uid, $phase, $params, $count_list );
+  download_file( $initial_uid, $base_dir, $params, $count_list );
 }
 else
 {
@@ -244,7 +251,7 @@ else
 
     $object = json_decode( $response );
     foreach( $object->valueSets as $value_set )
-      download_file( $value_set->identifier, $phase, $params, $count_list );
+      download_file( $value_set->identifier, $base_dir, $params, $count_list );
   }
 }
 

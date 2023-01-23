@@ -1,5 +1,5 @@
 <?php
-require_once 'common.php';
+require_once 'src/common.php';
 
 $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
 $study_uid_lookup = get_study_uid_lookup( TICWATCH_IDENTIFIER_NAME );

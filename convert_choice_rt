@@ -1,0 +1,130 @@
+#!/usr/bin/php
+<?php
+/**
+ * This script reads all choice_rt CSV result files and compiles the data into a single table.
+ * 
+ * @author Patrick Emond <emondpd@mcmaster.ca>
+ * @date 2022-12-14
+ */
+
+ini_set( 'display_errors', '1' );
+error_reporting( E_ALL | E_STRICT );
+ini_set( 'date.timezone', 'US/Eastern' );
+
+// utility functions
+function usage()
+{
+  print "Compiles all choice_rt data from CSV result files into a single CSV file.".
+        "\n".
+        "Usage: convert_choice_rt <phase>\n".
+        "       where <phase> must be a number between 1 and 7\n".
+        "       (1 is baseline, 2 is follow-up 1, 3 is follow-up 2, etc)\n".
+        "\n";
+  die();
+}
+function error( $msg ) { out( sprintf( 'ERROR! %s', $msg ) ); die(); }
+
+function parse_result_file( $filename )
+{
+  // read the file data into an array of associative arrays
+  $valid_count = 0;
+  $last_index = 0;
+  $cols = [];
+  $rows = [];
+  foreach( explode( "\n", file_get_contents( $filename ) ) as $index => $line )
+  {
+    $row = explode( ',', $line );
+    // the first line is a header, use it to get the column index of relevant data
+    if( 0 == $index )
+    {
+      $date_col_index = array_search( 'UserStartDateTime', $row );
+      $cols['CORANS'] = array_search( 'IfCorrect1Else0', $row );
+      $cols['ELAPTIME'] = array_search( 'ElapsedTime_ms', $row );
+      $cols['CORPOS'] = array_search( 'CorrectAnswer', $row );
+      $cols['RES_STIMINTER'] = array_search( 'ResponseStimulusInterval_ms', $row );
+      continue;
+    }
+
+    // we only want the first 61 lines
+    if( 60 < $index ) break;
+
+    if( 1 == $index )
+    {
+      // add the participant's UID
+      preg_match( '#choice_rt/(.+)/result_file.csv#', $filename, $matches );
+      $rows['entity_id'] = $matches[1];
+
+      // add date and time columns
+      $rows['CRT_DATETIME'] = NULL;
+      if( array_key_exists( $date_col_index, $row ) )
+      {
+        if( preg_match( '#[0-9]+/[0-9]+/[0-9]+ [0-9]+:[0-9]+:[0-9]+ [AP]M#', $row[$date_col_index] ) )
+        {
+          $date = date_parse_from_format( 'd/m/Y H:i:s A', $row[$date_col_index] );
+          $rows['CRT_DATETIME'] = sprintf(
+            '%s-%02d-%02d %02d:%02d:00',
+            $date['year'],
+            $date['month'],
+            $date['day'],
+            $date['hour'],
+            $date['minute']
+          );
+        }
+        else
+        {
+          $rows['CRT_DATETIME'] = $row[$date_col_index];
+        }
+      }
+    }
+
+    $valid = true;
+    foreach( $cols as $var_name => $col_index )
+    {
+      $col = sprintf( 'CRT_%s_%d', $var_name, $index );
+      if( !array_key_exists( $col_index, $row ) ) $valid = false;
+      $rows[$col] = array_key_exists( $col_index, $row ) ? $row[$col_index] : NULL;
+    }
+
+    if( $valid ) $valid_count++;
+    $last_index = $index;
+  }
+  
+  // now print the missing lines
+  for( $index = $last_index; 60 > $index; $index++ )
+  {
+    foreach( $cols as $var_name => $col_index )
+    {
+      $col = sprintf( 'CRT_%s_%d', $var_name, $index );
+      $rows[$col] = NULL;
+    }
+  }
+
+  $rows['CRT_TRIAL_NB'] = $valid_count;
+
+  return $rows;
+}
+
+if( 2 != $argc )
+{
+  printf( "ERROR: No study phase provided\n\n" );
+  usage();
+}
+
+$phase = intval( $argv[1] );
+if( !( 1 <= $phase && $phase <= 7 ) )
+{
+  printf( "ERROR: Study phase must be a number between 1 and 7 (\"%s\" provided)\n\n", $argv[1] );
+  usage();
+}
+
+// get data from all participants
+$data = [];
+$path = sprintf( '/data/raw/clsa/%d/choice_rt', $phase );
+foreach( glob( sprintf( '%s/*/result_file.csv', $path ) ) as $index => $filename )
+{
+  $data = parse_result_file( $filename );
+  
+  // print the header the first time only
+  if( 0 == $index ) printf( "%s\n", implode( ",", array_keys( $data ) ) );
+  printf( "%s\n", implode( ",", array_values( $data ) ) );
+}
