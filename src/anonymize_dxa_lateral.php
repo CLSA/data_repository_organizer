@@ -43,6 +43,7 @@ function anonymize( $filename )
   );
 
   $result_code = 0;
+  $output = NULL;
   if( DEBUG )
   {
     printf( "%s\n", $command );

@@ -404,12 +404,13 @@ notes: Data not recorded, can be ignored
 
 dxa lateral measure
 -------------------
-Opal BL: clsa-dcs-images / LateralBoneDensity / RES_SEL_DICOM_MEASURE
-Opal F1: clsa-dcs-images-f1 / LateralBoneDensity / RES_SEL_DICOM_MEASURE
-Opal F2: clsa-dcs-images-f2 / LateralBoneDensity / RES_SEL_DICOM_MEASURE
+Opal BL: clsa-dcs-images / LateralBoneDensity / RES_SEL_DICOM_MEASURE (done)
+Opal F1: clsa-dcs-images-f1 / LateralBoneDensity / RES_SEL_DICOM_MEASURE (done)
+Opal F2: clsa-dcs-images-f2 / LateralBoneDensity / RES_SEL_DICOM_MEASURE (done)
 Opal F3: clsa-dcs-images-f3 / LateralBoneDensity / RES_SEL_DICOM_MEASURE
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_lateral.dcm
+path: /anonymized/clsa/<PHASE>/dxa/<UID>/dxa_lateral.dcm
 path: /supplementary/ ... .jpeg (TODO)
 
 dxa lateral ot
