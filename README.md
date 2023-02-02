@@ -171,8 +171,8 @@ stroop dot recording
 --------------------
 Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_DOTREC_DCS (done)
 Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_DOTREC_COF1 (done)
-Opal F2: clsa-dcs-f2 / StroopFAS / STP_DOTREC_COF2
-Opal F3: clsa-dcs-f3 / StroopFAS / STP_DOTREC_COF3
+Opal F2: clsa-dcs-f2 / StroopFAS / STP_DOTREC_COF2 (done)
+Opal F3: clsa-dcs-f3 / StroopFAS / STP_DOTREC_COF3 (done)
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/stroop_dot.wav
 

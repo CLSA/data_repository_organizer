@@ -15,7 +15,8 @@ $category_list = [
   'animal_fluency',
   'counting',
   'delayed_word_list',
-  'immediate_word_list'
+  'immediate_word_list',
+  'stroop_dot'
 ];
 
 foreach( $category_list as $category )

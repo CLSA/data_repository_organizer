@@ -441,21 +441,21 @@ $category_list = [
       'datasource' => 'clsa-dcs',
       'table' => 'Spirometry',
       'variable' => 'Measure.RES_REPORT',
-      'filename' => 'report.pdf' // this data isn't actually repeated, so no <N> is included,
+      'filename' => 'report.pdf', // this data isn't actually repeated, so no <N> is included,
     ],
     '3' => [
       'name' => 'spirometry',
       'datasource' => 'clsa-dcs',
       'table' => 'Spirometry',
       'variable' => 'Measure.RES_REPORT',
-      'filename' => 'report.pdf' // this data isn't actually repeated, so no <N> is included,
+      'filename' => 'report.pdf', // this data isn't actually repeated, so no <N> is included,
     ],
     '4' => [
       'name' => 'spirometry',
       'datasource' => 'clsa-dcs',
       'table' => 'Spirometry',
       'variable' => 'Measure.RES_REPORT',
-      'filename' => 'report.pdf' // this data isn't actually repeated, so no <N> is included,
+      'filename' => 'report.pdf', // this data isn't actually repeated, so no <N> is included,
     ],
   ],
   'cineloop_1' => [ // baseline had three cineloops
@@ -465,6 +465,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop1_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
   ],
   'cineloop_2' => [
@@ -474,6 +481,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_2',
       'filename' => 'cineloop2_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
   ],
   'cineloop_3' => [
@@ -483,6 +497,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_3',
       'filename' => 'cineloop3_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
   ],
   'cineloop' => [ // after baseline we only have one cineloop
@@ -492,6 +513,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
     '3' => [
       'name' => 'carotid_intima',
@@ -499,6 +527,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
     '4' => [
       'name' => 'carotid_intima',
@@ -506,6 +541,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
   ],
   'plaque_cineloop' => [
@@ -515,6 +557,13 @@ $category_list = [
       'table' => 'Plaque',
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'plaque_cineloop_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
   ],
   'us_report' => [
@@ -554,6 +603,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE',
       'filename' => 'still_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
   ],
   'still_image_1' => [ // beyond baseline had three still images
@@ -563,6 +619,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_1',
       'filename' => 'still1_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
     '3' => [
       'name' => 'carotid_intima',
@@ -570,6 +633,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_1',
       'filename' => 'still1_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
     '4' => [
       'name' => 'carotid_intima',
@@ -577,6 +647,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_1',
       'filename' => 'still1_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
   ],
   'still_image_2' => [
@@ -586,6 +663,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_2',
       'filename' => 'still2_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
     '3' => [
       'name' => 'carotid_intima',
@@ -593,6 +677,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_2',
       'filename' => 'still2_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
     '4' => [
       'name' => 'carotid_intima',
@@ -600,6 +691,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_2',
       'filename' => 'still2_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
   ],
   'still_image_3' => [
@@ -609,6 +707,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_3',
       'filename' => 'still3_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
     '3' => [
       'name' => 'carotid_intima',
@@ -616,6 +721,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_3',
       'filename' => 'still3_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
     '4' => [
       'name' => 'carotid_intima',
@@ -623,6 +735,13 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_3',
       'filename' => 'still3_<N>.dcm',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+        copy( $filename, $anonymized_filename );
+        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+      },
     ],
   ],
   'dxa_hip' => [
@@ -655,7 +774,7 @@ $category_list = [
         $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
         if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
         copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_dxa_lateral.php %s', $anonymized_filename ) );
+        exec( sprintf( 'php src/anonymize_dxa.php %s', $anonymized_filename ) );
       }
     ],
   ],
