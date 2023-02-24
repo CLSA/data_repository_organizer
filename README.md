@@ -167,8 +167,8 @@ Opal F3: clsa-dcs-f3 / StroopFAS / FAS_SREC_COF3 (done)
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/s_word_fluency.wav
 
-stroop dot recording
---------------------
+stroop dot recording (done)
+---------------------------
 Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_DOTREC_DCS (done)
 Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_DOTREC_COF1 (done)
 Opal F2: clsa-dcs-f2 / StroopFAS / STP_DOTREC_COF2 (done)
@@ -176,21 +176,21 @@ Opal F3: clsa-dcs-f3 / StroopFAS / STP_DOTREC_COF3 (done)
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/stroop_dot.wav
 
-stroop word recording
----------------------
-Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_WORREC_DCS
-Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_WORREC_COF1
-Opal F2: clsa-dcs-f2 / StroopFAS / STP_WORREC_COF2
-Opal F3: clsa-dcs-f3 / StroopFAS / STP_WORREC_COF3
+stroop word recording (done)
+----------------------------
+Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_WORREC_DCS (done)
+Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_WORREC_COF1 (done)
+Opal F2: clsa-dcs-f2 / StroopFAS / STP_WORREC_COF2 (done)
+Opal F3: clsa-dcs-f3 / StroopFAS / STP_WORREC_COF3 (done)
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/stroop_word.wav
 
-stroop colour recording
------------------------
-Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_COLREC_DCS
-Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_COLREC_COF1
-Opal F2: clsa-dcs-f2 / StroopFAS / STP_COLREC_COF2
-Opal F3: clsa-dcs-f3 / StroopFAS / STP_COLREC_COF3
+stroop colour recording (done)
+------------------------------
+Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_COLREC_DCS (done)
+Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_COLREC_COF1 (done)
+Opal F2: clsa-dcs-f2 / StroopFAS / STP_COLREC_COF2 (done)
+Opal F3: clsa-dcs-f3 / StroopFAS / STP_COLREC_COF3 (done)
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/stroop_colour.wav
 
@@ -209,9 +209,9 @@ file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/<NN>.wav
 path: /raw/clsa/<PHASE>/audio/<UID>/<NN>-operator.wav
 
-cog alphabet
-------------
-Opal BL: clsa-inhome / InHome_2 / COG_ALPTME_REC2_COM
+cog alphabet (done)
+-------------------
+Opal BL: clsa-inhome / InHome_2 / COG_ALPTME_REC2_COM (done)
 Opal F1: clsa-inhome / InHome_2 / COG_ALPTME_REC2_COF1 (done)
 Opal F2: clsa-inhome-f2 / InHome_2 / COG_ALPTME_REC2_COF2 (done)
 Opal F3: clsa-inhome-f3 / InHome_2 / COG_ALPTME_REC2_COF3 (done)
@@ -224,9 +224,9 @@ file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/alphabet.wav
 path: /raw/clsa/<PHASE>/audio/<UID>/alphabet-operator.wav
 
-cog mental alternation
-----------------------
-Opal BL: clsa-inhome / InHome_2 / COG_ALTTME_REC_COM
+cog mental alternation (done)
+-----------------------------
+Opal BL: clsa-inhome / InHome_2 / COG_ALTTME_REC_COM (done)
 Opal F1: clsa-inhome / InHome_2 / COG_ALTTME_REC_COF1 (done)
 Opal F2: clsa-inhome-f2 / InHome_2 / COG_ALTTME_REC_COF2 (done)
 Opal F3: clsa-inhome-f3 / InHome_2 / COG_ALTTME_REC_COF3 (done)
@@ -239,9 +239,9 @@ file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/mental_alternation.wav
 path: /raw/clsa/<PHASE>/audio/<UID>/mental_alternation-operator.wav
 
-cog animal list
----------------
-Opal BL: clsa-inhome / InHome_2 / COG_ANMLLLIST_REC_COM
+cog animal list (done)
+----------------------
+Opal BL: clsa-inhome / InHome_2 / COG_ANMLLLIST_REC_COM (done)
 Opal F1: clsa-inhome / InHome_2 / COG_ANMLLLIST_REC_COF1 (done)
 Opal F2: clsa-inhome-f2 / InHome_2 / COG_ANMLLLIST_REC_COF2 (done)
 Opal F3: clsa-inhome-f3 / InHome_2 / COG_ANMLLLIST_REC_COF3 (done)
@@ -254,9 +254,9 @@ file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/animal_fluency.wav
 path: /raw/clsa/<PHASE>/audio/<UID>/animal_fluency-operator.wav
 
-cog counting
-------------
-Opal BL: clsa-inhome / InHome_2 / COG_CNTTMEREC_COM
+cog counting (done)
+-------------------
+Opal BL: clsa-inhome / InHome_2 / COG_CNTTMEREC_COM (done)
 Opal F1: clsa-inhome / InHome_2 / COG_CNTTMEREC_COF1 (done)
 Opal F2: clsa-inhome-f2 / InHome_2 / COG_CNTTMEREC_COF2 (done)
 Opal F3: clsa-inhome-f3 / InHome_2 / COG_CNTTMEREC_COF3 (done)
@@ -269,9 +269,9 @@ file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/counting.wav
 path: /raw/clsa/<PHASE>/audio/<UID>/counting-operator.wav
 
-cog delayed word list
----------------------
-Opal BL: clsa-inhome / InHome_2 / COG_WRDLST2_REC_COM
+cog delayed word list (done)
+----------------------------
+Opal BL: clsa-inhome / InHome_2 / COG_WRDLST2_REC_COM (done)
 Opal F1: clsa-inhome / InHome_2 / COG_WRDLST2_REC_COF1 (done)
 Opal F2: clsa-inhome-f2 / InHome_2 / COG_WRDLST2_REC_COF2 (done)
 Opal F3: clsa-inhome-f3 / InHome_2 / COG_WRDLST2_REC_COF3 (done)
@@ -284,9 +284,9 @@ file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/delayed_word_list.wav
 path: /raw/clsa/<PHASE>/audio/<UID>/delayed_word_list-operator.wav
 
-cog immediate word list
------------------------
-Opal BL: clsa-inhome / InHome_2 / COG_WRDLSTREC_COM
+cog immediate word list (done)
+------------------------------
+Opal BL: clsa-inhome / InHome_2 / COG_WRDLSTREC_COM (done)
 Opal F1: clsa-inhome / InHome_2 / COG_WRDLSTREC_COF1 (done)
 Opal F2: clsa-inhome-f2 / InHome_2 / COG_WRDLSTREC_COF2 (done)
 Opal F3: clsa-inhome-f3 / InHome_2 / COG_WRDLSTREC_COF3 (done)
@@ -299,30 +299,34 @@ file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/immediate_word_list.wav
 path: /raw/clsa/<PHASE>/audio/<UID>/immediate_word_list-operator.wav
 
-spirometry flow
----------------
+spirometry flow (done)
+----------------------
 Opal BL: clsa-dcs / Spirometry / Measure.RES_FLOW_VALUES (repeated) (done)
-Opal F1: clsa-dcs-f1 / Spirometry / Measure.RES_FLOW_VALUES (repeated) (keep running from 5000)
+Opal F1: clsa-dcs-f1 / Spirometry / Measure.RES_FLOW_VALUES (repeated) (done)
 Opal F2: clsa-dcs-f2 / Spirometry / Measure.RES_FLOW_VALUES (repeated)
-Opal F3: clsa-dcs-f3 / Spirometry / Measure.RES_FLOW_VALUES (repeated)
+  -> note: opal often stopped responding during download
+Opal F3: clsa-dcs-f3 / Spirometry / Measure.RES_FLOW_VALUES (repeated) (done)
+  -> note: opal often stopped responding during download
 file-type: txt
 path: /raw/clsa/<PHASE>/spirometry/<UID>/spirometry_flow_<N>.txt
 
-spirometry volume
------------------
-Opal BL: clsa-dcs / Spirometry / Measure.RES_VOLUME_VALUES (repeated)
-Opal F1: clsa-dcs-f1 / Spirometry / Measure.RES_VOLUME_VALUES (repeated)
-Opal F2: clsa-dcs-f2 / Spirometry / Measure.RES_VOLUME_VALUES (repeated)
-Opal F3: clsa-dcs-f3 / Spirometry / Measure.RES_VOLUME_VALUES (repeated)
+spirometry volume (done)
+------------------------
+Opal BL: clsa-dcs / Spirometry / Measure.RES_VOLUME_VALUES (repeated) (done)
+Opal F1: clsa-dcs-f1 / Spirometry / Measure.RES_VOLUME_VALUES (repeated) (done)
+Opal F2: clsa-dcs-f2 / Spirometry / Measure.RES_VOLUME_VALUES (repeated) (done)
+  -> note: opal often stopped responding during download
+Opal F3: clsa-dcs-f3 / Spirometry / Measure.RES_VOLUME_VALUES (repeated) (done)
+  -> note: opal often stopped responding during download
 file-type: txt
 path: /raw/clsa/<PHASE>/spirometry/<UID>/spirometry_volume_<N>.txt
 
-spirometry report
------------------
+spirometry report (done)
+------------------------
 Opal BL: does not exist
-Opal F1: clsa-dcs-f1 / Spirometry / Measure.RES_REPORT (repeated)
-Opal F2: clsa-dcs-f2 / Spirometry / Measure.RES_REPORT (repeated)
-Opal F3: clsa-dcs-f3 / Spirometry / Measure.RES_REPORT (repeated)
+Opal F1: clsa-dcs-f1 / Spirometry / Measure.RES_REPORT (repeated) (done)
+Opal F2: clsa-dcs-f2 / Spirometry / Measure.RES_REPORT (repeated) (done)
+Opal F3: clsa-dcs-f3 / Spirometry / Measure.RES_REPORT (repeated) (done)
 file-type: pdf
 path: /raw/clsa/<PHASE>/spirometry/<UID>/report.pdf
 notes: not actually repeated

@@ -16,7 +16,12 @@ $category_list = [
   'counting',
   'delayed_word_list',
   'immediate_word_list',
-  'stroop_dot'
+  'stroop_dot',
+  'stroop_word',
+  'stroop_colour',
+  'spirometry_flow',
+  'spirometry_volume',
+  'spirometry_report',
 ];
 
 foreach( $category_list as $category )
