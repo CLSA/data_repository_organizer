@@ -31,6 +31,13 @@ function download_file( $uid, $base_dir, $params, &$count_list )
   // if the variable name starts with "Measure." then this is a repeated variable (download one at a time)
   if( preg_match( '/Measure\./', $params['variable'] ) )
   {
+    $output_filename = sprintf( '%s/%s', $directory, preg_replace( '/<N>/', 1, $params['filename'] ) );
+
+    if( array_key_exists( 'pre_download_function', $params ) )
+    {
+      $params['pre_download_function']( $output_filename );
+    }
+
     $response = opal_send( [
       'datasource' => $params['datasource'],
       'table' => $params['table'],
@@ -54,10 +61,7 @@ function download_file( $uid, $base_dir, $params, &$count_list )
     {
       // Create an empty file so that we know for the future that the data is missing.
       // If we don't do this then we will look for the file every time the script runs.
-      file_put_contents(
-        sprintf( '%s/%s', $directory, preg_replace( '/<N>/', 1, $params['filename'] ) ),
-        ''
-      );
+      file_put_contents( $output_filename, '' );
       
       $count_list['missing']++;
       return;
@@ -90,24 +94,31 @@ function download_file( $uid, $base_dir, $params, &$count_list )
         }
       }
 
+      $output_filename = sprintf( '%s/%s', $directory, preg_replace( '/<N>/', $index+1, $params['filename'] ) );
+
+      // the pre-download function is called for the first file above, so only do index value 1+
+      if( 0 < $index && array_key_exists( 'pre_download_function', $params ) )
+      {
+        $params['pre_download_function']( $output_filename );
+      }
+
       // now download the data for this iteration
       $response = opal_send( $opal_params );
 
       if( $response )
       {
-        file_put_contents(
-          sprintf( '%s/%s', $directory, preg_replace( '/<N>/', $index+1, $params['filename'] ) ),
-          $response
-        );
+        file_put_contents( $output_filename, $response );
         $count_list['download']++;
+
+        if( array_key_exists( 'post_download_function', $params ) )
+        {
+          $params['post_download_function']( $output_filename );
+        }
       }
       else
       {
         // create an empty file if it is missing (again, so we know in the future that it has been searched for)
-        file_put_contents(
-          sprintf( '%s/%s', $directory, preg_replace( '/<N>/', $index+1, $params['filename'] ) ),
-          ''
-        );
+        file_put_contents( $output_filename, '' );
         $count_list['missing']++;
       }
     }
