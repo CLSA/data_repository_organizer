@@ -1,4 +1,20 @@
 <?php
+
+// post download function used by all carotid intima files
+$carotid_intima_post_download_function = function( $filename ) {
+  $anonymized_filename = preg_replace(
+    ['#/raw/#', '#\.gz$#'],
+    ['/anonymized/', ''],
+    $filename
+  );
+  $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+  if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+  copy( $filename, sprintf( '%s.gz', $anonymized_filename ) );
+  exec( sprintf( 'gzip -d %s.gz', $anonymized_filename ) );
+  exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
+  exec( sprintf( 'gzip %s', $anonymized_filename ) );
+};
+
 $category_list = [
   'cdtt' => [
     '3' => [
@@ -464,14 +480,8 @@ $category_list = [
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
-      'filename' => 'cineloop1_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'cineloop1_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
   ],
   'cineloop_2' => [
@@ -480,14 +490,8 @@ $category_list = [
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_2',
-      'filename' => 'cineloop2_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'cineloop2_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
   ],
   'cineloop_3' => [
@@ -496,14 +500,8 @@ $category_list = [
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_3',
-      'filename' => 'cineloop3_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'cineloop3_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
   ],
   'cineloop' => [ // after baseline we only have one cineloop
@@ -512,42 +510,24 @@ $category_list = [
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
-      'filename' => 'cineloop_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'cineloop_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
     '3' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
-      'filename' => 'cineloop_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'cineloop_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
     '4' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
-      'filename' => 'cineloop_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'cineloop_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
   ],
   'plaque_cineloop' => [
@@ -556,14 +536,8 @@ $category_list = [
       'datasource' => 'clsa-dcs-images',
       'table' => 'Plaque',
       'variable' => 'Measure.CINELOOP_1',
-      'filename' => 'plaque_cineloop_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'plaque_cineloop_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
   ],
   'us_report' => [
@@ -602,14 +576,8 @@ $category_list = [
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE',
-      'filename' => 'still_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'still_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
   ],
   'still_image_1' => [ // beyond baseline had three still images
@@ -618,42 +586,24 @@ $category_list = [
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_1',
-      'filename' => 'still1_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'still1_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
     '3' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_1',
-      'filename' => 'still1_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'still1_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
     '4' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_1',
-      'filename' => 'still1_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'still1_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
   ],
   'still_image_2' => [
@@ -662,42 +612,24 @@ $category_list = [
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_2',
-      'filename' => 'still2_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'still2_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
     '3' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_2',
-      'filename' => 'still2_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'still2_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
     '4' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_2',
-      'filename' => 'still2_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'still2_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
   ],
   'still_image_3' => [
@@ -706,42 +638,24 @@ $category_list = [
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_3',
-      'filename' => 'still3_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'still3_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
     '3' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_3',
-      'filename' => 'still3_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'still3_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
     '4' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_3',
-      'filename' => 'still3_<N>.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-      },
+      'filename' => 'still3_<N>.dcm.gz',
+      'post_download_function' => $carotid_intima_post_download_function,
     ],
   ],
   'dxa_hip' => [

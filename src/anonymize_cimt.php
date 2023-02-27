@@ -37,7 +37,7 @@ function anonymize( $filename )
     $modify_list[] = sprintf( '-m "(%s)%s"', $key, is_null( $value ) ? '' : sprintf( '=%s', $value ) );
   }
 
-  $command = sprintf( 'dcmodify -nb %s %s', implode( ' ', $modify_list ), $filename );
+  $command = sprintf( 'dcmodify -nb -nrc -imt %s %s', implode( ' ', $modify_list ), $filename );
 
   $result_code = 0;
   $output = NULL;
