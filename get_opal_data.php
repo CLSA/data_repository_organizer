@@ -1,5 +1,14 @@
 <?php
-require_once 'src/common.php';
+/**
+ * This script downloads binary data from Opal directly to the raw/ directory.
+ * 
+ * @author Patrick Emond <emondpd@mcmaster.ca>
+ * @date 2023-03-14
+ */
+
+require_once( 'settings.ini.php' );
+require_once( 'src/common.php' );
+require_once( 'src/arguments.class.php' );
 require_once( 'src/opal_category_list.php' );
 
 function download_file( $uid, $base_dir, $params, &$count_list )
@@ -162,79 +171,63 @@ function download_file( $uid, $base_dir, $params, &$count_list )
   }
 }
 
-$possible_category_list = array_keys( $category_list );
 
-if(
-  3 > $argc ||
-  !preg_match( '/^[0-9]$/', $argv[1] ) ||
-  !in_array( $argv[2], $possible_category_list )
-) {
-  file_put_contents(
-    'php://stderr',
-    "Usage: php get_opal_data.php <phase> <category> (<offset|uid>)\n".
-    "       where <phase> is the rank of the phase (1 is baseline, 2 is F1, etc)\n".
-    "       and <category> must be one of the following:\n".
-    "         ".join( "\n         ", $possible_category_list )."\n".
-    "       and <offset> is an optional parameter that will start the download with the given offset\n".
-    "       and <uid> is the CLSA ID of a specific participant to download (must be A000000 format)\n"
-  );
-  exit;
-}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// build the command argument details, then parse the passed args
+$arguments = new arguments;
+$arguments->set_description( "Downloads data from Opal and stores it directly in the raw/ directory." );
+$arguments->add_option( 'd', 'debug', 'Runs in test mode, no files will be affected.' );
+$arguments->add_option( 'k', 'keep_files', 'Do not delete any files from the temporary directory.' );
+$arguments->add_option( 'v', 'verbose', 'Shows more details when running the script.' );
+$arguments->add_option( 'o', 'offset', 'Start the download at a particular offset', true, 0 );
+$arguments->add_option( 'u', 'uid', 'Download data for a specific participant by UID', true, false );
+$arguments->add_option( 'p', 'phase', 'The phase of the study the data belongs to', true, 1 );
+$arguments->add_input( 'CATEGORY', 'Which data category to download (eg: cdtt, ecg, frax, etc...)' );
 
-$phase = $argv[1];
-$category = $argv[2];
-$initial_offset = 0;
-$initial_uid = NULL;
-if( 4 == $argc )
-{
-  if( preg_match( '/^[A-Z][0-9]{6}$/', $argv[3] ) )
-  {
-    $initial_uid = $argv[3];
-  }
-  else
-  {
-    $initial_offset = $argv[3];
-  }
-}
+$args = $arguments->parse_arguments( $argv );
 
-if( !array_key_exists( 'all', $category_list[$argv[2]] ) &&
-    !array_key_exists( $phase, $category_list[$argv[2]] ) )
+define( 'TEST_ONLY', array_key_exists( 'debug', $args['option_list'] ) );
+define( 'KEEP_FILES', array_key_exists( 'keep_files', $args['option_list'] ) );
+define( 'VERBOSE', array_key_exists( 'verbose', $args['option_list'] ) );
+$initial_offset = $args['option_list']['offset'];
+$uid = $args['option_list']['uid'];
+$phase = $args['option_list']['phase'];
+$category = $args['input_list']['CATEGORY'];
+
+// make sure the category and phase is valid
+if( !array_key_exists( 'all', $category_list[$category] ) &&
+    !array_key_exists( $phase, $category_list[$category] ) )
 {
   fatal_error(
-    sprintf(
-      'Category "%s" does not exist for phase "%d".',
-      $category,
-      $phase
-    ),
+    sprintf( 'Category "%s" does not exist for phase "%d".', $category, $phase ),
     6
   );
 }
 
-$params = array_key_exists( 'all', $category_list[$argv[2]] )
-        ? $category_list[$argv[2]]['all']
-        : $category_list[$argv[2]][$phase];
+$params = array_key_exists( 'all', $category_list[$category] )
+        ? $category_list[$category]['all']
+        : $category_list[$category][$phase];
 
 // add the postfix to the datasource based on the phase input argument
 if( 1 < $phase ) $params['datasource'] .= sprintf( '-f%d', $phase-1 );
 
 // Download binary data from Opal
-$count_list = array(
-  'skipped' => 0,
-  'download' => 0,
-  'missing' => 0
-);
+$count_list = [ 'skipped' => 0, 'download' => 0, 'missing' => 0 ];
+$base_dir = sprintf( '%s/raw/clsa/%d/%s', DATA_DIR, $phase, $params['name'] );
 
-$base_dir = sprintf(
-  '%s/raw/clsa/%d/%s',
-  DATA_DIR,
-  $phase,
-  $params['name']
-);
+// make sure the opal_enabled file exists
+$opal_enabled_filename = sprintf( '%s/opal_enabled', __DIR__ );
 
-if( !is_null( $initial_uid ) )
+if( !file_exists( $opal_enabled_filename ) )
 {
-  output( sprintf( 'Downloading %s data from Opal to %s (for UID %s only)', $category, $base_dir, $initial_uid ) );
-  download_file( $initial_uid, $base_dir, $params, $count_list );
+  output( 'Not proceeding since no "opal_enabled" file exists.' );
+  exit( 0 );
+}
+
+if( $uid )
+{
+  output( sprintf( 'Downloading %s data from Opal to %s (for UID %s only)', $category, $base_dir, $uid ) );
+  download_file( $uid, $base_dir, $params, $count_list );
 }
 else
 {
@@ -263,11 +256,11 @@ else
     $object = json_decode( $response );
     foreach( $object->valueSets as $value_set )
     {
-      if( !file_exists( 'opal_enabled' ) ) break;
+      if( !file_exists( $opal_enabled_filename ) ) break;
       download_file( $value_set->identifier, $base_dir, $params, $count_list );
     }
 
-    if( !file_exists( 'opal_enabled' ) )
+    if( !file_exists( $opal_enabled_filename ) )
     {
       // In order to stop downloading without leaving a half-downloaded file behind we stop
       // downloading if the opal_enabled file doesn't exist.

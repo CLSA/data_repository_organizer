@@ -1,14 +1,15 @@
 <?php
-// set TEST_ONLY, VERBOSE, and KEEP_FILES to false for production
-define( 'TEST_ONLY', true );
-define( 'VERBOSE', true );
-define( 'KEEP_FILES', true );
-
 // The connection details for the CENOZO database
 define( 'CENOZO_DB_HOSTNAME', '' );
 define( 'CENOZO_DB_USERNAME', '' );
 define( 'CENOZO_DB_PASSWORD', '' );
 define( 'CENOZO_DB_DATABASE', '' );
+
+// Opal settings
+define( 'OPAL_USERNAME', '' );
+define( 'OPAL_PASSWORD', '' );
+define( 'OPAL_URL', '' );
+define( 'OPAL_TIMEOUT', 5 );
 
 // The absolute base directory of the data repository to transfer files to
 define( 'DATA_DIR', '/data' );
@@ -21,19 +22,3 @@ define( 'CLEANED_DIR', 'cleaned' );
 
 // THe relative directory to move files which cannot be sorted
 define( 'INVALID_DIR', 'invalid' );
-
-// Details concerning actigraph files
-define( 'ACTIGRAPH_IDENTIFIER_NAME', '' );
-define( 'ACTIGRAPH_STUDY_NAME', '' );
-define( 'ACTIGRAPH_STUDY_PHASE', '' );
-
-// Details concerning ticwatch files
-define( 'TICWATCH_IDENTIFIER_NAME', '' );
-define( 'TICWATCH_STUDY_NAME', '' );
-define( 'TICWATCH_STUDY_PHASE', '' );
-
-// Opal settings
-define( 'OPAL_USERNAME', '' );
-define( 'OPAL_PASSWORD', '' );
-define( 'OPAL_URL', '' );
-define( 'OPAL_TIMEOUT', 5 );

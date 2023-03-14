@@ -10,8 +10,6 @@ set_time_limit( 7200 ); // two hours
 error_reporting( E_ALL | E_STRICT );
 require_once( 'src/arguments.class.php' );
 
-define( 'VERSION', '1.0' );
-
 /**
  * Prints datetime-indexed messages to stdout
  * @param string $message
@@ -173,7 +171,6 @@ function purge( $path, $days_old )
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // build the command argument details, then parse the passed args
 $arguments = new arguments;
-$arguments->set_version( VERSION );
 $arguments->set_description(
   "A script that will attempt to transfer collected data files from a local to a remote directory.\n".
   "If the transfer fails it can be run again, once successful local files will be archived."
@@ -223,7 +220,7 @@ if( !is_null( $purge_days_old ) && (
 ) ) {
   printf( "Option to remove files, \"%s\", is invalid\n", $purge_days_old );
   $arguments->usage();
-  exit( 1 );
+  exit( 10 );
 }
 
 out( sprintf( 'Transfering files from "%s"', $local_dir ) );
@@ -234,3 +231,5 @@ if( rsync( $local_dir, $remote_dir, $port, $timeout ) )
 }
 
 if( !is_null( $purge_days_old ) ) purge( $local_dir, $purge_days_old );
+
+exit( 0 );

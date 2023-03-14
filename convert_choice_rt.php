@@ -1,4 +1,3 @@
-#!/usr/bin/php
 <?php
 /**
  * This script reads all choice_rt CSV result files and compiles the data into a single table.
@@ -7,22 +6,9 @@
  * @date 2022-12-14
  */
 
-ini_set( 'display_errors', '1' );
 error_reporting( E_ALL | E_STRICT );
 ini_set( 'date.timezone', 'US/Eastern' );
-
-// utility functions
-function usage()
-{
-  print "Compiles all choice_rt data from CSV result files into a single CSV file.".
-        "\n".
-        "Usage: convert_choice_rt <phase>\n".
-        "       where <phase> must be a number between 1 and 7\n".
-        "       (1 is baseline, 2 is follow-up 1, 3 is follow-up 2, etc)\n".
-        "\n";
-  die();
-}
-function error( $msg ) { out( sprintf( 'ERROR! %s', $msg ) ); die(); }
+require_once( 'src/arguments.class.php' );
 
 function parse_result_file( $filename )
 {
@@ -104,27 +90,36 @@ function parse_result_file( $filename )
   return $rows;
 }
 
-if( 2 != $argc )
-{
-  printf( "ERROR: No study phase provided\n\n" );
-  usage();
-}
 
-$phase = intval( $argv[1] );
-if( !( 1 <= $phase && $phase <= 7 ) )
-{
-  printf( "ERROR: Study phase must be a number between 1 and 7 (\"%s\" provided)\n\n", $argv[1] );
-  usage();
-}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// build the command argument details, then parse the passed args
+$arguments = new arguments;
+$arguments->set_description( "Compiles all choice_rt data from CSV result files into a single CSV file." );
+$arguments->add_input( 'PHASE', 'The study phase such that 1 is baseline, 2 is follow-up 1, etc...' );
+
+$args = $arguments->parse_arguments( $argv );
+
+define( 'DEBUG', array_key_exists( 'debug', $args['option_list'] ) );
+$phase = $args['input_list']['PHASE'];
 
 // get data from all participants
 $data = [];
 $path = sprintf( '/data/raw/clsa/%d/choice_rt', $phase );
-foreach( glob( sprintf( '%s/*/result_file.csv', $path ) ) as $index => $filename )
+$file_list = glob( sprintf( '%s/*/result_file.csv', $path ) );
+if( 0 == count( $file_list ) )
 {
-  $data = parse_result_file( $filename );
-  
-  // print the header the first time only
-  if( 0 == $index ) printf( "%s\n", implode( ",", array_keys( $data ) ) );
-  printf( "%s\n", implode( ",", array_values( $data ) ) );
+  printf( "No files found in %s\n", $path );
 }
+else 
+{
+  foreach( glob( sprintf( '%s/*/result_file.csv', $path ) ) as $index => $filename )
+  {
+    $data = parse_result_file( $filename );
+    
+    // print the header the first time only
+    if( 0 == $index ) printf( "%s\n", implode( ",", array_keys( $data ) ) );
+    printf( "%s\n", implode( ",", array_values( $data ) ) );
+  }
+}
+
+exit( 0 );

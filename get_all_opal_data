@@ -1,5 +1,10 @@
 #!/usr/bin/php
 <?php
+/**
+ * A script that downloads all new binary data from Opal
+ * This is a temporary script that will be run on a regular basis until binary data is no longer
+ * uploaded to Opal.  After that time it will no longer be required.
+ */
 
 $phase = 4;
 $category_list = [
@@ -26,5 +31,5 @@ $category_list = [
 
 foreach( $category_list as $category )
 {
-  passthru( sprintf( 'php /usr/local/lib/data_librarian/get_opal_data.php %d %s', $phase, $category ) );
+  passthru( sprintf( 'php /usr/local/lib/data_librarian/get_opal_data.php -p %d %s', $phase, $category ) );
 }
