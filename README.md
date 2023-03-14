@@ -333,12 +333,12 @@ notes: not actually repeated
 
 cineloop [123]
 --------------
-Opal BL: clsa-dcs-images / CarotidIntima / Measure.CINELOOP_[123] (repeated)
+Opal BL: clsa-dcs-images / CarotidIntima / Measure.CINELOOP_[123] (repeated) (done)
 Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.CINELOOP_1 (repeated)
 Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.CINELOOP_1 (repeated)
 Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.CINELOOP_1 (repeated)
 file-type: gz -> dcm
-path: /raw/clsa/<PHASE>/carotid_intima/<UID>/cineloop[123]_<N>.dcm
+path: /raw/clsa/<PHASE>/carotid_intima/<UID>/cineloop[123]_<N>.dcm.gz
 notes: either left or right as indicated by Measure.SIDE; "[123]_" for BL only
 
 plaque cineloop
@@ -348,7 +348,7 @@ Opal F1: does not exist
 Opal F2: does not exist
 Opal F3: does not exist
 file-type: gz -> dcm
-path: /raw/clsa/<PHASE>/carotid_intima/<UID>/plaque_cineloop_<N>.dcm
+path: /raw/clsa/<PHASE>/carotid_intima/<UID>/plaque_cineloop_<N>.dcm.gz
 notes: either left or right as indicated by Measure.SIDE
 
 us report
@@ -368,7 +368,7 @@ Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.STILL_IMAGE_[123] (repeate
 Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.STILL_IMAGE_[123] (repeated)
 Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.STILL_IMAGE_[133] (repeated)
 file-type: gz -> dcm
-path: /raw/clsa/<PHASE>/carotid_intima/<UID>/still[123]_<N>.dcm
+path: /raw/clsa/<PHASE>/carotid_intima/<UID>/still[123]_<N>.dcm.gz
 notes: either left or right as indicated by Measure.SIDE
 
 dxa dual hip
