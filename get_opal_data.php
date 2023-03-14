@@ -262,7 +262,18 @@ else
 
     $object = json_decode( $response );
     foreach( $object->valueSets as $value_set )
+    {
+      if( !file_exists( 'opal_enabled' ) ) break;
       download_file( $value_set->identifier, $base_dir, $params, $count_list );
+    }
+
+    if( !file_exists( 'opal_enabled' ) )
+    {
+      // In order to stop downloading without leaving a half-downloaded file behind we stop
+      // downloading if the opal_enabled file doesn't exist.
+      output( 'Gracefully aborting since no "opal_enabled" file exists.' );
+      break;
+    }
   }
 }
 
