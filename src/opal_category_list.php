@@ -1,7 +1,7 @@
 <?php
 
 // post download function used by all carotid intima files
-$carotid_intima_post_download_function = function( $filename ) {
+$cimt_post_download_function = function( $filename ) {
   $anonymized_filename = preg_replace(
     ['#/raw/#', '#\.gz$#'],
     ['/anonymized/', ''],
@@ -485,7 +485,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop1_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'cineloop2' => [
@@ -495,7 +495,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_2',
       'filename' => 'cineloop2_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'cineloop3' => [
@@ -505,7 +505,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_3',
       'filename' => 'cineloop3_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'cineloop' => [ // after baseline we only have one cineloop
@@ -515,7 +515,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
     '3' => [
       'name' => 'carotid_intima',
@@ -523,7 +523,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
     '4' => [
       'name' => 'carotid_intima',
@@ -531,7 +531,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'plaque_cineloop' => [
@@ -541,7 +541,7 @@ $category_list = [
       'table' => 'Plaque',
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'plaque_cineloop_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'us_report' => [
@@ -581,7 +581,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE',
       'filename' => 'still_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'still_image_1' => [ // beyond baseline had three still images
@@ -591,7 +591,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_1',
       'filename' => 'still1_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
     '3' => [
       'name' => 'carotid_intima',
@@ -599,7 +599,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_1',
       'filename' => 'still1_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
     '4' => [
       'name' => 'carotid_intima',
@@ -607,7 +607,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_1',
       'filename' => 'still1_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'still_image_2' => [
@@ -617,7 +617,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_2',
       'filename' => 'still2_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
     '3' => [
       'name' => 'carotid_intima',
@@ -625,7 +625,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_2',
       'filename' => 'still2_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
     '4' => [
       'name' => 'carotid_intima',
@@ -633,7 +633,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_2',
       'filename' => 'still2_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'still_image_3' => [
@@ -643,7 +643,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_3',
       'filename' => 'still3_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
     '3' => [
       'name' => 'carotid_intima',
@@ -651,7 +651,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_3',
       'filename' => 'still3_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
     '4' => [
       'name' => 'carotid_intima',
@@ -659,7 +659,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_3',
       'filename' => 'still3_<N>.dcm.gz',
-      'post_download_function' => $carotid_intima_post_download_function,
+      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'dxa_hip' => [
