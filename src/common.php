@@ -51,25 +51,51 @@ function remove_dir( $dir )
 }
 
 // Reads the id_lookup file and returns an array containing Study ID => UID pairs
-function get_study_uid_lookup( $identifier_name )
+function get_study_uid_lookup( $identifier_name, $events = false )
 {
   $cenozo_db = get_cenozo_db();
-  $result = $cenozo_db->query( sprintf(
-    'SELECT participant.uid, participant_identifier.value '.
+
+  $sql = 'SELECT participant.uid, participant_identifier.value ';
+
+  if( $events )
+  {
+    $sql .=
+      ', '.
+      'DATE( CONVERT_TZ( home_event.datetime, "UTC", "Canada/Eastern" ) ) AS home, '.
+      'DATE( CONVERT_TZ( site_event.datetime, "UTC", "Canada/Eastern" ) ) AS site ';
+  }
+
+  $sql .=
     'FROM participant '.
     'JOIN identifier '.
     'JOIN participant_identifier '.
       'ON identifier.id = participant_identifier.identifier_id '.
-      'AND participant.id = participant_identifier.participant_id '.
-    'WHERE identifier.name = "%s"',
-    $cenozo_db->real_escape_string( $identifier_name )
-  ) );
+      'AND participant.id = participant_identifier.participant_id ';
+
+  if( $events )
+  {
+    $sql .=
+      'JOIN participant_last_event AS home_ple ON participant.id = home_ple.participant_id '.
+      'JOIN event_type AS home_event_type ON home_ple.event_type_id = home_event_type.id '.
+        'AND home_event_type.name = "completed (Follow Up 3-Home)" '.
+      'LEFT JOIN event AS home_event ON home_event_type.id = home_event.event_type_id '.
+        'AND participant.id = home_event.participant_id '.
+      'JOIN participant_last_event AS site_ple ON participant.id = site_ple.participant_id '.
+      'JOIN event_type AS site_event_type ON site_ple.event_type_id = site_event_type.id '.
+        'AND site_event_type.name = "completed (Follow Up 3-Site)" '.
+      'LEFT JOIN event AS site_event ON site_event_type.id = site_event.event_type_id '.
+        'AND participant.id = site_event.participant_id ';
+  }
+
+  $sql .= sprintf( 'WHERE identifier.name = "%s"', $cenozo_db->real_escape_string( $identifier_name ) );
+
+  $result = $cenozo_db->query( $sql );
   $cenozo_db->close();
 
   if( false === $result ) throw new Exception( 'Unable to get study UID lookup data.' );
 
   $data = [];
-  while( $row = $result->fetch_assoc() ) $data[$row['value']] = $row['uid'];
+  while( $row = $result->fetch_assoc() ) $data[$row['value']] = $events ? $row : $row['uid'];
   $result->free();
 
   return $data;
@@ -94,7 +120,7 @@ function opal_send( $arguments, $file_handle = NULL )
              base64_encode( sprintf( '%s:%s', OPAL_USERNAME, OPAL_PASSWORD ) ) ),
     'Accept: application/json' );
 
-  $url = sprintf( 'https://%s:%d/ws', OPAL_SERVER, OPAL_PORT );
+  $url = OPAL_URL;
   $postfix = array();
   foreach( $arguments as $key => $value )
   {   

@@ -2,7 +2,7 @@
 require_once 'src/common.php';
 
 $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
-$study_uid_lookup = get_study_uid_lookup( ACTIGRAPH_IDENTIFIER_NAME );
+$study_uid_lookup = get_study_uid_lookup( ACTIGRAPH_IDENTIFIER_NAME, true ); // include event dates
 
 // Process all Actigraph files
 // Each site has their own directory, and in each site directory there are sub-directories for
@@ -35,7 +35,63 @@ foreach( glob( sprintf( '%s/[A-Z][A-Z][A-Z]/actigraph/*', $base_dir ) ) as $file
     if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $filename );
     continue;
   }
-  $uid = $study_uid_lookup[$study_id];
+  $uid = $study_uid_lookup[$study_id]['uid'];
+  $home_date = $study_uid_lookup[$study_id]['home'];
+  $site_date = $study_uid_lookup[$study_id]['site'];
+
+  // determine if the device was on the thigh or wrist
+  $file = file_get_contents( $filename );
+  $type = 'unknown';
+  if( $file )
+  {
+    if( preg_match( '/"Limb":"Thigh"/', $file ) ) $type = 'thigh';
+    else if( preg_match( '/"Limb":"Wrist"/', $file ) ) $type = 'wrist';
+  }
+
+  if( 'unknown' == $type )
+  {
+    if( VERBOSE ) output( sprintf(
+      'No limb defined in actigraph file, "%s".',
+      $filename
+    ) );
+    if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $filename );
+    continue;
+  }
+
+  // make sure the date aligns with the participant's events
+  $date_object = new DateTime( $date );
+  $diff = NULL;
+
+  // the thigh is done after the home interview
+  if( 'thigh' == $type && $home_date ) $diff = $date_object->diff( new DateTime( $home_date ) );
+  // the wrist is done after the site interview
+  else if( 'wrist' == $type && $site_date ) $diff = $date_object->diff( new DateTime( $site_date ) );
+
+  $valid = false;
+  if( !is_null( $diff ) )
+  {
+    if( $diff->invert )
+    {
+      // allow up to one day before
+      if( 1 >= $diff->days ) $valid = true;
+    }
+    else
+    {
+      // allow up to two days after
+      if( 2 >= $diff->days ) $valid = true;
+    }
+  }
+
+  if( !$valid )
+  {
+    if( VERBOSE ) output( sprintf(
+      'Invalid date found in %s actigraph file, "%s".',
+      $type,
+      $filename
+    ) );
+    if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $filename );
+    continue;
+  }
 
   $destination_directory = sprintf(
     '%s/raw/%s/%s/actigraph/%s',
@@ -48,7 +104,7 @@ foreach( glob( sprintf( '%s/[A-Z][A-Z][A-Z]/actigraph/*', $base_dir ) ) as $file
   // make sure the directory exists (recursively)
   if( !TEST_ONLY && !is_dir( $destination_directory ) ) mkdir( $destination_directory, 0755, true );
 
-  $destination = sprintf( '%s/%s.gt3x', $destination_directory, $date );
+  $destination = sprintf( '%s/%s_%s.gt3x', $destination_directory, $type, $date );
   $copy = TEST_ONLY ? true : copy( $filename, $destination );
   if( $copy )
   {
