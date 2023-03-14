@@ -7,12 +7,16 @@ $carotid_intima_post_download_function = function( $filename ) {
     ['/anonymized/', ''],
     $filename
   );
+
   $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
   if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-  copy( $filename, sprintf( '%s.gz', $anonymized_filename ) );
-  exec( sprintf( 'gzip -d %s.gz', $anonymized_filename ) );
-  exec( sprintf( 'php src/anonymize_cimt.php %s', $anonymized_filename ) );
-  exec( sprintf( 'gzip %s', $anonymized_filename ) );
+  copy( $filename, $anonymized_filename.'.gz' );
+  if( 0 < filesize( $anonymized_filename.'.gz' ) )
+  {
+    exec( sprintf( 'gzip -d -f %s.gz', $anonymized_filename ) );
+    exec( sprintf( 'php /usr/local/lib/data_librarian/src/anonymize_cimt.php %s', $anonymized_filename ) );
+    exec( sprintf( 'gzip %s', $anonymized_filename ) );
+  }
 };
 
 $category_list = [
@@ -474,7 +478,7 @@ $category_list = [
       'filename' => 'report.pdf', // this data isn't actually repeated, so no <N> is included,
     ],
   ],
-  'cineloop_1' => [ // baseline had three cineloops
+  'cineloop1' => [ // baseline had three cineloops
     '1' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
@@ -484,7 +488,7 @@ $category_list = [
       'post_download_function' => $carotid_intima_post_download_function,
     ],
   ],
-  'cineloop_2' => [
+  'cineloop2' => [
     '1' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
@@ -494,7 +498,7 @@ $category_list = [
       'post_download_function' => $carotid_intima_post_download_function,
     ],
   ],
-  'cineloop_3' => [
+  'cineloop3' => [
     '1' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',

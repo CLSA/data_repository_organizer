@@ -31,3 +31,9 @@ define( 'ACTIGRAPH_STUDY_PHASE', '' );
 define( 'TICWATCH_IDENTIFIER_NAME', '' );
 define( 'TICWATCH_STUDY_NAME', '' );
 define( 'TICWATCH_STUDY_PHASE', '' );
+
+// Opal settings
+define( 'OPAL_USERNAME', '' );
+define( 'OPAL_PASSWORD', '' );
+define( 'OPAL_URL', '' );
+define( 'OPAL_TIMEOUT', 5 );
