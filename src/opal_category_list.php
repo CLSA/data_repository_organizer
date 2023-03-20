@@ -14,7 +14,7 @@ $cimt_post_download_function = function( $filename ) {
   if( 0 < filesize( $anonymized_filename.'.gz' ) )
   {
     exec( sprintf( 'gzip -d -f %s.gz', $anonymized_filename ) );
-    exec( sprintf( 'php /usr/local/lib/data_librarian/src/anonymize_cimt.php %s', $anonymized_filename ) );
+    exec( sprintf( 'php /usr/local/lib/data_librarian/src/anonymize.php -t cimt %s', $anonymized_filename ) );
     exec( sprintf( 'gzip %s', $anonymized_filename ) );
   }
 };
@@ -692,7 +692,7 @@ $category_list = [
         $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
         if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
         copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize_dxa.php %s', $anonymized_filename ) );
+        exec( sprintf( 'php src/anonymize.php -t dxa %s', $anonymized_filename ) );
       }
     ],
   ],
