@@ -117,7 +117,7 @@ function get_study_uid_lookup( $identifier_name, $events = false )
   return $data;
 }
 
-/** 
+/**
  * Sends a curl request to the opal server(s)
  * 
  * @param array(key->value) $arguments The url arguments as key->value pairs (value may be null)
@@ -138,7 +138,7 @@ function opal_send( $arguments, $file_handle = NULL )
   $url = OPAL_URL;
   $postfix = array();
   foreach( $arguments as $key => $value )
-  {   
+  {
     if( in_array( $key, array( 'counts', 'offset', 'limit', 'pos', 'select' ) ) )
       $postfix[] = sprintf( '%s=%s', $key, $value );
     else $url .= is_null( $value ) ? sprintf( '/%s', $key ) : sprintf( '/%s/%s', $key, rawurlencode( $value ) );
@@ -153,7 +153,7 @@ function opal_send( $arguments, $file_handle = NULL )
   curl_setopt( $curl, CURLOPT_CONNECTTIMEOUT, OPAL_TIMEOUT );
 
   if( !is_null( $file_handle ) )
-  {   
+  {
     //curl_setopt( $curl, CURLOPT_CUSTOMREQUEST, 'PUT' );
     curl_setopt( $curl, CURLOPT_PUT, true );
     curl_setopt( $curl, CURLOPT_INFILE, $file_handle );
@@ -184,7 +184,7 @@ function opal_send( $arguments, $file_handle = NULL )
 }
 
 
-/** 
+/**
  * Processes all actigraph files
  * 
  * @param string $identifier_name The name of the identifier used in actigraph filenames
@@ -322,7 +322,7 @@ function process_actigraph_files( $identifier_name, $study, $phase )
 }
 
 
-/** 
+/**
  * Processes all audio files
  */
 function process_audio_files()
@@ -372,7 +372,7 @@ function process_audio_files()
       if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $filename );
       continue;
     }
-    
+
     $cohort = $matches[1];
     $phase_name = $matches[2];
     $uid = $matches[3];
@@ -473,7 +473,7 @@ function process_audio_files()
       // make sure the directory exists (recursively)
       if( !is_dir( $destination_directory ) ) mkdir( $destination_directory, 0755, true );
 
-      // determine the destination filename based on 
+      // determine the destination filename based on
       $destination = sprintf( '%s/%s.wav', $destination_directory, $destination_filename );
       if( TEST_ONLY ? true : copy( $filename, $destination ) )
       {
@@ -521,7 +521,7 @@ function process_audio_files()
 }
 
 
-/** 
+/**
  * Processes all ticwatch files
  * 
  * @param string $identifier_name The name of the identifier used in actigraph filenames
@@ -558,7 +558,7 @@ function process_ticwatch_files( $identifier_name, $study, $phase )
         'Cannot transfer ticwatch directory due to missing UID lookup for study ID "%s"',
         $study_id
       ) );
-      if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $study_dirname ); 
+      if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $study_dirname );
       continue;
     }
     $uid = $study_uid_lookup[$study_id];
@@ -611,7 +611,7 @@ function process_ticwatch_files( $identifier_name, $study, $phase )
     foreach( glob( sprintf( '%s/*', $destination_directory ) ) as $filename )
     {
       $existing_filename = substr( $filename, strrpos( $filename, '/' )+1 );
-      
+
       // see if there is a date in the filename that comes after the latest date
       if( preg_match( '#_(20[0-9]{6})\.#', $existing_filename, $matches ) )
       {
@@ -669,7 +669,7 @@ function process_ticwatch_files( $identifier_name, $study, $phase )
         else
         {
           // move the remaining files to the invalid directory
-          move_from_temporary_to_invalid( $study_dirname ); 
+          move_from_temporary_to_invalid( $study_dirname );
         }
       }
     }
@@ -681,4 +681,24 @@ function process_ticwatch_files( $identifier_name, $study, $phase )
     TEST_ONLY ? 'would be ' : '',
     $dir_count
   ) );
+}
+
+
+/**
+ * Processes all ticwatch files
+ * 
+ * @param string $filename The name of the DICOM file to modify
+ * @param string $identifier The identifier to set
+ */
+function set_dicom_identifier( $filename, $identifier )
+{
+  $result_code = 0;
+  $output = NULL;
+  exec(
+    sprintf( 'dcmodify -nb -nrc -imt -m "(0010,0020)=%s" %s', $identifier, $filename ),
+    $output,
+    $result_code
+  );
+  if( 0 < $result_code ) printf( implode( "\n", $output ) );
+  return $result_code;
 }
