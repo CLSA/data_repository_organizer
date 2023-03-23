@@ -35,8 +35,11 @@ function check_directories()
   }
 }
 
-function move_from_temporary_to_invalid( $file_or_dir )
+function move_from_temporary_to_invalid( $file_or_dir, $reason = NULL )
 {
+  if( VERBOSE && !is_null( $reason ) ) output( $reason );
+  if( TEST_ONLY || KEEP_FILES ) return;
+
   // make sure the parent directory exists
   $rename_from = $file_or_dir;
   $rename_to = preg_replace(
@@ -54,6 +57,15 @@ function move_from_temporary_to_invalid( $file_or_dir )
 
   // move the file
   rename( $rename_from, $rename_to );
+
+  // write the reason to a file in the temporary directory
+  if( !is_null( $reason ) )
+  {
+    file_put_contents(
+      sprintf( is_dir( $rename_to ) ? '%s/error.txt' : '%s.error.txt', $rename_to ),
+      $reason
+    );
+  }
 }
 
 // find and remove all empty directories
@@ -67,26 +79,31 @@ function remove_dir( $dir )
 }
 
 // Reads the id_lookup file and returns an array containing Study ID => UID pairs
-function get_study_uid_lookup( $identifier_name, $events = false )
+function get_study_uid_lookup( $identifier_name, $events = false, $consents = false )
 {
   $cenozo_db = get_cenozo_db();
 
-  $sql = 'SELECT participant.uid, participant_identifier.value ';
-
+  $select_list = ['participant.uid', 'participant_identifier.value'];
   if( $events )
   {
-    $sql .=
-      ', '.
-      'DATE( CONVERT_TZ( home_event.datetime, "UTC", "Canada/Eastern" ) ) AS home, '.
-      'DATE( CONVERT_TZ( site_event.datetime, "UTC", "Canada/Eastern" ) ) AS site ';
+    $select_list[] = 'DATE( CONVERT_TZ( home_event.datetime, "UTC", "Canada/Eastern" ) ) AS home_date';
+    $select_list[] = 'DATE( CONVERT_TZ( site_event.datetime, "UTC", "Canada/Eastern" ) ) AS site_date';
+  }
+  if( $consents )
+  {
+    $select_list[] = 'IFNULL( sleep_consent.accept, false ) AS sleep_consent';
+    $select_list[] = 'IFNULL( mobility_consent.accept, false ) AS mobility_consent';
   }
 
-  $sql .=
+  $sql = sprintf(
+    'SELECT %s '.
     'FROM participant '.
     'JOIN identifier '.
     'JOIN participant_identifier '.
       'ON identifier.id = participant_identifier.identifier_id '.
-      'AND participant.id = participant_identifier.participant_id ';
+      'AND participant.id = participant_identifier.participant_id ',
+    implode( ', ', $select_list )
+  );
 
   if( $events )
   {
@@ -94,13 +111,24 @@ function get_study_uid_lookup( $identifier_name, $events = false )
       'JOIN participant_last_event AS home_ple ON participant.id = home_ple.participant_id '.
       'JOIN event_type AS home_event_type ON home_ple.event_type_id = home_event_type.id '.
         'AND home_event_type.name = "completed (Follow Up 3-Home)" '.
-      'LEFT JOIN event AS home_event ON home_event_type.id = home_event.event_type_id '.
-        'AND participant.id = home_event.participant_id '.
+      'LEFT JOIN event AS home_event ON home_ple.event_id = home_event.id '.
       'JOIN participant_last_event AS site_ple ON participant.id = site_ple.participant_id '.
       'JOIN event_type AS site_event_type ON site_ple.event_type_id = site_event_type.id '.
         'AND site_event_type.name = "completed (Follow Up 3-Site)" '.
-      'LEFT JOIN event AS site_event ON site_event_type.id = site_event.event_type_id '.
-        'AND participant.id = site_event.participant_id ';
+      'LEFT JOIN event AS site_event ON site_ple.event_id = site_event.id ';
+  }
+
+  if( $consents )
+  {
+    $sql .=
+      'JOIN participant_last_consent AS sleep_plc ON participant.id = sleep_plc.participant_id '.
+      'JOIN consent_type AS sleep_consent_type ON sleep_plc.consent_type_id = sleep_consent_type.id '.
+        'AND sleep_consent_type.name = "F3 Sleep Trackers" '.
+      'LEFT JOIN consent AS sleep_consent ON sleep_plc.consent_id = sleep_consent.id '.
+      'JOIN participant_last_consent AS mobility_plc ON participant.id = mobility_plc.participant_id '.
+      'JOIN consent_type AS mobility_consent_type ON mobility_plc.consent_type_id = mobility_consent_type.id '.
+        'AND mobility_consent_type.name = "F3 Mobility Trackers" '.
+      'LEFT JOIN consent AS mobility_consent ON mobility_plc.consent_id = mobility_consent.id ';
   }
 
   $sql .= sprintf( 'WHERE identifier.name = "%s"', $cenozo_db->real_escape_string( $identifier_name ) );
@@ -111,7 +139,7 @@ function get_study_uid_lookup( $identifier_name, $events = false )
   if( false === $result ) throw new Exception( 'Unable to get study UID lookup data.' );
 
   $data = [];
-  while( $row = $result->fetch_assoc() ) $data[$row['value']] = $events ? $row : $row['uid'];
+  while( $row = $result->fetch_assoc() ) $data[$row['value']] = ( $events || $consents ) ? $row : $row['uid'];
   $result->free();
 
   return $data;
@@ -194,7 +222,7 @@ function opal_send( $arguments, $file_handle = NULL )
 function process_actigraph_files( $identifier_name, $study, $phase )
 {
   $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
-  $study_uid_lookup = get_study_uid_lookup( $identifier_name, true ); // include event dates
+  $study_uid_lookup = get_study_uid_lookup( $identifier_name, true, true ); // include event and consent data
 
   // Each site has their own directory, and in each site directory there are sub-directories for
   // each modality (actigraph, ticwatch, etc).  Within the actigraph directory there is one file
@@ -207,11 +235,11 @@ function process_actigraph_files( $identifier_name, $study, $phase )
     $matches = [];
     if( !preg_match( '#/([^/]+) \(([0-9]{4}-[0-9]{2}-[0-9]{2})\)\.gt3x$#', $filename, $matches ) )
     {
-      if( VERBOSE ) output( sprintf(
+      $reason = sprintf(
         'Cannot transfer actigraph file, "%s", invalid format.',
         $filename
-      ) );
-      if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $filename );
+      );
+      move_from_temporary_to_invalid( $filename, $reason );
       continue;
     }
 
@@ -219,16 +247,18 @@ function process_actigraph_files( $identifier_name, $study, $phase )
     $date = str_replace( '-', '', $matches[2] );
     if( !array_key_exists( $study_id, $study_uid_lookup ) )
     {
-      output( sprintf(
-        'Cannot transfer actigraph file due to missing UID lookup for study ID "%s"',
+      $reason = sprintf(
+        'Cannot transfer actigraph data due to missing UID lookup for study ID "%s"',
         $study_id
-      ) );
-      if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $filename );
+      );
+      move_from_temporary_to_invalid( $filename, $reason );
       continue;
     }
     $uid = $study_uid_lookup[$study_id]['uid'];
-    $home_date = $study_uid_lookup[$study_id]['home'];
-    $site_date = $study_uid_lookup[$study_id]['site'];
+    $sleep_consent = $study_uid_lookup[$study_id]['sleep_consent'];
+    $mobility_consent = $study_uid_lookup[$study_id]['mobility_consent'];
+    $home_date = $study_uid_lookup[$study_id]['home_date'];
+    $site_date = $study_uid_lookup[$study_id]['site_date'];
 
     // determine if the device was on the thigh or wrist
     $file = file_get_contents( $filename );
@@ -239,13 +269,39 @@ function process_actigraph_files( $identifier_name, $study, $phase )
       else if( preg_match( '/"Limb":"Wrist"/', $file ) ) $type = 'wrist';
     }
 
-    if( 'unknown' == $type )
+    if( 'wrist' == $type )
     {
-      if( VERBOSE ) output( sprintf(
+      // make sure the participant has consented to sleep trackers
+      if( !$sleep_consent )
+      {
+        $reason = sprintf(
+          'Wrist actigraph data without sleep consent, "%s".',
+          $filename
+        );
+        move_from_temporary_to_invalid( $filename, $reason );
+        continue;
+      }
+    }
+    else if( 'thigh' == $type )
+    {
+      // make sure the participant has consented to mobility trackers
+      if( !$mobility_consent )
+      {
+        $reason = sprintf(
+          'Thigh actigraph data without mobility consent, "%s".',
+          $filename
+        );
+        move_from_temporary_to_invalid( $filename, $reason );
+        continue;
+      }
+    }
+    else
+    {
+      $reason = sprintf(
         'No limb defined in actigraph file, "%s".',
         $filename
-      ) );
-      if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $filename );
+      );
+      move_from_temporary_to_invalid( $filename, $reason );
       continue;
     }
 
@@ -275,12 +331,12 @@ function process_actigraph_files( $identifier_name, $study, $phase )
 
     if( !$valid )
     {
-      if( VERBOSE ) output( sprintf(
+      $reason = sprintf(
         'Invalid date found in %s actigraph file, "%s".',
         $type,
         $filename
-      ) );
-      if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $filename );
+      );
+      move_from_temporary_to_invalid( $filename, $reason );
       continue;
     }
 
@@ -305,12 +361,12 @@ function process_actigraph_files( $identifier_name, $study, $phase )
     }
     else
     {
-      output( sprintf(
+      $reason = sprintf(
         'Failed to copy "%s" to "%s"',
         $filename,
         $destination
-      ) );
-      if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $filename );
+      );
+      move_from_temporary_to_invalid( $filename, $reason );
     }
   }
 
@@ -365,11 +421,11 @@ function process_audio_files()
     $matches = [];
     if( false === preg_match( '#/([^/]+)/([^/]+)/([^/]+)/([^/]+).wav$#', $filename, $matches ) )
     {
-      if( VERBOSE ) output( sprintf(
+      $reason = sprintf(
         'Ignoring invalid audio file: "%s"',
         $filename
-      ) );
-      if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $filename );
+      );
+      move_from_temporary_to_invalid( $filename, $reason );
       continue;
     }
 
@@ -407,11 +463,11 @@ function process_audio_files()
       // sabretooth_f1-live, sabretooth_f2-live, sabretooth_c1-live, etc
       if( 0 === preg_match( '/sabretooth_(bl|cb|[cf][1-9])-live/', $phase_name, $matches ) )
       {
-        if( VERBOSE ) output( sprintf(
+        $reason = sprintf(
           'Ignoring invalid audio file: "%s"',
           $filename
-        ) );
-        if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $filename );
+        );
+        move_from_temporary_to_invalid( $filename, $reason );
         continue;
       }
 
@@ -431,11 +487,11 @@ function process_audio_files()
       }
       else
       {
-        if( VERBOSE ) output( sprintf(
+        $reason = sprintf(
           'Ignoring invalid audio file "%s"',
           $filename
-        ) );
-        if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $filename );
+        );
+        move_from_temporary_to_invalid( $filename, $reason );
         continue;
       }
 
@@ -483,21 +539,21 @@ function process_audio_files()
       }
       else
       {
-        if( VERBOSE ) output( sprintf(
+        $reason = sprintf(
           'Failed to copy "%s" to "%s"',
           $filename,
           $destination
-        ) );
-        if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $filename );
+        );
+        move_from_temporary_to_invalid( $filename, $reason );
       }
     }
     else
     {
-      if( VERBOSE ) output( sprintf(
+      $reason = sprintf(
         'Unable to process file "%s"',
         $filename
-      ) );
-      if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $filename );
+      );
+      move_from_temporary_to_invalid( $filename, $reason );
     }
   }
 
@@ -510,7 +566,11 @@ function process_audio_files()
   // any remaining files are to be moved to the invalid directory for data cleaning
   foreach( glob( sprintf( '%s/*/audio/*/*', $base_dir ) ) as $dirname )
   {
-    move_from_temporary_to_invalid( $dirname );
+    $reason = sprintf(
+      'Unable to sort directory, "%s"',
+      $dirname
+    );
+    move_from_temporary_to_invalid( $dirname, $reason );
   }
 
   output( sprintf(
@@ -524,14 +584,14 @@ function process_audio_files()
 /**
  * Processes all ticwatch files
  * 
- * @param string $identifier_name The name of the identifier used in actigraph filenames
+ * @param string $identifier_name The name of the identifier used in ticwatch filenames
  * @param string $study The name of the study that files come from
  * @param integer $phase The phase of the study that files come from
  */
 function process_ticwatch_files( $identifier_name, $study, $phase )
 {
   $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
-  $study_uid_lookup = get_study_uid_lookup( $identifier_name );
+  $study_uid_lookup = get_study_uid_lookup( $identifier_name, false, true ); // include consent data
 
   // Process all Ticwatch files
   // Each site has their own directory, and in each site directory there are sub-directories for
@@ -554,14 +614,26 @@ function process_ticwatch_files( $identifier_name, $study, $phase )
     $study_id = strtoupper( trim( $original_study_id ) );
     if( !array_key_exists( $study_id, $study_uid_lookup ) )
     {
-      if( VERBOSE ) output( sprintf(
+      $reason = sprintf(
         'Cannot transfer ticwatch directory due to missing UID lookup for study ID "%s"',
         $study_id
-      ) );
-      if( !TEST_ONLY && !KEEP_FILES ) move_from_temporary_to_invalid( $study_dirname );
+      );
+      move_from_temporary_to_invalid( $study_dirname, $reason );
       continue;
     }
     $uid = $study_uid_lookup[$study_id];
+    $mobility_consent = $study_uid_lookup[$study_id]['mobility_consent'];
+
+    // make sure the participant has consented to mobility trackers
+    if( !$mobility_consent )
+    {
+      $reason = sprintf(
+        'Ticwatch data without mobility consent, "%s".',
+        $study_dirname
+      );
+      move_from_temporary_to_invalid( $study_dirname, $reason );
+      continue;
+    }
 
     $destination_directory = sprintf(
       '%s/raw/%s/%s/ticwatch/%s',
@@ -669,7 +741,11 @@ function process_ticwatch_files( $identifier_name, $study, $phase )
         else
         {
           // move the remaining files to the invalid directory
-          move_from_temporary_to_invalid( $study_dirname );
+          $reason = sprintf(
+            'Unable to sort directory, "%s"',
+            $study_dirname
+          );
+          move_from_temporary_to_invalid( $study_dirname, $reason );
         }
       }
     }
