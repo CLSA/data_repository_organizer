@@ -621,7 +621,7 @@ function process_ticwatch_files( $identifier_name, $study, $phase )
       move_from_temporary_to_invalid( $study_dirname, $reason );
       continue;
     }
-    $uid = $study_uid_lookup[$study_id];
+    $uid = $study_uid_lookup[$study_id]['uid'];
     $mobility_consent = $study_uid_lookup[$study_id]['mobility_consent'];
 
     // make sure the participant has consented to mobility trackers
