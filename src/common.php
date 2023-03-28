@@ -57,14 +57,14 @@ function move_from_temporary_to_invalid( $file_or_dir, $reason = NULL )
 
   // move the file
   rename( $rename_from, $rename_to );
+  exec( sprintf( 'chgrp -R sftpusers %s', $rename_to ) ); // can't do this natively since there is no -R option
 
   // write the reason to a file in the temporary directory
   if( !is_null( $reason ) )
   {
-    file_put_contents(
-      sprintf( is_dir( $rename_to ) ? '%s/error.txt' : '%s.error.txt', $rename_to ),
-      $reason
-    );
+    $reason_filename = sprintf( is_dir( $rename_to ) ? '%s/error.txt' : '%s.error.txt', $rename_to );
+    file_put_contents( $reason_filename, sprintf( "%s\n", $reason ) );
+    chgrp( $reason_filename, 'sftpusers' );
   }
 }
 
