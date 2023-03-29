@@ -1,6 +1,7 @@
 <?php
 set_time_limit( 60 ); // one minute
 error_reporting( E_ALL | E_STRICT );
+require_once( 'common.php' );
 require_once( 'arguments.class.php' );
 
 define( 'VERSION', '1.0' );
@@ -74,7 +75,7 @@ $arguments->set_description(
   "WARNING: the target file will be overwritten so make sure a backup exists before running this utility."
 );
 $arguments->add_option( 'd', 'debug', 'Outputs the script\'s commands without executing them' );
-$arguments->add_option( 't', 'data_type', 'The type of file being anonymized' );
+$arguments->add_option( 't', 'data_type', 'The type of file being anonymized', true );
 $arguments->add_input( 'FILENAME', 'The filename of the DICOM image' );
 
 $args = $arguments->parse_arguments( $argv );
