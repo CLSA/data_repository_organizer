@@ -8,9 +8,10 @@ require_once( 'src/arguments.class.php' );
  * @param string $release_name The name of the release
  * @param string $data_path The relative path to the data to prepare (study/phase/category)
  * @param string $file_glob The relative path to the data to prepare (study/phase/category)
+ * @param boolean $keep_files Whether to keep files which already exist
  * @param string $identifier_filename The name of the CSV file containing identifiers
  */
-function prepare_data( $release_name, $data_path, $file_glob, $identifier_filename )
+function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $identifier_filename )
 {
   // make sure the data path exists
   $data_path = sprintf( '%s/%s', DATA_DIR, $data_path );
@@ -122,37 +123,44 @@ function prepare_data( $release_name, $data_path, $file_glob, $identifier_filena
           str_replace( $participant['uid'], $participant['identifier'], basename( $source_filename ) )
         );
 
-        VERBOSE && output( sprintf( 'Copying %s to %s', $source_filename, $destination_filename ) );
-        if( copy( $source_filename, $destination_filename ) )
+        // don't overwrite existing files, if requested
+        if( $keep_files && file_exists( $destination_filename ) )
         {
-          // decompress all files
-          if( preg_match( '/.gz$/', $destination_filename ) )
-          {
-            VERBOSE && output( 'Uncompressing destination file' );
-            exec( sprintf( 'gzip -d -f %s', $destination_filename ) );
-            $destination_filename = preg_replace( '/.gz$/', '', $destination_filename );
-          }
+          VERBOSE && output( sprintf( 'Skipping %s, file already exists', $destination_filename ) );
+          continue;
+        }
 
-          // set the identifier tag in dicom files
-          if( preg_match( '/.dcm$/', $destination_filename ) )
-          {
-            VERBOSE && output( sprintf(
-              'Setting destination file\'s identifier to "%s"',
-              $participant['identifier']
-            ) );
-            $result = set_dicom_identifier( $destination_filename, $participant['identifier'] );
-            if( 0 < $result )
-            {
-              fatal_error(
-                sprintf(
-                  'Failed to set identifier in "%s", error code "%s" returned by dcmodify',
-                  $destination_filename,
-                  $result
-                ),
-                13
-              );
-            }
-          }
+        VERBOSE && output( sprintf( 'Copying %s to %s', $source_filename, $destination_filename ) );
+        if( false == copy( $source_filename, $destination_filename ) ) continue;
+
+        // decompress all files
+        if( preg_match( '/.gz$/', $destination_filename ) )
+        {
+          VERBOSE && output( 'Uncompressing destination file' );
+          exec( sprintf( 'gzip -d -f %s', $destination_filename ) );
+          $destination_filename = preg_replace( '/.gz$/', '', $destination_filename );
+        }
+
+        // set the identifier tag in dicom files only
+        if( false == preg_match( '/.dcm$/', $destination_filename ) ) continue;
+
+        VERBOSE && output( sprintf(
+          'Setting destination file\'s identifier to "%s"',
+          $participant['identifier']
+        ) );
+        $result = set_dicom_identifier( $destination_filename, $participant['identifier'] );
+        if( 0 < $result )
+        {
+          // delete the invalid file and stop
+          unlink( $destination_filename );
+          fatal_error(
+            sprintf(
+              'Failed to set identifier in "%s", error code "%s" returned by dcmodify (file removed from release)',
+              $destination_filename,
+              $result
+            ),
+            13
+          );
         }
       }
     }
@@ -173,6 +181,7 @@ $arguments->set_description(
 );
 $arguments->add_option( 'v', 'verbose', 'Shows more details when running the script' );
 $arguments->add_option( 'g', 'glob', 'Restrict to files matching a particular glob (eg: *.dcm)', true, '*' );
+$arguments->add_option( 'k', 'keep_files', 'Keep files which have already been copied.' );
 $arguments->add_input( 'RELEASE_NAME', 'The name of the release where files will be copied to' );
 $arguments->add_input( 'DATA_PATH', 'The relative path to the data to prepare (eg: raw/clsa/1/dxa)' );
 $arguments->add_input( 'IDENTIFIER_FILENAME', 'The CSV file containing the CLSA ID and identifier' );
@@ -181,8 +190,9 @@ $args = $arguments->parse_arguments( $argv );
 
 define( 'VERBOSE', array_key_exists( 'verbose', $args['option_list'] ) );
 $file_glob = $args['option_list']['glob'];
+$keep_files = $args['option_list']['keep_files'];
 $release_name = $args['input_list']['RELEASE_NAME'];
 $data_path = $args['input_list']['DATA_PATH'];
 $identifier_filename = $args['input_list']['IDENTIFIER_FILENAME'];
 
-prepare_data( $release_name, $data_path, $file_glob, $identifier_filename );
+prepare_data( $release_name, $data_path, $file_glob, $keep_files, $identifier_filename );
