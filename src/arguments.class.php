@@ -118,9 +118,9 @@ class arguments
 
     // add the name, version and usage example
     $usage = sprintf(
-      "%s%s\n".
+      "Script: %s%s\n".
       "Usage: php %s%s %s\n",
-      $_SERVER['SCRIPT_FILENAME'],
+      basename( $_SERVER['SCRIPT_FILENAME'] ),
       !is_null( $this->version ) ? sprintf( ' version %s', $this->version ) : '',
       $_SERVER['SCRIPT_FILENAME'],
       0 < count( $this->option_list ) ? ' [OPTION]' : '',
