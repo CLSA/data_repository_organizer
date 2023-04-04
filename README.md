@@ -448,19 +448,20 @@ path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_spine.dcm
 path: /supplementary/ ... _reanalyzed.dcm (TODO)
 path: /supplementary/ ... .jpeg (TODO)
 
-dxa whole body 1
-----------------
+dxa whole body 1 (BMD)
+----------------------
 Opal BL: clsa-dcs-images / WholeBodyBoneDensity / RES_WB_DICOM_1
 Opal F1: clsa-dcs-images-f1 / WholeBodyBoneDensity / RES_WB_DICOM_1
 Opal F2: clsa-dcs-images-f2 / WholeBodyBoneDensity / RES_WB_DICOM_1
 Opal F3: clsa-dcs-images-f3 / WholeBodyBoneDensity / RES_WB_DICOM_1
 file-type: dicom
-path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_wbody.dcm
+path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bmd.dcm
 path: /supplementary/ ... _reanalyzed.dcm (TODO)
-path: /supplementary/ ... .jpeg (TODO)
+path: /supplementary/ ... .jpeg
+notes: bmd is "body mass measurement"
 
-dxa whole body 2
-----------------
+dxa whole body 2 (BCA)
+----------------------
 Opal BL: clsa-dcs-images / WholeBodyBoneDensity / RES_WB_DICOM_2
 Opal F1: clsa-dcs-images-f1 / WholeBodyBoneDensity / RES_WB_DICOM_2
 Opal F2: clsa-dcs-images-f2 / WholeBodyBoneDensity / RES_WB_DICOM_2
@@ -468,7 +469,7 @@ Opal F3: clsa-dcs-images-f3 / WholeBodyBoneDensity / RES_WB_DICOM_2
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bca.dcm
 path: /supplementary/ ... _reanalyzed.dcm (TODO)
-path: /supplementary/ ... .jpeg (TODO)
+path: /supplementary/ ... .jpeg
 notes: bca is "body composition analysis"
 
 retinal

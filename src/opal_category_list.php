@@ -29,6 +29,46 @@ $dxa_post_download_function = function( $filename ) {
   {
     exec( sprintf( 'php src/anonymize.php -t dxa %s', $anonymized_filename ) );
   }
+
+  // wbody BCA and BMD images need to be converted to jpeg
+  $matches = [];
+  if( preg_match( '/wbody_(bca|bmd)/', $filename, $matches ) )
+  {
+    $type = $matches[1];
+    $image_filename = preg_replace( ['#/raw/#', '#\.xml$#'], ['/supplementary/', '.jpeg'], $filename );
+
+    // convert from dcm to jpeg
+    $output = [];
+    $result_code = NULL;
+    exec( sprintf( 'dcmj2pnm --write-jpeg %s %s', $filename, $image_filename ), $output, $result_code );
+    if( 0 < $result_code )
+    {
+      // there was an error, so throw away any generated file
+      if( file_exists( $image_filename ) ) unlink( $image_filename );
+    }
+    else
+    {
+      // crop the image (box based on BCA or BMA)
+      exec( sprintf(
+        'convert %s -crop %s +repage %s',
+        $image_filename,
+        'bca' == $type ? '607x872+489+136' : '334x757+492+176',
+        $image_filename
+      ) );
+    }
+  }
+};
+
+// post download function used by all dxa files
+$dxa_wbody_post_download_function = function( $filename ) {
+  $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+  $directory = dirname( $anonymized_filename );
+  if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+  copy( $filename, $anonymized_filename );
+  if( 0 < filesize( $anonymized_filename ) )
+  {
+    exec( sprintf( 'php src/anonymize.php -t dxa %s', $anonymized_filename ) );
+  }
 };
 
 $category_list = [
@@ -763,13 +803,14 @@ $category_list = [
       'filename' => 'dxa_spine.dcm',
     ],
   ],
-  'dxa_wbody' => [
+  'dxa_wbody_bmd' => [
     'all' => [
       'name' => 'dxa',
       'datasource' => 'clsa-dcs-images',
       'table' => 'LateralBoneDensity',
       'variable' => 'RES_WB_DICOM_1',
-      'filename' => 'dxa_wbody.dcm',
+      'filename' => 'dxa_wbody_bmd.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_wbody_bca' => [
@@ -779,6 +820,7 @@ $category_list = [
       'table' => 'LateralBoneDensity',
       'variable' => 'RES_WB_DICOM_2',
       'filename' => 'dxa_wbody_bca.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_hip_recovery_left' => [
