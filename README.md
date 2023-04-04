@@ -334,7 +334,7 @@ notes: not actually repeated
 cineloop [123]
 --------------
 Opal BL: clsa-dcs-images / CarotidIntima / Measure.CINELOOP_[123] (repeated) (done)
-Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.CINELOOP_1 (repeated)
+Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.CINELOOP_1 (repeated) (done)
 Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.CINELOOP_1 (repeated)
 Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.CINELOOP_1 (repeated)
 file-type: gz -> dcm
@@ -363,7 +363,7 @@ notes: either left or right as indicated by Measure.SIDE; not actually repeated
 
 still image [123]
 -----------------
-Opal BL: clsa-dcs-images / CarotidIntima / Measure.STILL_IMAGE (repeated)
+Opal BL: clsa-dcs-images / CarotidIntima / Measure.STILL_IMAGE (repeated) (done)
 Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.STILL_IMAGE_[123] (repeated)
 Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.STILL_IMAGE_[123] (repeated)
 Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.STILL_IMAGE_[133] (repeated)
@@ -473,19 +473,20 @@ notes: bca is "body composition analysis"
 
 retinal
 -------
-Opal BL: clsa-dcs-images / RetinalScan / Measure.EYE (repeated)
+Opal BL: clsa-dcs-images / RetinalScan / Measure.EYE (repeated) (done)
 Opal F1: does not exist
 Opal F2: does not exist
 Opal F3: does not exist
 file-type: jpeg
 path: /raw/clsa/<PHASE>/retinal/<UID>/retinal_<N>.jpeg
+link: /raw/clsa/<PHASE>/retinal/<UID>/retinal_<left|right|unknown>.jpeg
 notes: files need to be numbered since some might have multiple images per side
 notes: SIDE defined by Measure.SIDE
 
 retinal left
 ------------
 Opal BL: does not exist
-Opal F1: clsa-dcs-images-f1 / RetinalScanLeft / EYE
+Opal F1: clsa-dcs-images-f1 / RetinalScanLeft / EYE (done)
 Opal F2: clsa-dcs-images-f2 / RetinalScanLeft / EYE
 Opal F3: clsa-dcs-images-f3 / RetinalScanLeft / EYE
 file-type: jpeg

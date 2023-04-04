@@ -20,7 +20,7 @@ function out( $message )
  * @param string $data_type The type of data being anonymize (cimt or dxa)
  * @param string $filename The name of the file to anonymize
  */
-function anonymize( $data_type, $filename )
+function anonymize_dicom( $data_type, $filename )
 {
   $tag_list = [
     '0008,1010' => '',      // Station Name
@@ -66,17 +66,46 @@ function anonymize( $data_type, $filename )
 }
 
 
+/**
+ * Anonymizes an ECG XML file by removing identifying data
+ * @param string $filename The name of the file to anonymize
+ */
+function anonymize_ecg( $filename )
+{
+  // remove the body of the Facility element
+  $command = sprintf( 'sed -i "s#<Facility>[^<]\+</Facility>#<Facility></Facility>#" %s', $filename );
+  $result_code = 0;
+  $output = NULL;
+  DEBUG ? printf( "%s\n", $command ) : exec( $command, $output, $result_code );
+  if( 0 < $result_code ) printf( implode( "\n", $output ) );
+
+  // remove the body of the Name element
+  $command = sprintf( 'sed -i "s#<Name>[^<]\+</Name>#<Name></Name>#" %s', $filename );
+  $result_code = 0;
+  $output = NULL;
+  DEBUG ? printf( "%s\n", $command ) : exec( $command, $output, $result_code );
+  if( 0 < $result_code ) printf( implode( "\n", $output ) );
+
+  // remove the body of the PID element
+  $command = sprintf( 'sed -i "s#<PID>[^<]\+</PID>#<PID></PID>#" %s', $filename );
+  $result_code = 0;
+  $output = NULL;
+  DEBUG ? printf( "%s\n", $command ) : exec( $command, $output, $result_code );
+  if( 0 < $result_code ) printf( implode( "\n", $output ) );
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // build the command argument details, then parse the passed args
 $arguments = new arguments;
 $arguments->set_version( VERSION );
 $arguments->set_description(
-  "Removes all identifying DICOM tags from a DICOM image.\n".
+  "Removes all identifying information from DICOM image and ECG XML files.\n".
   "WARNING: the target file will be overwritten so make sure a backup exists before running this utility."
 );
 $arguments->add_option( 'd', 'debug', 'Outputs the script\'s commands without executing them' );
 $arguments->add_option( 't', 'data_type', 'The type of file being anonymized', true );
-$arguments->add_input( 'FILENAME', 'The filename of the DICOM image' );
+$arguments->add_input( 'FILENAME', 'The name of the file to anonymize' );
 
 $args = $arguments->parse_arguments( $argv );
 
@@ -90,7 +119,7 @@ if( !array_key_exists( 'data_type', $args['option_list'] ) )
 $data_type = $args['option_list']['data_type'];
 $filename = $args['input_list']['FILENAME'];
 
-if( !in_array( $data_type, ['cimt', 'dxa'] ) )
+if( !in_array( $data_type, ['cimt', 'dxa', 'ecg'] ) )
 {
   fatal_error(
     sprintf( "Invalid DATA_TYPE \"%s\", aborting", $data_type ),
@@ -99,4 +128,5 @@ if( !in_array( $data_type, ['cimt', 'dxa'] ) )
 }
 
 out( sprintf( 'Anonymizing file "%s"', $filename ) );
-anonymize( $data_type, $filename );
+if( 'ecg' == $data_type ) anonymize_ecg( $filename );
+else anonymize_dicom( $data_type, $filename );

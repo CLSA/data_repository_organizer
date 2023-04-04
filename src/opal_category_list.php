@@ -8,7 +8,7 @@ $cimt_post_download_function = function( $filename ) {
     $filename
   );
 
-  $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
+  $directory = dirname( $anonymized_filename );
   if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
   copy( $filename, $anonymized_filename.'.gz' );
   if( 0 < filesize( $anonymized_filename.'.gz' ) )
@@ -16,6 +16,18 @@ $cimt_post_download_function = function( $filename ) {
     exec( sprintf( 'gzip -d -f %s.gz', $anonymized_filename ) );
     exec( sprintf( 'php /usr/local/lib/data_librarian/src/anonymize.php -t cimt %s', $anonymized_filename ) );
     exec( sprintf( 'gzip %s', $anonymized_filename ) );
+  }
+};
+
+// post download function used by all dxa files
+$dxa_post_download_function = function( $filename ) {
+  $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
+  $directory = dirname( $anonymized_filename );
+  if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+  copy( $filename, $anonymized_filename );
+  if( 0 < filesize( $anonymized_filename ) )
+  {
+    exec( sprintf( 'php src/anonymize.php -t dxa %s', $anonymized_filename ) );
   }
 };
 
@@ -52,6 +64,33 @@ $category_list = [
       'table' => 'ECG',
       'variable' => 'RES_XML_FILE',
       'filename' => 'ecg.xml',
+      'post_download_function' => function( $filename ) {
+        $anonymized_filename = preg_replace( '#/raw/#', '/anonymized/', $filename );
+        $directory = dirname( $anonymized_filename );
+        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+
+        copy( $filename, $anonymized_filename );
+        if( 0 < filesize( $anonymized_filename ) )
+        {
+          exec( sprintf(
+            'php /usr/local/lib/data_librarian/src/anonymize.php -t ecg %s',
+            $anonymized_filename
+          ) );
+        }
+
+        if( 0 < filesize( $filename ) )
+        {
+          $image_filename = preg_replace( ['#/raw/#', '#\.xml$#'], ['/supplementary/', '.jpeg'], $filename );
+          $directory = dirname( $image_filename );
+          if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
+
+          exec( sprintf(
+            'php /usr/local/lib/data_librarian/src/plot_ecg.php -r %s %s',
+            $filename,
+            $image_filename
+          ) );
+        }
+      },
     ],
   ],
   'frax' => [
@@ -687,13 +726,7 @@ $category_list = [
       'table' => 'LateralBoneDensity',
       'variable' => 'RES_SEL_DICOM_MEASURE',
       'filename' => 'dxa_lateral.dcm',
-      'post_download_function' => function( $filename ) {
-        $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-        $directory = preg_replace( '#/[^/]+$#', '', $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-        copy( $filename, $anonymized_filename );
-        exec( sprintf( 'php src/anonymize.php -t dxa %s', $anonymized_filename ) );
-      }
+      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_lateral_ot' => [
