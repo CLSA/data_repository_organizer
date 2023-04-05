@@ -27,7 +27,7 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
     fatal_error( sprintf( 'Identifier filename "%s" is not a valid CSV file', $identifier_filename ), 11 );
   }
 
-  $potential_participants = exec( sprintf( 'grep -c \'"[A-Z][0-9]\{6\}"\' %s', $identifier_filename ) );
+  $potential_participants = exec( sprintf( 'grep -c \'\<[A-Z][0-9]\{6\}\>\' %s', $identifier_filename ) );
   output( sprintf(
     'Identifier CSV file contains %s potential participants for release, checking files...',
     $potential_participants
@@ -190,7 +190,7 @@ $args = $arguments->parse_arguments( $argv );
 
 define( 'VERBOSE', array_key_exists( 'verbose', $args['option_list'] ) );
 $file_glob = $args['option_list']['glob'];
-$keep_files = $args['option_list']['keep_files'];
+$keep_files = array_key_exists( 'keep_files', $args['option_list'] );
 $release_name = $args['input_list']['RELEASE_NAME'];
 $data_path = $args['input_list']['DATA_PATH'];
 $identifier_filename = $args['input_list']['IDENTIFIER_FILENAME'];
