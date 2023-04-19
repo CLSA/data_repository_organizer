@@ -28,7 +28,7 @@ function create_dxa_report( $type, $dicom_filename, $image_filename )
     $label_box = [62, 1195, 426, 1504];
   }
 
-  $command = sprintf( 'convert %s', $dicom_filename );
+  $command = sprintf( 'convert %s', format_filename( $dicom_filename ) );
 
   // draw the redact boxes
   if( 0 < count( $redact_box_list ) )
@@ -87,7 +87,7 @@ function create_dxa_report( $type, $dicom_filename, $image_filename )
     );
   }
 
-  $command .= sprintf( ' %s', $image_filename );
+  $command .= sprintf( ' %s', format_filename( $image_filename ) );
   shell_exec( $command );
   return true;
 }

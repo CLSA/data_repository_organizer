@@ -36,7 +36,7 @@ function check_dicom_files( $data_path, $file_glob )
       $result_code = 0;
       $output = NULL;
       exec(
-        sprintf( "dcmdump -q %s", $filename ),
+        sprintf( "dcmdump -q %s", format_filename( $filename ) ),
         $output,
         $result_code
       );

@@ -35,6 +35,11 @@ function check_directories()
   }
 }
 
+function format_filename( $filename )
+{
+  return sprintf( '"%s"', str_replace( '"', '\"', $filename ) );
+}
+
 function move_from_temporary_to_invalid( $file_or_dir, $reason = NULL )
 {
   if( VERBOSE && !is_null( $reason ) ) output( $reason );
@@ -53,11 +58,12 @@ function move_from_temporary_to_invalid( $file_or_dir, $reason = NULL )
   if( !is_dir( $destination_dir ) ) mkdir( $destination_dir, 0755, true );
 
   // if the rename_to file or dir already exists then delete it
-  if( file_exists( $rename_to ) ) exec( sprintf( 'rm -rf %s', $rename_to ) );
+  if( file_exists( $rename_to ) ) exec( sprintf( 'rm -rf %s', format_filename( $rename_to ) ) );
 
   // move the file
   rename( $rename_from, $rename_to );
-  exec( sprintf( 'chgrp -R sftpusers %s', $rename_to ) ); // can't do this natively since there is no -R option
+  // can't do this natively since there is no -R option
+  exec( sprintf( 'chgrp -R sftpusers %s', format_filename( $rename_to ) ) );
 
   // write the reason to a file in the temporary directory
   if( !is_null( $reason ) )
@@ -409,7 +415,7 @@ function process_audio_files()
           'Removing non-production audio directory "%s"',
           $dirname
         ) );
-        exec( sprintf( 'rm -rf %s', $dirname ) );
+        exec( sprintf( 'rm -rf %s', format_filename( $dirname ) ) );
       }
     }
   }
@@ -702,12 +708,12 @@ function process_ticwatch_files( $identifier_name, $study, $phase )
         'Ignoring files in %s as there already exists more recent files',
         $study_dirname
       ) );
-      if( !TEST_ONLY && !KEEP_FILES ) exec( sprintf( 'rm -rf %s', $study_dirname ) );
+      if( !TEST_ONLY && !KEEP_FILES ) exec( sprintf( 'rm -rf %s', format_filename( $study_dirname ) ) );
     }
     else
     {
       // otherwise remove any existing files
-      if( !TEST_ONLY ) exec( sprintf( 'rm -rf %s/*', $destination_directory ) );
+      if( !TEST_ONLY ) exec( sprintf( 'rm -rf %s', format_filename( $destination_directory.'/*' ) ) );
 
       // then copy the local files to their destinations (deleting them as we do)
       $success = true;
@@ -771,7 +777,7 @@ function set_dicom_identifier( $filename, $identifier )
   $result_code = 0;
   $output = NULL;
   exec(
-    sprintf( 'dcmodify -nb -nrc -imt -m "(0010,0020)=%s" %s', $identifier, $filename ),
+    sprintf( 'dcmodify -nb -nrc -imt -m "(0010,0020)=%s" %s', $identifier, format_filename( $filename ) ),
     $output,
     $result_code
   );

@@ -56,7 +56,7 @@ function anonymize_dicom( $data_type, $filename )
     $modify_list[] = sprintf( '-m "(%s)%s"', $tag, is_null( $value ) ? '' : sprintf( '=%s', $value ) );
   }
 
-  $command = sprintf( 'dcmodify -nb -nrc -imt %s %s', implode( ' ', $modify_list ), $filename );
+  $command = sprintf( 'dcmodify -nb -nrc -imt %s %s', implode( ' ', $modify_list ), format_filename( $filename ) );
 
   $result_code = 0;
   $output = NULL;
@@ -73,21 +73,30 @@ function anonymize_dicom( $data_type, $filename )
 function anonymize_ecg( $filename )
 {
   // remove the body of the Facility element
-  $command = sprintf( 'sed -i "s#<Facility>[^<]\+</Facility>#<Facility></Facility>#" %s', $filename );
+  $command = sprintf(
+    'sed -i "s#<Facility>[^<]\+</Facility>#<Facility></Facility>#" %s',
+    format_filename( $filename )
+  );
   $result_code = 0;
   $output = NULL;
   DEBUG ? printf( "%s\n", $command ) : exec( $command, $output, $result_code );
   if( 0 < $result_code ) printf( implode( "\n", $output ) );
 
   // remove the body of the Name element
-  $command = sprintf( 'sed -i "s#<Name>[^<]\+</Name>#<Name></Name>#" %s', $filename );
+  $command = sprintf(
+    'sed -i "s#<Name>[^<]\+</Name>#<Name></Name>#" %s',
+    format_filename( $filename )
+  );
   $result_code = 0;
   $output = NULL;
   DEBUG ? printf( "%s\n", $command ) : exec( $command, $output, $result_code );
   if( 0 < $result_code ) printf( implode( "\n", $output ) );
 
   // remove the body of the PID element
-  $command = sprintf( 'sed -i "s#<PID>[^<]\+</PID>#<PID></PID>#" %s', $filename );
+  $command = sprintf(
+    'sed -i "s#<PID>[^<]\+</PID>#<PID></PID>#" %s',
+    format_filename( $filename )
+  );
   $result_code = 0;
   $output = NULL;
   DEBUG ? printf( "%s\n", $command ) : exec( $command, $output, $result_code );

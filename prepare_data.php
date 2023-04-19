@@ -27,7 +27,10 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
     fatal_error( sprintf( 'Identifier filename "%s" is not a valid CSV file', $identifier_filename ), 11 );
   }
 
-  $potential_participants = exec( sprintf( 'grep -c \'\<[A-Z][0-9]\{6\}\>\' %s', $identifier_filename ) );
+  $potential_participants = exec( sprintf(
+    'grep -c \'\<[A-Z][0-9]\{6\}\>\' %s',
+    format_filename( $identifier_filename )
+  ) );
   output( sprintf(
     'Identifier CSV file contains %s potential participants for release, checking files...',
     $potential_participants
@@ -137,7 +140,7 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
         if( preg_match( '/.gz$/', $destination_filename ) )
         {
           VERBOSE && output( 'Uncompressing destination file' );
-          exec( sprintf( 'gzip -d -f %s', $destination_filename ) );
+          exec( sprintf( 'gzip -d -f %s', format_filename( $destination_filename ) ) );
           $destination_filename = preg_replace( '/.gz$/', '', $destination_filename );
         }
 
