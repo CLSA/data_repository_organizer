@@ -8,7 +8,7 @@ require_once( 'arguments.class.php' );
  * @param string $dicom_filename The input DXA DICOM image filename
  * @param string $image_filename The output JPEG image filename
  */
-function create_dxa_report( $type, $dicom_filename, $image_filename )
+function create_dxa_for_participant( $type, $dicom_filename, $image_filename )
 {
   $redact_box_list = [];
   $label_box = NULL;
@@ -58,13 +58,14 @@ function create_dxa_report( $type, $dicom_filename, $image_filename )
       $label_box[3]
     );
 
+    // TODO: TRANSLATE INTO FRENCH
     $caption = 
-      'These tests were conducted for research purposes only; these results should not be used as the basis '.
-      'for clinical diagnosis or treatment.  These results have been released to the participant at their '.
-      'request.\n\n'.
-      'Les mesures effectuées au Site de collecte de données ne sont utilisées qu’à des fins de recherche. '.
-      'Les résultats qui en découlent n’ont pas de valeur diagnostique ou thérapeutique.  Les résultats ont '.
-      'été envoyés au participant à sa demande.';
+      'These results are for research purposes only and should not be used for clinical diagnosis or treatment.  '.
+      'At the request of the participant, these results have been released to them.  '.
+      'These results have not been checked for quality or interpreted.\n\n'.
+      'These results are for research purposes only and should not be used for clinical diagnosis or treatment.  '.
+      'At the request of the participant, these results have been released to them.  '.
+      'These results have not been checked for quality or interpreted.';
     $command .= sprintf(
       ' \( '.
         '-background white '.
@@ -111,4 +112,4 @@ $type = $args['option_list']['type'];
 $dicom_filename = $args['input_list']['INPUT'];
 $image_filename = $args['input_list']['OUTPUT'];
 
-create_dxa_report( $type, $dicom_filename, $image_filename );
+create_dxa_for_participant( $type, $dicom_filename, $image_filename );
