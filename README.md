@@ -364,7 +364,7 @@ notes: either left or right as indicated by Measure.SIDE; not actually repeated
 still image [123]
 -----------------
 Opal BL: clsa-dcs-images / CarotidIntima / Measure.STILL_IMAGE (repeated) (done)
-Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.STILL_IMAGE_[123] (repeated)
+Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.STILL_IMAGE_[123] (repeated) (done)
 Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.STILL_IMAGE_[123] (repeated)
 Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.STILL_IMAGE_[133] (repeated)
 file-type: gz -> dcm
@@ -383,6 +383,7 @@ path: /anonymized/clsa/<PHASE>/dxa/<UID>/dxa_hip_<SIDE>.dcm (done)
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_hip_reanalyzed-<SIDE>_<N>.dcm (???)
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_hip-<SIDE>_<N>.jpeg (???)
 notes: either left or right as indicated by Measure.OUTPUT_HIP_SIDE
+notes: this data isn't valid until a paired analysis is done and DICOM image exported from Apex
 
 dxa forearm
 -----------
@@ -395,6 +396,7 @@ path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_forearm.dcm
 path: /supplementary/ ... _reanalyzed.dcm (???)
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_forearm.jpeg (manually generated from dicom using script) (done)
 notes: SIDE defined by INPUT_FA_SIDE
+notes: unsure whether images need to be re-analsed in Apex
 
 dxa hip
 -------
@@ -447,6 +449,7 @@ file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_spine.dcm
 path: /supplementary/ ... _reanalyzed.dcm (TODO)
 path: /supplementary/ ... .jpeg (TODO)
+notes: this data isn't valid until a paired analysis is done and DICOM image exported from Apex
 
 dxa whole body 1 (BMD)
 ----------------------
@@ -459,6 +462,7 @@ path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bmd.dcm
 path: /supplementary/ ... _reanalyzed.dcm (TODO)
 path: /supplementary/ ... .jpeg
 notes: bmd is "body mass measurement"
+notes: this data isn't valid until a non-paired analysis is done and DICOM image exported from Apex
 
 dxa whole body 2 (BCA)
 ----------------------
@@ -471,6 +475,7 @@ path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bca.dcm
 path: /supplementary/ ... _reanalyzed.dcm (TODO)
 path: /supplementary/ ... .jpeg
 notes: bca is "body composition analysis"
+notes: this data isn't valid until a non-paired analysis is done and DICOM image exported from Apex
 
 retinal
 -------
@@ -491,18 +496,18 @@ Opal F1: clsa-dcs-images-f1 / RetinalScanLeft / EYE (done)
 Opal F2: clsa-dcs-images-f2 / RetinalScanLeft / EYE
 Opal F3: clsa-dcs-images-f3 / RetinalScanLeft / EYE
 file-type: jpeg
-path: /raw/clsa/<PHASE>/retinal/<UID>/retinal.dcm
+path: /raw/clsa/<PHASE>/retinal/<UID>/retinal.jpeg
 notes: figure out what the side variable is (so that opal points to the correct file)
 notes: SIDE defined by SIDE
 
 retinal right
 -------------
 Opal BL: does not exist
-Opal F1: clsa-dcs-images-f1 / RetinalScanRight / EYE
+Opal F1: clsa-dcs-images-f1 / RetinalScanRight / EYE (done)
 Opal F2: clsa-dcs-images-f2 / RetinalScanRight / EYE
 Opal F3: clsa-dcs-images-f3 / RetinalScanRight / EYE
 file-type: jpeg
-path: /raw/clsa/<PHASE>/retinal/<UID>/retinal.dcm
+path: /raw/clsa/<PHASE>/retinal/<UID>/retinal.jpeg
 notes: figure out what the side variable is (so that opal points to the correct file)
 notes: SIDE defined by SIDE
 
