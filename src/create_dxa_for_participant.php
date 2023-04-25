@@ -10,23 +10,74 @@ require_once( 'arguments.class.php' );
  */
 function create_dxa_for_participant( $type, $dicom_filename, $image_filename )
 {
-  $redact_box_list = [];
-  $label_box = NULL;
-  if( 'forearm' == $type )
+  $size = explode( ' ', @shell_exec( sprintf( 'identify -format "%%w %%h" %s', $dicom_filename ) ) );
+  if( 2 != count( $size ) ) return 'Invalid file';
+  $width = (int) $size[0];
+  $height = (int) $size[1];
+
+  $redact = [
+    'x' => 169, // the x-coordinate of the left side of all information boxes
+    'name_y' => $height - 182,
+    'dob_y' => $height - 447, // varies for all image types
+    'box_width' => 78, // the width of all patient information boxes
+    'box_height' => 25, // the height of all patient information boxes
+    'box_margin' => 8, // the vertical margin between all information boxes
+  ];
+
+  $label = [
+    'x' => 30, // the x-coordinate of the left side of the label
+    'y_offset' => 160, // the distance from the bottom of the top of the label
+    'width' => 1140, // the width of the label
+    'height' => 115, // the height of the label
+  ];
+
+  if( 'forearm' == $type && 1200 == $width && 1320 == $height )
   {
-    $redact_box_list = [[170, 1204, 248, 1178], [170, 973, 248, 948]];
-    $label_box = [62, 1261, 1138, 1375];
+    // use the default measurements
   }
-  else if( 'hip' == $type )
+  // hip scans have a height of 1830 or 1930, so accept anything in between
+  else if( 'hip' == $type && 1200 == $width && 1830 <= $height && $height <= 1930 )
   {
-    $redact_box_list = [[170, 1614, 248, 1589], [170, 1383, 248, 1358]];
-    $label_box = [62, 1671, 1138, 1785];
+    // use the default measurements
   }
-  else if( 'wbody' == $type )
+  else if( 'wbody' == $type && 1440 == $width && 1585 == $height )
   {
-    $redact_box_list = [[170, 1545, 248, 1520], [170, 1314, 248, 1289]];
-    $label_box = [62, 1195, 426, 1504];
+    // The label needs to be in the bottom-left, less wide and taller
+    $label['x'] = 20;
+    $label['y_offset'] = 390;
+    $label['width'] = 400;
+    $label['height'] = 260;
   }
+  else
+  {
+    return sprintf( 'Unexected type/geometry: %s (%d, %d)', $type, $width, $height );
+  }
+
+  $redact_box_list = [
+    [ // redact the Name, Patient ID, Identifier 2, and Postal Code information boxes
+      $redact['x'],
+      $redact['name_y'],
+      // add 1 box
+      $redact['x'] + $redact['box_width'],
+      // add 4 box and 3 margins
+      $redact['name_y'] - ( 4*$redact['box_height'] + 3*$redact['box_margin'] ),
+    ],
+    [ // redact the DOB information box
+      $redact['x'],
+      $redact['dob_y'],
+      // add 1 box
+      $redact['x'] + $redact['box_width'],
+      // add 1 box
+      $redact['dob_y'] - $redact['box_height'],
+    ],
+  ];
+
+  $label_box = [
+    $label['x'],
+    $height - $label['y_offset'],
+    $label['x'] + $label['width'],
+    $height - $label['y_offset'] + $label['height'],
+  ];
 
   $command = sprintf( 'convert %s', format_filename( $dicom_filename ) );
 
@@ -58,14 +109,16 @@ function create_dxa_for_participant( $type, $dicom_filename, $image_filename )
       $label_box[3]
     );
 
-    // TODO: TRANSLATE INTO FRENCH
-    $caption = 
+    $caption =
+      // English
       'These results are for research purposes only and should not be used for clinical diagnosis or treatment.  '.
       'At the request of the participant, these results have been released to them.  '.
       'These results have not been checked for quality or interpreted.\n\n'.
-      'These results are for research purposes only and should not be used for clinical diagnosis or treatment.  '.
-      'At the request of the participant, these results have been released to them.  '.
-      'These results have not been checked for quality or interpreted.';
+      // French
+      'Ces résultats sont utilisés à des fins de recherche seulement.  '.
+      'Ils n’ont pas de valeur clinique ou diagnostique.  '.
+      'Ils ont été communiqués au/à la participant·e à sa demande.  '.
+      'Leur qualité n’a pas été vérifiée ni interprétée.';
     $command .= sprintf(
       ' \( '.
         '-background white '.
@@ -77,14 +130,14 @@ function create_dxa_for_participant( $type, $dicom_filename, $image_filename )
         '-gravity NorthWest '.
         'caption:"%s" '.
       '\)',
-      $label_box[2] - $label_box[0]+1,
-      $label_box[3] - $label_box[1]+1,
+      $label_box[2] - $label_box[0] - 3,
+      $label_box[3] - $label_box[1] - 3,
       $caption
     );
     $command .= sprintf(
       ' -compose Over -geometry +%d+%d -composite',
-      $label_box[0],
-      $label_box[1]
+      $label_box[0]+4,
+      $label_box[1]+4
     );
   }
 
@@ -109,7 +162,9 @@ $arguments->add_input( 'OUTPUT', 'The filename of the generated JPEG file' );
 $args = $arguments->parse_arguments( $argv );
 
 $type = $args['option_list']['type'];
+if( 0 == strlen( $type ) ) $type = 'unknown';
 $dicom_filename = $args['input_list']['INPUT'];
 $image_filename = $args['input_list']['OUTPUT'];
 
-create_dxa_for_participant( $type, $dicom_filename, $image_filename );
+$result = create_dxa_for_participant( $type, $dicom_filename, $image_filename );
+if( is_string( $result ) ) printf( "%s\n", $result );
