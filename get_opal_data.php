@@ -72,14 +72,14 @@ function download_file( $uid, $base_dir, $params, &$count_list )
 
   if( !is_dir( $directory ) ) mkdir( $directory );
 
+  // REPEATED IMAGE DATA /////////////////////////////////////////////////////////////////////////////////
   // if the variable name starts with "Measure." then this is a repeated variable (download one at a time)
   if( preg_match( '/Measure\./', $params['variable'] ) )
   {
-    $output_filename = sprintf( '%s/%s', $directory, preg_replace( '/<N>/', 1, $params['filename'] ) );
-
+    $first_output_filename = sprintf( '%s/%s', $directory, preg_replace( '/<N>/', 1, $params['filename'] ) );
     if( array_key_exists( 'pre_download_function', $params ) )
     {
-      $params['pre_download_function']( $output_filename );
+      $params['pre_download_function']( $first_output_filename );
     }
 
     $response = opal_send( $opal_params );
@@ -99,8 +99,7 @@ function download_file( $uid, $base_dir, $params, &$count_list )
     {
       // Create an empty file so that we know for the future that the data is missing.
       // If we don't do this then we will look for the file every time the script runs.
-      file_put_contents( $output_filename, '' );
-      
+      file_put_contents( $first_output_filename, '' );
       $count_list['missing']++;
       return;
     }
@@ -166,7 +165,7 @@ function download_file( $uid, $base_dir, $params, &$count_list )
         {
           $side = array_key_exists( $index, $side_list ) ? $side_list[$index] : 'unknown';
           $cwd = getcwd();
-          
+
           foreach( $new_filename_list as $new_filename )
           {
             // only create a link if the file exists and isn't empty
@@ -189,7 +188,9 @@ function download_file( $uid, $base_dir, $params, &$count_list )
       }
     }
   }
-  else
+
+  // SINGLE IMAGE DATA /////////////////////////////////////////////////////////////////////////////////
+  else // data is not repeated, so there's only one file to download
   {
     $output_filename = sprintf( '%s/%s', $directory, $params['filename'] );
 
@@ -200,48 +201,45 @@ function download_file( $uid, $base_dir, $params, &$count_list )
 
     $opal_params['value'] = NULL;
     $response = opal_send( $opal_params );
-    if( $response )
+    if( !$response )
     {
-      file_put_contents( $output_filename, $response );
-      $count_list['download']++;
-
-      $new_filename_list = [$output_filename];
-      if( array_key_exists( 'post_download_function', $params ) )
-      {
-        $new_filename = $params['post_download_function']( $output_filename );
-        if( is_string( $new_filename ) ) $new_filename_list[] = $new_filename;
-        else if( is_array( $new_filename ) )
-          $new_filename_list = array_merge( $new_filename_list, $new_filename );
-      }
-
-      // if a side exists then create a symlink with the side for all files that have been created
-      if( array_key_exists( 'side', $params ) )
-      {
-        $side = get_side( $uid, $params );
-        $cwd = getcwd();
-        
-        foreach( $new_filename_list as $new_filename )
-        {
-          // only create a link if the file exists and isn't empty
-          if( file_exists( $new_filename ) && 0 < filesize( $new_filename ) )
-          {
-            chdir( dirname( $new_filename ) );
-            $link = preg_replace( '/^([^.]+)/', sprintf( '$1_%s', $side ), $params['filename'] );
-            if( !file_exists( $link ) ) symlink( basename( $new_filename ), $link );
-          }
-        }
-
-        chdir( $cwd );
-      }
-    }
-    else
-    {
-      // create an empty file if it is missing (again, so we know in the future that it has been searched for)
-      file_put_contents(
-        sprintf( '%s/%s', $directory, $params['filename'] ),
-        ''
-      );
+      // Create an empty file so that we know for the future that the data is missing.
+      // If we don't do this then we will look for the file every time the script runs.
+      file_put_contents( $output_filename, '' );
       $count_list['missing']++;
+      return;
+    }
+
+    file_put_contents( $output_filename, $response );
+    $count_list['download']++;
+
+    $new_filename_list = [$output_filename];
+    if( array_key_exists( 'post_download_function', $params ) )
+    {
+      $new_filename = $params['post_download_function']( $output_filename );
+      if( is_string( $new_filename ) ) $new_filename_list[] = $new_filename;
+      else if( is_array( $new_filename ) )
+        $new_filename_list = array_merge( $new_filename_list, $new_filename );
+    }
+
+    // if a side exists then create a symlink with the side for all files that have been created
+    if( array_key_exists( 'side', $params ) )
+    {
+      $side = get_side( $uid, $params );
+      $cwd = getcwd();
+
+      foreach( $new_filename_list as $new_filename )
+      {
+        // only create a link if the file exists and isn't empty
+        if( file_exists( $new_filename ) && 0 < filesize( $new_filename ) )
+        {
+          chdir( dirname( $new_filename ) );
+          $link = preg_replace( '/^([^.]+)/', sprintf( '$1_%s', $side ), $params['filename'] );
+          if( !file_exists( $link ) ) symlink( basename( $new_filename ), $link );
+        }
+      }
+
+      chdir( $cwd );
     }
   }
 }
@@ -359,7 +357,7 @@ else
 }
 
 output( sprintf(
-  'Done [%d valid, %d empty, %d skipped]',
+  'Done [%d valid, %d missing, %d skipped]',
   $count_list['download'],
   $count_list['missing'],
   $count_list['skipped']
