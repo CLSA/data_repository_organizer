@@ -14,13 +14,18 @@ $cimt_post_download_function = function( $filename ) {
   if( 0 < filesize( $anonymized_filename.'.gz' ) )
   {
     exec( sprintf( 'gzip -d -f %s.gz', $anonymized_filename ) );
-    exec( sprintf( 'php /usr/local/lib/data_librarian/src/anonymize.php -t cimt %s', $anonymized_filename ) );
+    exec( sprintf( 'php src/anonymize.php -t cimt %s', $anonymized_filename ) );
     exec( sprintf( 'gzip %s', $anonymized_filename ) );
   }
+
+  // return the new file that was created by this function
+  return $anonymized_filename;
 };
 
 // post download function used by all dxa files
 $dxa_post_download_function = function( $filename ) {
+  $new_filename_list = [];
+
   $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
   $directory = dirname( $anonymized_filename );
   if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
@@ -28,19 +33,34 @@ $dxa_post_download_function = function( $filename ) {
   if( 0 < filesize( $anonymized_filename ) )
   {
     exec( sprintf( 'php src/anonymize.php -t dxa %s', $anonymized_filename ) );
+    $new_filename_list[] = $anonymized_filename;
   }
 
-  // wbody BCA and BMD images need to be converted to jpeg
+  // need to create redacted participant versions of hip, forearm and BMD images
   $matches = [];
-  if( preg_match( '/wbody_(bca|bmd)/', $filename, $matches ) )
+  if( preg_match( '/(dxa_hip|dxa_forearm|dxa_wbody_bmd)/', $filename, $matches ) )
   {
     $type = $matches[1];
-    $image_filename = preg_replace( ['#/raw/#', '#\.xml$#'], ['/supplementary/', '.jpeg'], $filename );
+    if( 'dxa_hip' == $type ) $type = 'hip';
+    else if( 'dxa_forearm' == $type ) $type = 'forearm';
+    else $type = 'wbody';
+    $image_filename = preg_replace( ['#/raw/#', '#\.dcm$#'], ['/supplementary/', '.participant.jpeg'], $filename );
+    $directory = dirname( $image_filename );
+    if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
 
     // convert from dcm to jpeg
     $output = [];
     $result_code = NULL;
-    exec( sprintf( 'dcmj2pnm --write-jpeg %s %s', $filename, $image_filename ), $output, $result_code );
+    exec(
+      sprintf(
+        'php src/create_dxa_for_participant.php -t %s %s %s',
+        $type,
+        $filename,
+        $image_filename
+      ),
+      $output,
+      $result_code
+    );
     if( 0 < $result_code )
     {
       // there was an error, so throw away any generated file
@@ -48,15 +68,12 @@ $dxa_post_download_function = function( $filename ) {
     }
     else
     {
-      // crop the image (box based on BCA or BMA)
-      exec( sprintf(
-        'convert %s -crop %s +repage %s',
-        $image_filename,
-        'bca' == $type ? '607x872+489+136' : '334x757+492+176',
-        $image_filename
-      ) );
+      $new_filename_list[] = $image_filename;
     }
   }
+
+  // return all new files created by this function
+  return $new_filename_list;
 };
 
 // post download function used by all dxa files
@@ -69,6 +86,9 @@ $dxa_wbody_post_download_function = function( $filename ) {
   {
     exec( sprintf( 'php src/anonymize.php -t dxa %s', $anonymized_filename ) );
   }
+
+  // return the new file that was created by this function
+  return $anonymized_filename;
 };
 
 $category_list = [
@@ -764,8 +784,9 @@ $category_list = [
       'datasource' => 'clsa-dcs-images',
       'table' => 'DualHipBoneDensity',
       'variable' => 'Measure.RES_HIP_DICOM',
-      'side' => 'INPUT_HIP_SIDE',
+      'side' => 'Measure.OUTPUT_HIP_SIDE',
       'filename' => 'dxa_hip_<N>.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_forearm' => [
@@ -774,8 +795,9 @@ $category_list = [
       'datasource' => 'clsa-dcs-images',
       'table' => 'ForearmBoneDensity',
       'variable' => 'RES_FA_DICOM',
-      'side' => 'INPUT_HIP_SIDE',
+      'side' => 'OUTPUT_FA_SIDE',
       'filename' => 'dxa_forearm.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_lateral' => [
@@ -795,6 +817,7 @@ $category_list = [
       'table' => 'LateralBoneDensity',
       'variable' => 'RES_SEL_DICOM_OT',
       'filename' => 'dxa_lateral_ot.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_lateral_pr' => [
@@ -804,6 +827,7 @@ $category_list = [
       'table' => 'LateralBoneDensity',
       'variable' => 'RES_SEL_DICOM_PR',
       'filename' => 'dxa_lateral_pr.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_spine' => [
@@ -813,6 +837,7 @@ $category_list = [
       'table' => 'SpineBoneDensity',
       'variable' => 'RES_SP_DICOM',
       'filename' => 'dxa_spine.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
     '3' => [
       'name' => 'dxa',
@@ -820,6 +845,7 @@ $category_list = [
       'table' => 'SpineBoneDensity',
       'variable' => 'RES_SP_DICOM',
       'filename' => 'dxa_spine.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_wbody_bmd' => [
@@ -849,6 +875,7 @@ $category_list = [
       'table' => 'HipRecoveryLeft',
       'variable' => 'RES_HIP_DICOM',
       'filename' => 'dxa_hip_recovery_left.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
     '2' => [
       'name' => 'dxa',
@@ -856,6 +883,7 @@ $category_list = [
       'table' => 'HipRecoveryLeft',
       'variable' => 'RES_HIP_DICOM',
       'filename' => 'dxa_hip_recovery_left.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_hip_recovery_right' => [
@@ -865,6 +893,7 @@ $category_list = [
       'table' => 'HipRecoveryRight',
       'variable' => 'RES_HIP_DICOM',
       'filename' => 'dxa_hip_recovery_right.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
     '2' => [
       'name' => 'dxa',
@@ -872,6 +901,7 @@ $category_list = [
       'table' => 'HipRecoveryRight',
       'variable' => 'RES_HIP_DICOM',
       'filename' => 'dxa_hip_recovery_right.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_lateral_recovery' => [
@@ -881,6 +911,7 @@ $category_list = [
       'table' => 'LateralRecovery',
       'variable' => 'RES_SEL_DICOM_MEASURE',
       'filename' => 'dxa_lateral_recovery.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
     '2' => [
       'name' => 'dxa',
@@ -888,6 +919,7 @@ $category_list = [
       'table' => 'LateralRecovery',
       'variable' => 'RES_SEL_DICOM_MEASURE',
       'filename' => 'dxa_lateral_recovery.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_wbody_recovery' => [
@@ -897,6 +929,7 @@ $category_list = [
       'table' => 'WbodyRecovery',
       'variable' => 'RES_WB_DICOM_1',
       'filename' => 'dxa_wbody_recovery.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
     '2' => [
       'name' => 'dxa',
@@ -904,6 +937,7 @@ $category_list = [
       'table' => 'WbodyRecovery',
       'variable' => 'RES_WB_DICOM_1',
       'filename' => 'dxa_wbody_recovery.dcm',
+      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'retinal' => [

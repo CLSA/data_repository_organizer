@@ -11,6 +11,34 @@ require_once( 'src/common.php' );
 require_once( 'src/arguments.class.php' );
 require_once( 'src/opal_category_list.php' );
 
+function get_side( $uid, $params )
+{
+  $opal_params = [
+    'datasource' => $params['datasource'],
+    'table' => $params['table'],
+    'valueSet' => $uid,
+    'variable' => $params['side']
+  ];
+
+  if( preg_match( '/Measure\./', $params['side'] ) )
+  {
+    $response = opal_send( $opal_params );
+    if( !$response ) return NULL;
+
+    $object = json_decode( $response );
+    if( !property_exists( $object, 'values' ) ) return NULL;
+
+    $side_list = [];
+    foreach( $object->values as $value ) $side_list[] = strtolower( $value->value );
+    return $side_list;
+  }
+
+  // not repeated
+  $opal_params['value'] = NULL;
+  $response = opal_send( $opal_params );
+  return strtolower( $response );
+}
+
 function download_file( $uid, $base_dir, $params, &$count_list )
 {
   $directory = sprintf( '%s/%s', $base_dir, $uid );
@@ -35,6 +63,13 @@ function download_file( $uid, $base_dir, $params, &$count_list )
     return;
   }
 
+  $opal_params = [
+    'datasource' => $params['datasource'],
+    'table' => $params['table'],
+    'valueSet' => $uid,
+    'variable' => $params['variable']
+  ];
+
   if( !is_dir( $directory ) ) mkdir( $directory );
 
   // if the variable name starts with "Measure." then this is a repeated variable (download one at a time)
@@ -47,13 +82,7 @@ function download_file( $uid, $base_dir, $params, &$count_list )
       $params['pre_download_function']( $output_filename );
     }
 
-    $response = opal_send( [
-      'datasource' => $params['datasource'],
-      'table' => $params['table'],
-      'valueSet' => $uid,
-      'variable' => $params['variable']
-    ] );
-
+    $response = opal_send( $opal_params );
     $object = NULL;
     $missing = false;
     if( !$response )
@@ -75,6 +104,9 @@ function download_file( $uid, $base_dir, $params, &$count_list )
       $count_list['missing']++;
       return;
     }
+
+    // if a side is included in the parameters then first get the side data from opal
+    $side_list = array_key_exists( 'side', $params ) ? get_side( $uid, $params ) : NULL;
 
     foreach( $object->values as $value )
     {
@@ -117,11 +149,36 @@ function download_file( $uid, $base_dir, $params, &$count_list )
       if( $response )
       {
         file_put_contents( $output_filename, $response );
+
         $count_list['download']++;
 
+        $new_filename_list = [$output_filename];
         if( array_key_exists( 'post_download_function', $params ) )
         {
-          $params['post_download_function']( $output_filename );
+          $new_filename = $params['post_download_function']( $output_filename );
+          if( is_string( $new_filename ) ) $new_filename_list[] = $new_filename;
+          else if( is_array( $new_filename ) )
+            $new_filename_list = array_merge( $new_filename_list, $new_filename );
+        }
+
+        // if a side exists then create a symlink with the side for all files that have been created
+        if( array_key_exists( 'side', $params ) )
+        {
+          $side = array_key_exists( $index, $side_list ) ? $side_list[$index] : 'unknown';
+          $cwd = getcwd();
+          
+          foreach( $new_filename_list as $new_filename )
+          {
+            // only create a link if the file exists and isn't empty
+            if( file_exists( $new_filename ) && 0 < filesize( $new_filename ) )
+            {
+              chdir( dirname( $new_filename ) );
+              $link = preg_replace( '/<N>/', $side, $params['filename'] );
+              if( !file_exists( $link ) ) symlink( basename( $new_filename ), $link );
+            }
+          }
+
+          chdir( $cwd );
         }
       }
       else
@@ -141,22 +198,40 @@ function download_file( $uid, $base_dir, $params, &$count_list )
       $params['pre_download_function']( $output_filename );
     }
 
-    $response = opal_send( [
-      'datasource' => $params['datasource'],
-      'table' => $params['table'],
-      'valueSet' => $uid,
-      'variable' => $params['variable'],
-      'value' => NULL
-    ] );
-
+    $opal_params['value'] = NULL;
+    $response = opal_send( $opal_params );
     if( $response )
     {
       file_put_contents( $output_filename, $response );
       $count_list['download']++;
 
+      $new_filename_list = [$output_filename];
       if( array_key_exists( 'post_download_function', $params ) )
       {
-        $params['post_download_function']( $output_filename );
+        $new_filename = $params['post_download_function']( $output_filename );
+        if( is_string( $new_filename ) ) $new_filename_list[] = $new_filename;
+        else if( is_array( $new_filename ) )
+          $new_filename_list = array_merge( $new_filename_list, $new_filename );
+      }
+
+      // if a side exists then create a symlink with the side for all files that have been created
+      if( array_key_exists( 'side', $params ) )
+      {
+        $side = get_side( $uid, $params );
+        $cwd = getcwd();
+        
+        foreach( $new_filename_list as $new_filename )
+        {
+          // only create a link if the file exists and isn't empty
+          if( file_exists( $new_filename ) && 0 < filesize( $new_filename ) )
+          {
+            chdir( dirname( $new_filename ) );
+            $link = preg_replace( '/^([^.]+)/', sprintf( '$1_%s', $side ), $params['filename'] );
+            if( !file_exists( $link ) ) symlink( basename( $new_filename ), $link );
+          }
+        }
+
+        chdir( $cwd );
       }
     }
     else
@@ -195,12 +270,25 @@ $phase = $args['option_list']['phase'];
 $category = $args['input_list']['CATEGORY'];
 
 // make sure the category and phase is valid
+if( !array_key_exists( $category, $category_list ) )
+{
+  fatal_error(
+    sprintf(
+      'No such category "%s"%sValid categories include: %s',
+      $category,
+      "\n",
+      implode( ', ', array_keys( $category_list ) )
+    ),
+    6
+  );
+}
+
 if( !array_key_exists( 'all', $category_list[$category] ) &&
     !array_key_exists( $phase, $category_list[$category] ) )
 {
   fatal_error(
     sprintf( 'Category "%s" does not exist for phase "%d".', $category, $phase ),
-    6
+    7
   );
 }
 

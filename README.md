@@ -23,6 +23,27 @@ DEFINITIONS
 <N>: The zero-padded number of a repeated scan (eg: 1, 2, 3, etc)
 
 
+PREPARING DATA
+==============
+The prepare_data.php script is used to collect requested data into a directory while de-identifying in order to prepare binary files to deliver to researchers.
+In order to do that you will need a CSV file that includes CLSAIDs and anonymized IDs as well as a list of requested binary data types and wave(s).
+Example: 22009933.csv requires retinal images, carotid intima, cineloops for baseline and followup 1.
+
+Once you have that information, you will need to place the CSV file in the /data/release/ directory.
+Depending on the volume of data, you will either be preparing the data in /data/release/<APPLICANT>_<CATEGORY>_<PHASE>/ or on an encrypted hard disk.
+
+You can find the location of the exportable data and the filter used to grab the right files in the sections below for each binary type.
+
+Example of using the prepare_data.php to prepare data into the /data/release/ directory:
+  nohup php prepare_data.php 22009933_Retinal_Baseline raw/clsa/1/retinal/ /data/release/22009933.csv -g "retinal_[lru]*.jpeg" > /nohup.out &
+
+Example for an external drive:
+
+After the data is prepared, it will need to be encrypted. To encrypt data in /data/release/ simply zip each folder you created using a password that is to be saved to the password manager. Example: zip --encrypt <APPLICANT>_Retinal_Baseline.zip -r <APPLICANT>_Retinal_Baseline and then move the .zip file to the applicant folder: /data/release/magnolia/<APPLICANT>
+
+Be absolutely sure that you DO NOT include the csv file as a deliverable to the researcher. Please leave the CSV file in /data/release/ and make sure it does not make it's way into the delivered .zip files.
+
+
 DIRECTORIES
 ===========
 .
@@ -98,6 +119,7 @@ DIRECTORIES
  
 Where modality1, modality2, etc, can be any of the following:
 choice_rt, audio, dxa_hip, dxa_forearm, dxa_lateral, dxa_spine, dxa_wbody, ecg, frax, retinal, spirometry, cineloop, report, actigraph, ticwatch, etc...
+
 
 OPAL AND CLSANFS DATA
 =====================
@@ -343,7 +365,7 @@ notes: either left or right as indicated by Measure.SIDE; "[123]_" for BL only
 
 plaque cineloop
 ---------------
-Opal BL: clsa-dcs-images / Plaque / Measure.CINELOOP_1 (repeated)
+Opal BL: clsa-dcs-images / Plaque / Measure.CINELOOP_1 (repeated) (half downloaded - low priority)
 Opal F1: does not exist
 Opal F2: does not exist
 Opal F3: does not exist
@@ -384,6 +406,7 @@ path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_hip_reanalyzed-<SIDE>_<N>.dcm (?
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_hip-<SIDE>_<N>.jpeg (???)
 notes: either left or right as indicated by Measure.OUTPUT_HIP_SIDE
 notes: this data isn't valid until a paired analysis is done and DICOM image exported from Apex
+notes: participant images can be created with the create_dxa_for_participant.php script
 
 dxa forearm
 -----------
@@ -397,6 +420,7 @@ path: /supplementary/ ... _reanalyzed.dcm (???)
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_forearm.jpeg (manually generated from dicom using script) (done)
 notes: SIDE defined by INPUT_FA_SIDE
 notes: unsure whether images need to be re-analsed in Apex
+notes: participant images can be created with the create_dxa_for_participant.php script
 
 dxa hip
 -------
@@ -463,6 +487,8 @@ path: /supplementary/ ... _reanalyzed.dcm (TODO)
 path: /supplementary/ ... .jpeg
 notes: bmd is "body mass measurement"
 notes: this data isn't valid until a non-paired analysis is done and DICOM image exported from Apex
+notes: participant images can be created with the create_dxa_for_participant.php script
+notes: dean wrote a script to convert to jpeg, not sure if we need those
 
 dxa whole body 2 (BCA)
 ----------------------
@@ -476,6 +502,7 @@ path: /supplementary/ ... _reanalyzed.dcm (TODO)
 path: /supplementary/ ... .jpeg
 notes: bca is "body composition analysis"
 notes: this data isn't valid until a non-paired analysis is done and DICOM image exported from Apex
+notes: dean wrote a script to convert to jpeg, not sure if we need those
 
 retinal
 -------
@@ -497,8 +524,11 @@ Opal F2: clsa-dcs-images-f2 / RetinalScanLeft / EYE
 Opal F3: clsa-dcs-images-f3 / RetinalScanLeft / EYE
 file-type: jpeg
 path: /raw/clsa/<PHASE>/retinal/<UID>/retinal.jpeg
-notes: figure out what the side variable is (so that opal points to the correct file)
-notes: SIDE defined by SIDE
+export path: /raw/clsa/<PHASE>/retinal/<UID>/
+export filter for data librarian: -g "retinal_[lru]*.jpeg"
+val notes: export filter will give left/right/unknown scans.
+patrick notes: figure out what the side variable is (so that opal points to the correct file)
+patrick notes: SIDE defined by SIDE
 
 retinal right
 -------------
