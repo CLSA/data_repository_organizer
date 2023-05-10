@@ -27,9 +27,10 @@ $category_list = [
   'spirometry_flow',
   'spirometry_volume',
   'spirometry_report',
+  'dxa_forearm',
 ];
 
 foreach( $category_list as $category )
 {
-  passthru( sprintf( 'php /usr/local/lib/data_librarian/get_opal_data.php -p %d %s', $phase, $category ) );
+  passthru( sprintf( 'php %s/get_opal_data.php -p %d %s', __DIR__, $phase, $category ) );
 }

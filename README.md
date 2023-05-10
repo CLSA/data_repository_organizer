@@ -403,21 +403,21 @@ file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_hip_<N>.dcm
 path: /anonymized/clsa/<PHASE>/dxa/<UID>/dxa_hip_<SIDE>.dcm (done)
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_hip_reanalyzed-<SIDE>_<N>.dcm (???)
-path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_hip-<SIDE>_<N>.jpeg (???)
+path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_hip_<SIDE>.participant.jpeg (for participant release)
 notes: either left or right as indicated by Measure.OUTPUT_HIP_SIDE
 notes: this data isn't valid until a paired analysis is done and DICOM image exported from Apex
 notes: participant images can be created with the create_dxa_for_participant.php script
 
-dxa forearm
------------
-Opal BL: clsa-dcs-images / ForearmBoneDensity / RES_FA_DICOM
-Opal F1: clsa-dcs-images-f1 / ForearmBoneDensity / RES_FA_DICOM
-Opal F2: clsa-dcs-images-f2 / ForearmBoneDensity / RES_FA_DICOM
-Opal F3: clsa-dcs-images-f3 / ForearmBoneDensity / RES_FA_DICOM
+dxa forearm (done)
+------------------
+Opal BL: clsa-dcs-images / ForearmBoneDensity / RES_FA_DICOM (done)
+Opal F1: clsa-dcs-images-f1 / ForearmBoneDensity / RES_FA_DICOM (done)
+Opal F2: clsa-dcs-images-f2 / ForearmBoneDensity / RES_FA_DICOM (done)
+Opal F3: clsa-dcs-images-f3 / ForearmBoneDensity / RES_FA_DICOM (done)
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_forearm.dcm
 path: /supplementary/ ... _reanalyzed.dcm (???)
-path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_forearm.jpeg (manually generated from dicom using script) (done)
+path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_forearm.participant.jpeg (for participant release)
 notes: SIDE defined by INPUT_FA_SIDE
 notes: unsure whether images need to be re-analsed in Apex
 notes: participant images can be created with the create_dxa_for_participant.php script
@@ -484,7 +484,7 @@ Opal F3: clsa-dcs-images-f3 / WholeBodyBoneDensity / RES_WB_DICOM_1
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bmd.dcm
 path: /supplementary/ ... _reanalyzed.dcm (TODO)
-path: /supplementary/ ... .jpeg
+path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_wbody.participant.jpeg (for participant release)
 notes: bmd is "body mass measurement"
 notes: this data isn't valid until a non-paired analysis is done and DICOM image exported from Apex
 notes: participant images can be created with the create_dxa_for_participant.php script
