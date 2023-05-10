@@ -14,7 +14,7 @@ $cimt_post_download_function = function( $filename ) {
   if( 0 < filesize( $anonymized_filename.'.gz' ) )
   {
     exec( sprintf( 'gzip -d -f %s.gz', $anonymized_filename ) );
-    exec( sprintf( 'php src/anonymize.php -t cimt %s', $anonymized_filename ) );
+    exec( sprintf( 'php %s/anonymize.php -t cimt %s', __DIR__, $anonymized_filename ) );
     exec( sprintf( 'gzip %s', $anonymized_filename ) );
   }
 
@@ -32,7 +32,7 @@ $dxa_post_download_function = function( $filename ) {
   copy( $filename, $anonymized_filename );
   if( 0 < filesize( $anonymized_filename ) )
   {
-    exec( sprintf( 'php src/anonymize.php -t dxa %s', $anonymized_filename ) );
+    exec( sprintf( 'php %s/anonymize.php -t dxa %s', __DIR__, $anonymized_filename ) );
     $new_filename_list[] = $anonymized_filename;
   }
 
@@ -53,7 +53,8 @@ $dxa_post_download_function = function( $filename ) {
     $result_code = NULL;
     exec(
       sprintf(
-        'php src/create_dxa_for_participant.php -t %s %s %s',
+        'php %s/create_dxa_for_participant.php -t %s %s %s',
+        __DIR__,
         $type,
         $filename,
         $image_filename
@@ -84,7 +85,7 @@ $dxa_wbody_post_download_function = function( $filename ) {
   copy( $filename, $anonymized_filename );
   if( 0 < filesize( $anonymized_filename ) )
   {
-    exec( sprintf( 'php src/anonymize.php -t dxa %s', $anonymized_filename ) );
+    exec( sprintf( 'php %s/anonymize.php -t dxa %s', __DIR__, $anonymized_filename ) );
   }
 
   // return the new file that was created by this function
@@ -133,7 +134,8 @@ $category_list = [
         if( 0 < filesize( $anonymized_filename ) )
         {
           exec( sprintf(
-            'php /usr/local/lib/data_librarian/src/anonymize.php -t ecg %s',
+            'php %s/anonymize.php -t ecg %s',
+            __DIR__,
             $anonymized_filename
           ) );
         }
@@ -145,7 +147,8 @@ $category_list = [
           if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
 
           exec( sprintf(
-            'php /usr/local/lib/data_librarian/src/plot_ecg.php -r %s %s',
+            'php %s/plot_ecg.php -r %s %s',
+            __DIR__,
             $filename,
             $image_filename
           ) );

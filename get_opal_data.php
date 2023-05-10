@@ -172,7 +172,13 @@ function download_file( $uid, $base_dir, $params, &$count_list )
             if( file_exists( $new_filename ) && 0 < filesize( $new_filename ) )
             {
               chdir( dirname( $new_filename ) );
-              $link = preg_replace( '/<N>/', $side, $params['filename'] );
+              $link = preg_replace(
+                // replace the part of the output filename without extension
+                sprintf( '#^%s#', preg_replace( '#\..+$#', '', basename( $output_filename ) ) ),
+                // with the part of the parameterized filename without extention, with <N> replaced by side
+                preg_replace( ['#\..+$#', '#<N>#'], ['', $side], $params['filename'] ),
+                basename( $new_filename )
+              );
               if( !file_exists( $link ) ) symlink( basename( $new_filename ), $link );
             }
           }
