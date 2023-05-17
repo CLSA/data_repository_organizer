@@ -570,7 +570,7 @@ function process_audio_files()
   }
 
   // any remaining files are to be moved to the invalid directory for data cleaning
-  foreach( glob( sprintf( '%s/*/audio/*/*', $base_dir ) ) as $dirname )
+  foreach( glob( sprintf( '%s/*/audio/*/*/*/*', $base_dir ) ) as $dirname )
   {
     $reason = sprintf(
       'Unable to sort directory, "%s"',
