@@ -125,11 +125,12 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
           // in case the filename includes the UID, rename it to the identifier
           str_replace( $participant['uid'], $participant['identifier'], basename( $source_filename ) )
         );
+        $final_filename = preg_replace( '/.gz$/', '', $destination_filename );
 
         // don't overwrite existing files, if requested
-        if( $keep_files && file_exists( $destination_filename ) )
+        if( $keep_files && file_exists( $final_filename ) )
         {
-          VERBOSE && output( sprintf( 'Skipping %s, file already exists', $destination_filename ) );
+          VERBOSE && output( sprintf( 'Skipping %s, file already exists', $final_filename ) );
           continue;
         }
 
@@ -141,25 +142,24 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
         {
           VERBOSE && output( 'Uncompressing destination file' );
           exec( sprintf( 'gzip -d -f %s', format_filename( $destination_filename ) ) );
-          $destination_filename = preg_replace( '/.gz$/', '', $destination_filename );
         }
 
         // set the identifier tag in dicom files only
-        if( false == preg_match( '/.dcm$/', $destination_filename ) ) continue;
+        if( false == preg_match( '/.dcm$/', $final_filename ) ) continue;
 
         VERBOSE && output( sprintf(
           'Setting destination file\'s identifier to "%s"',
           $participant['identifier']
         ) );
-        $result = set_dicom_identifier( $destination_filename, $participant['identifier'] );
+        $result = set_dicom_identifier( $final_filename, $participant['identifier'] );
         if( 0 < $result )
         {
           // delete the invalid file and stop
-          unlink( $destination_filename );
+          unlink( $final_filename );
           fatal_error(
             sprintf(
               'Failed to set identifier in "%s", error code "%s" returned by dcmodify (file removed from release)',
-              $destination_filename,
+              $final_filename,
               $result
             ),
             13
