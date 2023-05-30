@@ -106,6 +106,9 @@ function download_file( $uid, $base_dir, $params, &$count_list )
 
     // if a side is included in the parameters then first get the side data from opal
     $side_list = array_key_exists( 'side', $params ) ? get_side( $uid, $params ) : NULL;
+    $side_total = [ 'left' => 0, 'right' => 0 ];
+    $side_number = [ 'left' => 0, 'right' => 0 ];
+    foreach( $side_list as $side ) $side_total[$side]++;
 
     foreach( $object->values as $value )
     {
@@ -171,12 +174,19 @@ function download_file( $uid, $base_dir, $params, &$count_list )
             // only create a link if the file exists and isn't empty
             if( file_exists( $new_filename ) && 0 < filesize( $new_filename ) )
             {
+              // increment the side index, but only when we get a new raw file (all others need the same number)
+              if( '/data/raw' == substr( $new_filename, 0, 9 ) ) $side_number[$side]++;
+
               chdir( dirname( $new_filename ) );
               $link = preg_replace(
                 // replace the part of the output filename without extension
                 sprintf( '#^%s#', preg_replace( '#\..+$#', '', basename( $output_filename ) ) ),
                 // with the part of the parameterized filename without extention, with <N> replaced by side
-                preg_replace( ['#\..+$#', '#<N>#'], ['', $side], $params['filename'] ),
+                preg_replace(
+                  ['#\..+$#', '#<N>#'],
+                  ['', 1 == $side_total[$side] ? $side : sprintf( '%s_%d', $side, $side_number[$side] )],
+                  $params['filename']
+                ),
                 basename( $new_filename )
               );
               if( !file_exists( $link ) ) symlink( basename( $new_filename ), $link );
