@@ -393,12 +393,12 @@ file-type: gz -> dcm
 path: /raw/clsa/<PHASE>/carotid_intima/<UID>/still[123]_<N>.dcm.gz
 notes: either left or right as indicated by Measure.SIDE
 
-dxa dual hip
-------------
-Opal BL: clsa-dcs-images / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated)
-Opal F1: clsa-dcs-images-f1 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated)
-Opal F2: clsa-dcs-images-f2 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated)
-Opal F3: clsa-dcs-images-f3 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated)
+dxa dual hip (done)
+-------------------
+Opal BL: clsa-dcs-images / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated) (done)
+Opal F1: clsa-dcs-images-f1 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated) (done)
+Opal F2: clsa-dcs-images-f2 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated) (done)
+Opal F3: clsa-dcs-images-f3 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated) (done)
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_hip_<N>.dcm
 path: /anonymized/clsa/<PHASE>/dxa/<UID>/dxa_hip_<SIDE>.dcm (done)
