@@ -850,6 +850,14 @@ $category_list = [
       'filename' => 'dxa_spine.dcm',
       'post_download_function' => $dxa_post_download_function,
     ],
+    '4' => [
+      'name' => 'dxa',
+      'datasource' => 'clsa-dcs-images',
+      'table' => 'SpineBoneDensity',
+      'variable' => 'RES_SP_DICOM',
+      'filename' => 'dxa_spine.dcm',
+      'post_download_function' => $dxa_post_download_function,
+    ],
   ],
   'dxa_wbody_bmd' => [
     'all' => [
