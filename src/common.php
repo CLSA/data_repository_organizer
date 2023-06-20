@@ -116,11 +116,11 @@ function get_study_uid_lookup( $identifier_name, $events = false, $consents = fa
     $sql .=
       'JOIN participant_last_event AS home_ple ON participant.id = home_ple.participant_id '.
       'JOIN event_type AS home_event_type ON home_ple.event_type_id = home_event_type.id '.
-        'AND home_event_type.name = "completed (Follow Up 3-Home)" '.
+        'AND home_event_type.name = "completed (Follow-Up 3 Home)" '.
       'LEFT JOIN event AS home_event ON home_ple.event_id = home_event.id '.
       'JOIN participant_last_event AS site_ple ON participant.id = site_ple.participant_id '.
       'JOIN event_type AS site_event_type ON site_ple.event_type_id = site_event_type.id '.
-        'AND site_event_type.name = "completed (Follow Up 3-Site)" '.
+        'AND site_event_type.name = "completed (Follow-Up 3 Site)" '.
       'LEFT JOIN event AS site_event ON site_ple.event_id = site_event.id ';
   }
 
