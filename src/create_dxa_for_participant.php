@@ -5,10 +5,11 @@ require_once( 'arguments.class.php' );
 /**
  * Generates a redacted JPEG representation of a DXA DICOM image
  * @param string $type The type of DXA scan
+ * @param string $identifier The identifier to include in the file (NULL to not add one)
  * @param string $dicom_filename The input DXA DICOM image filename
  * @param string $image_filename The output JPEG image filename
  */
-function create_dxa_for_participant( $type, $dicom_filename, $image_filename )
+function create_dxa_for_participant( $type, $identifier, $dicom_filename, $image_filename )
 {
   $size = explode( ' ', @shell_exec( sprintf( 'identify -format "%%w %%h" %s', $dicom_filename ) ) );
   if( 2 != count( $size ) ) return 'Invalid file';
@@ -36,11 +37,34 @@ function create_dxa_for_participant( $type, $dicom_filename, $image_filename )
     // use the default measurements
   }
   // hip scans have a height of 1830 or 1930, so accept anything in between
-  else if( 'hip' == $type && 1200 == $width && 1830 <= $height && $height <= 1930 )
+  else if( 'hip' == $type && 1200 == $width && ( ( 1830 <= $height && $height <= 1964 ) || 1320 == $height ) )
   {
     // use the default measurements
   }
-  else if( 'wbody' == $type && 1440 == $width && 1585 == $height )
+  else if( 'wbody' == $type && 1440 == $width && 1620 == $height )
+  {
+    // The redact needs to be a bit higher, and much wider
+    $redact['x'] = 193;
+    $redact['name_y'] += 19;
+    $redact['dob_y'] += 48;
+    $redact['box_width'] = 203;
+    $redact['box_height'] = 22;
+
+    // The label needs to be in the bottom-right, less wide and taller
+    $label['x'] = 750;
+    $label['y_offset'] = 480;
+    $label['width'] = 500;
+    $label['height'] = 390;
+  }
+  else if( 'wbody' == $type && 1200 == $width && 1609 == $height )
+  {
+    // The label needs to be in the bottom-left, less wide and taller
+    $label['x'] = 20;
+    $label['y_offset'] = 390;
+    $label['width'] = 350;
+    $label['height'] = 300;
+  }
+  else if( 'wbody' == $type && 1440 == $width && 1585 <= $height && $height <= 1760 )
   {
     // The label needs to be in the bottom-left, less wide and taller
     $label['x'] = 20;
@@ -109,16 +133,18 @@ function create_dxa_for_participant( $type, $dicom_filename, $image_filename )
       $label_box[3]
     );
 
-    $caption =
+    $caption = sprintf(
       // English
       'These results are for research purposes only and should not be used for clinical diagnosis or treatment.  '.
-      'At the request of the participant, these results have been released to them.  '.
+      'At the request of %s, these results have been released to them.  '.
       'These results have not been checked for quality or interpreted.\n\n'.
       // French
       'Ces résultats sont utilisés à des fins de recherche seulement.  '.
       'Ils n’ont pas de valeur clinique ou diagnostique.  '.
       'Ils ont été communiqués au/à la participant·e à sa demande.  '.
-      'Leur qualité n’a pas été vérifiée ni interprétée.';
+      'Leur qualité n’a pas été vérifiée ni interprétée.',
+      is_null( $identifier ) ? 'the participant' : sprintf( 'participant %s', $identifier )
+    );
     $command .= sprintf(
       ' \( '.
         '-background white '.
@@ -156,6 +182,7 @@ $arguments->set_description(
   "a warning the the image should not be used for clinical purposes."
 );
 $arguments->add_option( 't', 'type', 'The type of DXA scan being processed', true, 'unknown' );
+$arguments->add_option( 'i', 'identifier', 'An optional identifier to add to the file', true, NULL );
 $arguments->add_input( 'INPUT', 'The filename of the DXA DICOM file to convert' );
 $arguments->add_input( 'OUTPUT', 'The filename of the generated JPEG file' );
 
@@ -163,8 +190,9 @@ $args = $arguments->parse_arguments( $argv );
 
 $type = $args['option_list']['type'];
 if( 0 == strlen( $type ) ) $type = 'unknown';
+$identifier = array_key_exists( 'identifier', $args['option_list'] ) ? $args['option_list']['identifier'] : NULL;
 $dicom_filename = $args['input_list']['INPUT'];
 $image_filename = $args['input_list']['OUTPUT'];
 
-$result = create_dxa_for_participant( $type, $dicom_filename, $image_filename );
+$result = create_dxa_for_participant( $type, $identifier, $dicom_filename, $image_filename );
 if( is_string( $result ) ) printf( "%s\n", $result );
