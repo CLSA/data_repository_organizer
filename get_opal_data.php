@@ -108,7 +108,12 @@ function download_file( $uid, $base_dir, $params, &$count_list )
     $side_list = array_key_exists( 'side', $params ) ? get_side( $uid, $params ) : NULL;
     $side_total = [ 'left' => 0, 'right' => 0 ];
     $side_number = [ 'left' => 0, 'right' => 0 ];
-    foreach( $side_list as $side ) $side_total[$side]++;
+    foreach( $side_list as $side )
+    {
+      if( 0 == strlen( $side ) ) $side = 'unknown';
+      if( !array_key_exists( $side, $side_total ) ) $side_total[$side] = 0;
+      $side_total[$side]++;
+    }
 
     foreach( $object->values as $value )
     {
@@ -167,6 +172,7 @@ function download_file( $uid, $base_dir, $params, &$count_list )
         if( array_key_exists( 'side', $params ) )
         {
           $side = array_key_exists( $index, $side_list ) ? $side_list[$index] : 'unknown';
+          if( 0 == strlen( $side ) ) $side = 'unknown';
           $cwd = getcwd();
 
           foreach( $new_filename_list as $new_filename )
@@ -175,7 +181,11 @@ function download_file( $uid, $base_dir, $params, &$count_list )
             if( file_exists( $new_filename ) && 0 < filesize( $new_filename ) )
             {
               // increment the side index, but only when we get a new raw file (all others need the same number)
-              if( '/data/raw' == substr( $new_filename, 0, 9 ) ) $side_number[$side]++;
+              if( '/data/raw' == substr( $new_filename, 0, 9 ) )
+              {
+                if( !array_key_exists( $side, $side_number ) ) $side_number[$side] = 0;
+                $side_number[$side]++;
+              }
 
               chdir( dirname( $new_filename ) );
               $link = preg_replace(
