@@ -28,6 +28,13 @@ $category_list = [
   'spirometry_volume',
   'spirometry_report',
   'dxa_forearm',
+  'dxa_hip',
+  'dxa_lateral_pr',
+  'dxa_spine',
+  'dxa_wbody_bmd',
+  'dxa_wbody_bca',
+  'retinal_left',
+  'retinal_right',
 ];
 
 foreach( $category_list as $category )
