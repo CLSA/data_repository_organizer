@@ -144,26 +144,35 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
           exec( sprintf( 'gzip -d -f %s', format_filename( $destination_filename ) ) );
         }
 
-        // set the identifier tag in dicom files only
-        if( false == preg_match( '/.dcm$/', $final_filename ) ) continue;
-
-        VERBOSE && output( sprintf(
-          'Setting destination file\'s identifier to "%s"',
-          $participant['identifier']
-        ) );
-        $result = set_dicom_identifier( $final_filename, $participant['identifier'] );
-        if( 0 < $result )
+        $prepare_file_type = NULL;
+        if( true == preg_match( '/.dcm$/', $final_filename ) )
         {
-          // delete the invalid file and stop
-          unlink( $final_filename );
-          fatal_error(
-            sprintf(
-              'Failed to set identifier in "%s", error code "%s" returned by dcmodify (file removed from release)',
-              $final_filename,
-              $result
-            ),
-            13
-          );
+          if( preg_match( '#/carotid_intima/#', $source_filename ) ) $prepare_file_type = 'cimt';
+          else if( preg_match( '#/dxa/#', $source_filename ) ) $prepare_file_type = 'dxa';
+          else throw new Exception( sprintf( 'Tried to prepare unknown DICOM file "%s"', $source_filename ) );
+        }
+        else if( true == preg_match( '/.xml$/', $final_filename ) ) $prepare_file_type = 'xml';
+
+        if( !is_null( $prepare_file_type ) )
+        {
+          VERBOSE && output( sprintf(
+            'Setting destination file\'s identifier to "%s"',
+            $participant['identifier']
+          ) );
+          $result = prepare_file( $prepare_file_type, $final_filename, $participant['identifier'] );
+          if( 0 < $result )
+          {
+            // delete the invalid file and stop
+            unlink( $final_filename );
+            fatal_error(
+              sprintf(
+                'Failed to anonymize and set identifier in "%s", error code "%s" (file removed from release)',
+                $final_filename,
+                $result
+              ),
+              13
+            );
+          }
         }
       }
     }

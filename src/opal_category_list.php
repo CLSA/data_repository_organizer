@@ -1,40 +1,8 @@
 <?php
 
-// post download function used by all carotid intima files
-$cimt_post_download_function = function( $filename ) {
-  $anonymized_filename = preg_replace(
-    ['#/raw/#', '#\.gz$#'],
-    ['/anonymized/', ''],
-    $filename
-  );
-
-  $directory = dirname( $anonymized_filename );
-  if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-  copy( $filename, $anonymized_filename.'.gz' );
-  if( 0 < filesize( $anonymized_filename.'.gz' ) )
-  {
-    exec( sprintf( 'gzip -d -f %s.gz', $anonymized_filename ) );
-    exec( sprintf( 'php %s/anonymize.php -t cimt %s', __DIR__, $anonymized_filename ) );
-    exec( sprintf( 'gzip %s', $anonymized_filename ) );
-  }
-
-  // return the new file that was created by this function
-  return $anonymized_filename;
-};
-
 // post download function used by all dxa files
 $dxa_post_download_function = function( $filename ) {
   $new_filename_list = [];
-
-  $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-  $directory = dirname( $anonymized_filename );
-  if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-  copy( $filename, $anonymized_filename );
-  if( 0 < filesize( $anonymized_filename ) )
-  {
-    exec( sprintf( 'php %s/anonymize.php -t dxa %s', __DIR__, $anonymized_filename ) );
-    $new_filename_list[] = $anonymized_filename;
-  }
 
   // need to create redacted participant versions of hip, forearm and BMD images
   $matches = [];
@@ -77,21 +45,6 @@ $dxa_post_download_function = function( $filename ) {
   return $new_filename_list;
 };
 
-// post download function used by all dxa files
-$dxa_wbody_post_download_function = function( $filename ) {
-  $anonymized_filename = str_replace( '/raw/', '/anonymized/', $filename );
-  $directory = dirname( $anonymized_filename );
-  if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-  copy( $filename, $anonymized_filename );
-  if( 0 < filesize( $anonymized_filename ) )
-  {
-    exec( sprintf( 'php %s/anonymize.php -t dxa %s', __DIR__, $anonymized_filename ) );
-  }
-
-  // return the new file that was created by this function
-  return $anonymized_filename;
-};
-
 $category_list = [
   'cdtt' => [
     '3' => [
@@ -126,20 +79,6 @@ $category_list = [
       'variable' => 'RES_XML_FILE',
       'filename' => 'ecg.xml',
       'post_download_function' => function( $filename ) {
-        $anonymized_filename = preg_replace( '#/raw/#', '/anonymized/', $filename );
-        $directory = dirname( $anonymized_filename );
-        if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-
-        copy( $filename, $anonymized_filename );
-        if( 0 < filesize( $anonymized_filename ) )
-        {
-          exec( sprintf(
-            'php %s/anonymize.php -t ecg %s',
-            __DIR__,
-            $anonymized_filename
-          ) );
-        }
-
         if( 0 < filesize( $filename ) )
         {
           $image_filename = preg_replace( ['#/raw/#', '#\.xml$#'], ['/supplementary/', '.jpeg'], $filename );
@@ -588,7 +527,6 @@ $category_list = [
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop1_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'cineloop2' => [
@@ -599,7 +537,6 @@ $category_list = [
       'variable' => 'Measure.CINELOOP_2',
       'filename' => 'cineloop2_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'cineloop3' => [
@@ -610,7 +547,6 @@ $category_list = [
       'variable' => 'Measure.CINELOOP_3',
       'filename' => 'cineloop3_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'cineloop' => [ // after baseline we only have one cineloop
@@ -621,7 +557,6 @@ $category_list = [
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
     '3' => [
       'name' => 'carotid_intima',
@@ -630,7 +565,6 @@ $category_list = [
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
     '4' => [
       'name' => 'carotid_intima',
@@ -639,7 +573,6 @@ $category_list = [
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'plaque_cineloop' => [
@@ -650,7 +583,6 @@ $category_list = [
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'plaque_cineloop_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'us_report' => [
@@ -691,7 +623,6 @@ $category_list = [
       'variable' => 'Measure.STILL_IMAGE',
       'filename' => 'still_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'still_image_1' => [ // beyond baseline had three still images
@@ -702,7 +633,6 @@ $category_list = [
       'variable' => 'Measure.STILL_IMAGE_1',
       'filename' => 'still1_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
     '3' => [
       'name' => 'carotid_intima',
@@ -711,7 +641,6 @@ $category_list = [
       'variable' => 'Measure.STILL_IMAGE_1',
       'filename' => 'still1_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
     '4' => [
       'name' => 'carotid_intima',
@@ -720,7 +649,6 @@ $category_list = [
       'variable' => 'Measure.STILL_IMAGE_1',
       'filename' => 'still1_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'still_image_2' => [
@@ -731,7 +659,6 @@ $category_list = [
       'variable' => 'Measure.STILL_IMAGE_2',
       'filename' => 'still2_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
     '3' => [
       'name' => 'carotid_intima',
@@ -740,7 +667,6 @@ $category_list = [
       'variable' => 'Measure.STILL_IMAGE_2',
       'filename' => 'still2_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
     '4' => [
       'name' => 'carotid_intima',
@@ -749,7 +675,6 @@ $category_list = [
       'variable' => 'Measure.STILL_IMAGE_2',
       'filename' => 'still2_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'still_image_3' => [
@@ -760,7 +685,6 @@ $category_list = [
       'variable' => 'Measure.STILL_IMAGE_3',
       'filename' => 'still3_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
     '3' => [
       'name' => 'carotid_intima',
@@ -769,7 +693,6 @@ $category_list = [
       'variable' => 'Measure.STILL_IMAGE_3',
       'filename' => 'still3_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
     '4' => [
       'name' => 'carotid_intima',
@@ -778,7 +701,6 @@ $category_list = [
       'variable' => 'Measure.STILL_IMAGE_3',
       'filename' => 'still3_<N>.dcm.gz',
       'side' => 'Measure.SIDE',
-      'post_download_function' => $cimt_post_download_function,
     ],
   ],
   'dxa_hip' => [
@@ -810,7 +732,6 @@ $category_list = [
       'table' => 'LateralBoneDensity',
       'variable' => 'RES_SEL_DICOM_MEASURE',
       'filename' => 'dxa_lateral.dcm',
-      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_lateral_ot' => [
@@ -820,7 +741,6 @@ $category_list = [
       'table' => 'LateralBoneDensity',
       'variable' => 'RES_SEL_DICOM_OT',
       'filename' => 'dxa_lateral_ot.dcm',
-      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_lateral_pr' => [
@@ -830,7 +750,6 @@ $category_list = [
       'table' => 'LateralBoneDensity',
       'variable' => 'RES_SEL_DICOM_PR',
       'filename' => 'dxa_lateral_pr.dcm',
-      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_spine' => [
@@ -840,7 +759,6 @@ $category_list = [
       'table' => 'SpineBoneDensity',
       'variable' => 'RES_SP_DICOM',
       'filename' => 'dxa_spine.dcm',
-      'post_download_function' => $dxa_post_download_function,
     ],
     '3' => [
       'name' => 'dxa',
@@ -848,7 +766,6 @@ $category_list = [
       'table' => 'SpineBoneDensity',
       'variable' => 'RES_SP_DICOM',
       'filename' => 'dxa_spine.dcm',
-      'post_download_function' => $dxa_post_download_function,
     ],
     '4' => [
       'name' => 'dxa',
@@ -856,7 +773,6 @@ $category_list = [
       'table' => 'SpineBoneDensity',
       'variable' => 'RES_SP_DICOM',
       'filename' => 'dxa_spine.dcm',
-      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_wbody_bmd' => [
@@ -876,7 +792,6 @@ $category_list = [
       'table' => 'WholeBodyBoneDensity',
       'variable' => 'RES_WB_DICOM_2',
       'filename' => 'dxa_wbody_bca.dcm',
-      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_hip_recovery_left' => [
@@ -886,15 +801,6 @@ $category_list = [
       'table' => 'HipRecoveryLeft',
       'variable' => 'RES_HIP_DICOM',
       'filename' => 'dxa_hip_recovery_left.dcm',
-      'post_download_function' => $dxa_post_download_function,
-    ],
-    '2' => [
-      'name' => 'dxa',
-      'datasource' => 'clsa-dcs-images',
-      'table' => 'HipRecoveryLeft',
-      'variable' => 'RES_HIP_DICOM',
-      'filename' => 'dxa_hip_recovery_left.dcm',
-      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_hip_recovery_right' => [
@@ -904,15 +810,6 @@ $category_list = [
       'table' => 'HipRecoveryRight',
       'variable' => 'RES_HIP_DICOM',
       'filename' => 'dxa_hip_recovery_right.dcm',
-      'post_download_function' => $dxa_post_download_function,
-    ],
-    '2' => [
-      'name' => 'dxa',
-      'datasource' => 'clsa-dcs-images',
-      'table' => 'HipRecoveryRight',
-      'variable' => 'RES_HIP_DICOM',
-      'filename' => 'dxa_hip_recovery_right.dcm',
-      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_lateral_recovery' => [
@@ -922,15 +819,6 @@ $category_list = [
       'table' => 'LateralRecovery',
       'variable' => 'RES_SEL_DICOM_MEASURE',
       'filename' => 'dxa_lateral_recovery.dcm',
-      'post_download_function' => $dxa_post_download_function,
-    ],
-    '2' => [
-      'name' => 'dxa',
-      'datasource' => 'clsa-dcs-images',
-      'table' => 'LateralRecovery',
-      'variable' => 'RES_SEL_DICOM_MEASURE',
-      'filename' => 'dxa_lateral_recovery.dcm',
-      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'dxa_wbody_recovery' => [
@@ -940,15 +828,6 @@ $category_list = [
       'table' => 'WbodyRecovery',
       'variable' => 'RES_WB_DICOM_1',
       'filename' => 'dxa_wbody_recovery.dcm',
-      'post_download_function' => $dxa_post_download_function,
-    ],
-    '2' => [
-      'name' => 'dxa',
-      'datasource' => 'clsa-dcs-images',
-      'table' => 'WbodyRecovery',
-      'variable' => 'RES_WB_DICOM_1',
-      'filename' => 'dxa_wbody_recovery.dcm',
-      'post_download_function' => $dxa_post_download_function,
     ],
   ],
   'retinal' => [

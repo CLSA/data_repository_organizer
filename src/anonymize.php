@@ -15,95 +15,6 @@ function out( $message )
   if( !DEBUG ) printf( "%s\n", $message );
 }
 
-/**
- * Anonymizes a DICOM file by removing identifying tags
- * @param string $data_type The type of data being anonymize (cimt or dxa)
- * @param string $filename The name of the file to anonymize
- */
-function anonymize_dicom( $data_type, $filename )
-{
-  $tag_list = [
-    '0008,1010' => '',      // Station Name
-    '0008,0080' => 'CLSA',  // Instituion Name
-    '0008,1040' => 'NCC',   // Instituion Department Name
-    '0008,1070' => '',      // Operators Name
-    '0010,0010' => '',      // Patient Name
-    '0010,0020' => '',      // Patient ID
-    '0010,1000' => '',      // Other Patient IDs
-    '0018,1000' => '',      // Device Serial Number
-  ];
-  
-  if( 'cimt' == $data_type )
-  {
-    $tag_list['0008,1010'] = 'VIVID_I'; // Station Name
-  }
-  else if( 'dxa' == $data_type )
-  {
-    // Unknown Tags & Data
-    $tag_list['0019,1000'] = NULL;
-    $tag_list['0023,1000'] = NULL;
-    $tag_list['0023,1001'] = NULL;
-    $tag_list['0023,1002'] = NULL;
-    $tag_list['0023,1003'] = NULL;
-    $tag_list['0023,1004'] = NULL;
-    $tag_list['0023,1005'] = NULL;
-  }
-  else return;
-
-  $modify_list = [];
-  foreach( $tag_list as $tag => $value )
-  {
-    $modify_list[] = sprintf( '-m "(%s)%s"', $tag, is_null( $value ) ? '' : sprintf( '=%s', $value ) );
-  }
-
-  $command = sprintf( 'dcmodify -nb -nrc -imt %s %s', implode( ' ', $modify_list ), format_filename( $filename ) );
-
-  $result_code = 0;
-  $output = NULL;
-  DEBUG ? printf( "%s\n", $command ) : exec( $command, $output, $result_code );
-
-  if( 0 < $result_code ) printf( implode( "\n", $output ) );
-}
-
-
-/**
- * Anonymizes an ECG XML file by removing identifying data
- * @param string $filename The name of the file to anonymize
- */
-function anonymize_ecg( $filename )
-{
-  // remove the body of the Facility element
-  $command = sprintf(
-    'sed -i "s#<Facility>[^<]\+</Facility>#<Facility></Facility>#" %s',
-    format_filename( $filename )
-  );
-  $result_code = 0;
-  $output = NULL;
-  DEBUG ? printf( "%s\n", $command ) : exec( $command, $output, $result_code );
-  if( 0 < $result_code ) printf( implode( "\n", $output ) );
-
-  // remove the body of the Name element
-  $command = sprintf(
-    'sed -i "s#<Name>[^<]\+</Name>#<Name></Name>#" %s',
-    format_filename( $filename )
-  );
-  $result_code = 0;
-  $output = NULL;
-  DEBUG ? printf( "%s\n", $command ) : exec( $command, $output, $result_code );
-  if( 0 < $result_code ) printf( implode( "\n", $output ) );
-
-  // remove the body of the PID element
-  $command = sprintf(
-    'sed -i "s#<PID>[^<]\+</PID>#<PID></PID>#" %s',
-    format_filename( $filename )
-  );
-  $result_code = 0;
-  $output = NULL;
-  DEBUG ? printf( "%s\n", $command ) : exec( $command, $output, $result_code );
-  if( 0 < $result_code ) printf( implode( "\n", $output ) );
-}
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // build the command argument details, then parse the passed args
 $arguments = new arguments;
@@ -137,5 +48,5 @@ if( !in_array( $data_type, ['cimt', 'dxa', 'ecg'] ) )
 }
 
 out( sprintf( 'Anonymizing file "%s"', $filename ) );
-if( 'ecg' == $data_type ) anonymize_ecg( $filename );
-else anonymize_dicom( $data_type, $filename );
+if( 'ecg' == $data_type ) anonymize_ecg( $filename, DEBUG );
+else anonymize_dicom( $data_type, $filename, DEBUG );
