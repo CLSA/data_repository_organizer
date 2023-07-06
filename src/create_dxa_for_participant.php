@@ -181,7 +181,7 @@ $arguments->set_description(
   "This script will convert a DXA DICOM file to a JPEG file, redacting identifying information and adding ".
   "a warning the the image should not be used for clinical purposes."
 );
-$arguments->add_option( 't', 'type', 'The type of DXA scan being processed', true, 'unknown' );
+$arguments->add_option( 't', 'type', 'The type of DXA scan being processed (eg: wbody, hip, forearm)', true, 'unknown' );
 $arguments->add_option( 'i', 'identifier', 'An optional identifier to add to the file', true, NULL );
 $arguments->add_input( 'INPUT', 'The filename of the DXA DICOM file to convert' );
 $arguments->add_input( 'OUTPUT', 'The filename of the generated JPEG file' );

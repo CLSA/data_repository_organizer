@@ -39,7 +39,7 @@ function get_side( $uid, $params )
   return strtolower( $response );
 }
 
-function download_file( $uid, $base_dir, $params, &$count_list )
+function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db )
 {
   $directory = sprintf( '%s/%s', $base_dir, $uid );
 
@@ -79,7 +79,7 @@ function download_file( $uid, $base_dir, $params, &$count_list )
     $first_output_filename = sprintf( '%s/%s', $directory, preg_replace( '/<N>/', 1, $params['filename'] ) );
     if( array_key_exists( 'pre_download_function', $params ) )
     {
-      $params['pre_download_function']( $first_output_filename );
+      $params['pre_download_function']( $first_output_filename, $cenozo_db );
     }
 
     $response = opal_send( $opal_params );
@@ -147,7 +147,7 @@ function download_file( $uid, $base_dir, $params, &$count_list )
       // the pre-download function is called for the first file above, so only do index value 1+
       if( 0 < $index && array_key_exists( 'pre_download_function', $params ) )
       {
-        $params['pre_download_function']( $output_filename );
+        $params['pre_download_function']( $output_filename, $cenozo_db );
       }
 
       // now download the data for this iteration
@@ -162,7 +162,7 @@ function download_file( $uid, $base_dir, $params, &$count_list )
         $new_filename_list = [$output_filename];
         if( array_key_exists( 'post_download_function', $params ) )
         {
-          $new_filename = $params['post_download_function']( $output_filename );
+          $new_filename = $params['post_download_function']( $output_filename, $cenozo_db );
           if( is_string( $new_filename ) ) $new_filename_list[] = $new_filename;
           else if( is_array( $new_filename ) )
             $new_filename_list = array_merge( $new_filename_list, $new_filename );
@@ -222,7 +222,7 @@ function download_file( $uid, $base_dir, $params, &$count_list )
 
     if( array_key_exists( 'pre_download_function', $params ) )
     {
-      $params['pre_download_function']( $output_filename );
+      $params['pre_download_function']( $output_filename, $cenozo_db );
     }
 
     $opal_params['value'] = NULL;
@@ -242,7 +242,7 @@ function download_file( $uid, $base_dir, $params, &$count_list )
     $new_filename_list = [$output_filename];
     if( array_key_exists( 'post_download_function', $params ) )
     {
-      $new_filename = $params['post_download_function']( $output_filename );
+      $new_filename = $params['post_download_function']( $output_filename, $cenozo_db );
       if( is_string( $new_filename ) ) $new_filename_list[] = $new_filename;
       else if( is_array( $new_filename ) )
         $new_filename_list = array_merge( $new_filename_list, $new_filename );
@@ -336,10 +336,11 @@ if( !file_exists( $opal_enabled_filename ) )
   exit( 0 );
 }
 
+$cenozo_db = get_cenozo_db();
 if( $uid )
 {
   output( sprintf( 'Downloading %s data from Opal to %s (for UID %s only)', $category, $base_dir, $uid ) );
-  download_file( $uid, $base_dir, $params, $count_list );
+  download_file( $uid, $base_dir, $params, $count_list, $cenozo_db );
 }
 else
 {
@@ -369,7 +370,7 @@ else
     foreach( $object->valueSets as $value_set )
     {
       if( !file_exists( $opal_enabled_filename ) ) break;
-      download_file( $value_set->identifier, $base_dir, $params, $count_list );
+      download_file( $value_set->identifier, $base_dir, $params, $count_list, $cenozo_db );
     }
 
     if( !file_exists( $opal_enabled_filename ) )
@@ -388,5 +389,7 @@ output( sprintf(
   $count_list['missing'],
   $count_list['skipped']
 ) );
+
+$cenozo_db->close();
 
 exit( 0 );

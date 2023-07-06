@@ -339,12 +339,12 @@ file-type: pdf
 path: /raw/clsa/<PHASE>/spirometry/<UID>/report.pdf
 notes: not actually repeated
 
-cineloop [123]
---------------
+cineloop [123] (done)
+---------------------
 Opal BL: clsa-dcs-images / CarotidIntima / Measure.CINELOOP_[123] (repeated) (done)
 Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.CINELOOP_1 (repeated) (done)
-Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.CINELOOP_1 (repeated)
-Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.CINELOOP_1 (repeated)
+Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.CINELOOP_1 (repeated) (done)
+Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.CINELOOP_1 (repeated) (done)
 file-type: gz -> dcm
 path: /raw/clsa/<PHASE>/carotid_intima/<UID>/cineloop[123]_<N>.dcm.gz
 notes: either left or right as indicated by Measure.SIDE; "[123]_" for BL only
@@ -404,7 +404,6 @@ path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_forearm.dcm
 path: /supplementary/ ... _reanalyzed.dcm (???)
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_forearm.participant.jpeg (for participant release)
 notes: SIDE defined by INPUT_FA_SIDE
-notes: unsure whether images need to be re-analsed in Apex
 notes: participant images can be created with the create_dxa_for_participant.php script
 
 dxa hip (na/done)

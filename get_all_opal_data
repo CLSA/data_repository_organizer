@@ -35,6 +35,7 @@ $category_list = [
   'dxa_wbody_bca',
   'retinal_left',
   'retinal_right',
+  'cineloop',
 ];
 
 foreach( $category_list as $category )

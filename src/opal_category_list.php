@@ -1,14 +1,16 @@
 <?php
+require_once( 'common.php' );
 
 // post download function used by all dxa files
-$dxa_post_download_function = function( $filename ) {
+$dxa_post_download_function = function( $filename, $cenozo_db ) {
   $new_filename_list = [];
 
   // need to create redacted participant versions of hip, forearm and BMD images
   $matches = [];
-  if( preg_match( '/(dxa_hip|dxa_forearm|dxa_wbody_bmd)/', $filename, $matches ) )
+  if( preg_match( '#/([^/]+)/(dxa_hip|dxa_forearm|dxa_wbody_bmd)#', $filename, $matches ) )
   {
-    $type = $matches[1];
+    $uid = $matches[1];
+    $type = $matches[2];
     if( 'dxa_hip' == $type ) $type = 'hip';
     else if( 'dxa_forearm' == $type ) $type = 'forearm';
     else $type = 'wbody';
@@ -16,14 +18,45 @@ $dxa_post_download_function = function( $filename ) {
     $directory = dirname( $image_filename );
     if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
 
+    // get the Results Correspondence identifier
+    $identifier = NULL;
+    if( !preg_match( '/^[A-Z][0-9][0-9][0-9][0-9][0-9][0-9]$/', $uid ) )
+      throw new Exception( sprintf( 'Invalid UID "%s" found while creating participant DXA image.', $uid ) );
+
+    $result = $cenozo_db->query( sprintf(
+      'SELECT participant_identifier.value '.
+      'FROM participant_identifier '.
+      'JOIN identifier ON participant_identifier.identifier_id = identifier.id '.
+      'JOIN participant ON participant_identifier.participant_id = participant.id '.
+      'WHERE identifier.name = "Results Correspondence" '.
+      'AND participant.uid = "%s"',
+      $uid
+    ) );
+
+    if( false === $result )
+    {
+      throw new Exception( sprintf(
+        'Unable to get participant identifier for UID "%s" while creating participant DXA image.',
+        $uid
+      ) );
+    }
+
+    while( $row = $result->fetch_assoc() )
+    {
+      $identifier = $row['value'];
+      break;
+    }
+    $result->free();
+
     // convert from dcm to jpeg
     $output = [];
     $result_code = NULL;
     exec(
       sprintf(
-        'php %s/create_dxa_for_participant.php -t %s %s %s',
+        'php %s/create_dxa_for_participant.php -t %s -i %s %s %s',
         __DIR__,
         $type,
+        $identifier,
         $filename,
         $image_filename
       ),
