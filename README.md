@@ -349,9 +349,9 @@ file-type: gz -> dcm
 path: /raw/clsa/<PHASE>/carotid_intima/<UID>/cineloop[123]_<N>.dcm.gz
 notes: either left or right as indicated by Measure.SIDE; "[123]_" for BL only
 
-plaque cineloop
----------------
-Opal BL: clsa-dcs-images / Plaque / Measure.CINELOOP_1 (repeated) (half downloaded - low priority)
+plaque cineloop (done)
+----------------------
+Opal BL: clsa-dcs-images / Plaque / Measure.CINELOOP_1 (repeated) (done)
 Opal F1: does not exist
 Opal F2: does not exist
 Opal F3: does not exist
@@ -361,10 +361,10 @@ notes: either left or right as indicated by Measure.SIDE
 
 us report
 ---------
-Opal BL: clsa-dcs-images / CarotidIntima / Measure.SR (repeated)
-Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.SR_1 (repeated)
-Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.SR_1 (repeated)
-Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.SR_1 (repeated)
+Opal BL: clsa-dcs-images / CarotidIntima / Measure.SR (done)
+Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.SR_1
+Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.SR_1
+Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.SR_1
 file-type: gz -> dcm
 path: /raw/clsa/<PHASE>/carotid_intima/<UID>/report.dcm
 notes: either left or right as indicated by Measure.SIDE; not actually repeated
@@ -387,7 +387,7 @@ Opal F2: clsa-dcs-images-f2 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeat
 Opal F3: clsa-dcs-images-f3 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated) (done)
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_hip_<N>.dcm
-path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_hip_reanalyzed-<SIDE>_<N>.dcm (???)
+path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_hip.reanalysed-<SIDE>_<N>.dcm (???)
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_hip_<SIDE>.participant.jpeg (for participant release)
 notes: either left or right as indicated by Measure.OUTPUT_HIP_SIDE
 notes: this data isn't valid until a paired analysis is done and DICOM image exported from Apex
@@ -401,7 +401,7 @@ Opal F2: clsa-dcs-images-f2 / ForearmBoneDensity / RES_FA_DICOM (done)
 Opal F3: clsa-dcs-images-f3 / ForearmBoneDensity / RES_FA_DICOM (done)
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_forearm.dcm
-path: /supplementary/ ... _reanalyzed.dcm (???)
+path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_forearm.jpeg (for applicant release)
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_forearm.participant.jpeg (for participant release)
 notes: SIDE defined by INPUT_FA_SIDE
 notes: participant images can be created with the create_dxa_for_participant.php script
@@ -454,7 +454,6 @@ Opal F2: clsa-dcs-images-f2 / SpineBoneDensity / RES_SP_DICOM (done)
 Opal F3: clsa-dcs-images-f3 / SpineBoneDensity / RES_SP_DICOM (done)
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_spine.dcm
-path: /supplementary/ ... _reanalyzed.dcm (TODO)
 path: /supplementary/ ... .jpeg (TODO)
 notes: this data isn't valid until a paired analysis is done and DICOM image exported from Apex
 
@@ -466,7 +465,7 @@ Opal F2: clsa-dcs-images-f2 / WholeBodyBoneDensity / RES_WB_DICOM_1 (done)
 Opal F3: clsa-dcs-images-f3 / WholeBodyBoneDensity / RES_WB_DICOM_1 (done)
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bmd.dcm
-path: /supplementary/ ... _reanalyzed.dcm (TODO)
+path: /supplementary/ ... _reanalysed.dcm (TODO)
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_wbody.participant.jpeg (for participant release)
 notes: bmd is "body mass measurement"
 notes: this data isn't valid until a non-paired analysis is done and DICOM image exported from Apex
@@ -481,7 +480,7 @@ Opal F2: clsa-dcs-images-f2 / WholeBodyBoneDensity / RES_WB_DICOM_2 (done)
 Opal F3: clsa-dcs-images-f3 / WholeBodyBoneDensity / RES_WB_DICOM_2 (done)
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bca.dcm
-path: /supplementary/ ... _reanalyzed.dcm (TODO)
+path: /supplementary/ ... _reanalysed.dcm (TODO)
 path: /supplementary/ ... .jpeg
 notes: bca is "body composition analysis"
 notes: this data isn't valid until a non-paired analysis is done and DICOM image exported from Apex
