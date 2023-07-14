@@ -29,7 +29,11 @@ function get_side( $uid, $params )
     if( !property_exists( $object, 'values' ) ) return NULL;
 
     $side_list = [];
-    foreach( $object->values as $value ) $side_list[] = strtolower( $value->value );
+    foreach( $object->values as $value )
+    {
+      if( property_exists( $value, 'value' ) ) $side_list[] = strtolower( $value->value );
+      else output( sprintf( 'Missing side data for %s', $uid ) );
+    }
     return $side_list;
   }
 
@@ -105,14 +109,17 @@ function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db )
     }
 
     // if a side is included in the parameters then first get the side data from opal
-    $side_list = array_key_exists( 'side', $params ) ? get_side( $uid, $params ) : NULL;
-    $side_total = [ 'left' => 0, 'right' => 0 ];
-    $side_number = [ 'left' => 0, 'right' => 0 ];
-    foreach( $side_list as $side )
+    if( array_key_exists( 'side', $params ) )
     {
-      if( 0 == strlen( $side ) ) $side = 'unknown';
-      if( !array_key_exists( $side, $side_total ) ) $side_total[$side] = 0;
-      $side_total[$side]++;
+      $side_list = array_key_exists( 'side', $params ) ? get_side( $uid, $params ) : NULL;
+      $side_total = [ 'left' => 0, 'right' => 0 ];
+      $side_number = [ 'left' => 0, 'right' => 0 ];
+      foreach( $side_list as $side )
+      {
+        if( 0 == strlen( $side ) ) $side = 'unknown';
+        if( !array_key_exists( $side, $side_total ) ) $side_total[$side] = 0;
+        $side_total[$side]++;
+      }
     }
 
     foreach( $object->values as $value )
