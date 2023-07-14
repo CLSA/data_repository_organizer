@@ -22,11 +22,9 @@ function create_dxa_for_researcher( $type, $dicom_filename, $image_filename )
   {
     // use the default measurements
   }
-  else if( 'hip' == $type && 1200 == $width && ( ( 1830 <= $height && $height <= 1964 ) || 1320 == $height ) )
+  else if( 'hip' == $type && 1200 == $width && ( ( 1420 <= $height && $height <= 1964 ) ) )
   {
-  }
-  else if( 'wbody' == $type && 1440 == $width && 1585 <= $height && $height <= 1760 )
-  {
+    // use the default measurements
   }
   else
   {
