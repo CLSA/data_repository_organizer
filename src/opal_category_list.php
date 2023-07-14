@@ -14,8 +14,17 @@ $dxa_post_download_function = function( $filename, $cenozo_db ) {
     if( 'dxa_hip' == $type ) $type = 'hip';
     else if( 'dxa_forearm' == $type ) $type = 'forearm';
     else $type = 'wbody';
-    $image_filename = preg_replace( ['#/raw/#', '#\.dcm$#'], ['/supplementary/', '.participant.jpeg'], $filename );
-    $directory = dirname( $image_filename );
+    $participant_image_filename = preg_replace(
+      ['#/raw/#', '#\.dcm$#'],
+      ['/supplementary/', '.participant.jpeg'],
+      $filename
+    );
+    $researcher_image_filename = preg_replace(
+      ['#/raw/#', '#\.dcm$#'],
+      ['/supplementary/', '.jpeg'],
+      $filename
+    );
+    $directory = dirname( $participant_image_filename );
     if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
 
     // get the Results Correspondence identifier
@@ -48,7 +57,7 @@ $dxa_post_download_function = function( $filename, $cenozo_db ) {
     }
     $result->free();
 
-    // convert from dcm to jpeg
+    // convert from dcm to participant jpeg
     $output = [];
     $result_code = NULL;
     exec(
@@ -58,7 +67,7 @@ $dxa_post_download_function = function( $filename, $cenozo_db ) {
         $type,
         $identifier,
         $filename,
-        $image_filename
+        $participant_image_filename
       ),
       $output,
       $result_code
@@ -66,11 +75,38 @@ $dxa_post_download_function = function( $filename, $cenozo_db ) {
     if( 0 < $result_code )
     {
       // there was an error, so throw away any generated file
-      if( file_exists( $image_filename ) ) unlink( $image_filename );
+      if( file_exists( $participant_image_filename ) ) unlink( $participant_image_filename );
     }
     else
     {
-      $new_filename_list[] = $image_filename;
+      $new_filename_list[] = $participant_image_filename;
+    }
+
+    // convert forearms from dcm to researcher jpeg
+    if( 'forearm' == $type )
+    {
+      $output = [];
+      $result_code = NULL;
+      exec(
+        sprintf(
+          'php %s/create_dxa_for_researcher.php -t %s %s %s',
+          __DIR__,
+          $type,
+          $filename,
+          $researcher_image_filename
+        ),
+        $output,
+        $result_code
+      );
+      if( 0 < $result_code )
+      {
+        // there was an error, so throw away any generated file
+        if( file_exists( $researcher_image_filename ) ) unlink( $researcher_image_filename );
+      }
+      else
+      {
+        $new_filename_list[] = $researcher_image_filename;
+      }
     }
   }
 
@@ -624,28 +660,28 @@ $category_list = [
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.SR',
-      'filename' => 'report.dcm' // this data isn't actually repeated, so no <N> is included,
+      'filename' => 'report.dcm.gz' // this data isn't actually repeated, so no <N> is included,
     ],
     '2' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.SR_1',
-      'filename' => 'report.dcm' // this data isn't actually repeated, so no <N> is included,
+      'filename' => 'report.dcm.gz' // this data isn't actually repeated, so no <N> is included,
     ],
     '3' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.SR_1',
-      'filename' => 'report.dcm' // this data isn't actually repeated, so no <N> is included,
+      'filename' => 'report.dcm.gz' // this data isn't actually repeated, so no <N> is included,
     ],
     '4' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.SR_1',
-      'filename' => 'report.dcm' // this data isn't actually repeated, so no <N> is included,
+      'filename' => 'report.dcm.gz' // this data isn't actually repeated, so no <N> is included,
     ],
   ],
   'still_image' => [ // baseline only has one still image
