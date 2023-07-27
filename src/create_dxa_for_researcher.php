@@ -10,34 +10,38 @@ require_once( 'arguments.class.php' );
  */
 function create_dxa_for_researcher( $type, $dicom_filename, $image_filename )
 {
-  $size = explode( ' ', @shell_exec( sprintf( 'identify -format "%%w %%h" %s', $dicom_filename ) ) );
-  if( 2 != count( $size ) ) return 'Invalid file';
-  $width = (int) $size[0];
-  $height = (int) $size[1];
+  $crop = NULL;
 
-  $chop_x = 386;
-  $chop_y = 148;
-
-  if( 'forearm' == $type && 1200 == $width && 1320 == $height )
+  if( 'forearm' == $type )
   {
-    // use the default measurements
+    $crop = '820x855+380+155';
   }
-  else if( 'hip' == $type && 1200 == $width && ( ( 1420 <= $height && $height <= 1964 ) ) )
+  else if( 'hip' == $type )
   {
-    // use the default measurements
+    $crop = '810x1530+390+153';
+  }
+  else if( 'wbody_bca' == $type )
+  {
+    $crop = '607x872+489+136';
+  }
+  else if( 'wbody_bmd' == $type )
+  {
+    $crop = '334x757+492+176';
   }
   else
   {
-    return sprintf( 'Unexected type/geometry: %s (%d, %d)', $type, $width, $height );
+    return sprintf( 'Unknown type: %s', $type );
   }
 
   $command = sprintf(
-    'convert -chop %dx%d %s %s',
-    $chop_x,
-    $chop_y,
-    format_filename( $dicom_filename ),
-    format_filename( $image_filename )
+    'dcmj2pnm --write-jpeg %s %s && convert %s -crop %s +repage %s',
+    $dicom_filename,
+    $image_filename,
+    $image_filename,
+    $crop,
+    $image_filename
   );
+
   shell_exec( $command );
   return true;
 }
@@ -50,7 +54,13 @@ $arguments->set_description(
   "Generates a cropped JPEG representation of a DXA DICOM image\n".
   "This script will convert a DXA DICOM file to a JPEG file specifically for release to researchers."
 );
-$arguments->add_option( 't', 'type', 'The type of DXA scan being processed (eg: wbody, hip, forearm)', true, 'unknown' );
+$arguments->add_option(
+  't',
+  'type',
+  'The type of DXA scan being processed (eg: forearm, hip, wbody_bca, or wbody_bmd)',
+  true,
+  'unknown'
+);
 $arguments->add_input( 'INPUT', 'The filename of the DXA DICOM file to convert' );
 $arguments->add_input( 'OUTPUT', 'The filename of the generated JPEG file' );
 

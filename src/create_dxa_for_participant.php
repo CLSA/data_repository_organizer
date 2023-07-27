@@ -141,10 +141,10 @@ function create_dxa_for_participant( $type, $identifier, $dicom_filename, $image
       // French
       'Ces résultats sont utilisés à des fins de recherche seulement.  '.
       'Ils n’ont pas de valeur clinique ou diagnostique.  '.
-      'Ils ont été communiqués au/à la participant·e%s à sa demande.  '.
+      'Ils ont été communiqués %s à sa demande.  '.
       'Leur qualité n’a pas été vérifiée ni interprétée.',
       is_null( $identifier ) ? 'the participant' : sprintf( 'participant %s', $identifier ),
-      is_null( $identifier ) ? '' : sprintf( ' %s', $identifier )
+      is_null( $identifier ) ? 'au/à la participant·e' : sprintf( 'à %s', $identifier )
     );
     $command .= sprintf(
       ' \( '.
