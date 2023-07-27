@@ -45,7 +45,7 @@ function rsync( $local_path, $remote_path, $port = NULL, $timeout = 10 )
   else
   {
     $command = sprintf(
-      'rsync -rtcv --timeout=%d %s %s %s',
+      'rsync -rtcvz --timeout=%d %s %s %s',
       $timeout,
       is_null( $port ) ? '' : sprintf( '-e "ssh -p %d"', $port ),
       $local_path,
