@@ -114,13 +114,12 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
 
       // create the destination directory
       $destination_path = sprintf( '%s/%s', $release_path, $participant['identifier'] );
-      if( !file_exists( $destination_path ) ) mkdir( $destination_path );
 
       // copy all files to the destination directory
       foreach( $participant['files'] as $source_filename )
       {
         $destination_filename = sprintf(
-          '%s/%s',
+          '%s_%s',
           $destination_path,
           // in case the filename includes the UID, rename it to the identifier
           str_replace( $participant['uid'], $participant['identifier'], basename( $source_filename ) )

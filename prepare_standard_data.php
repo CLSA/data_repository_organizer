@@ -66,75 +66,83 @@ if( 'forearm' == $type )
 {
   $data_path = sprintf( 'supplementary/clsa/%d/dxa', $phase );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "dxa_forearm_left.jpeg"',
+    'php %s/prepare_data.php %s %s %s -g "dxa_forearm_left.jpeg" %s',
     __DIR__,
     $release_name,
-    $data_phase,
-    $identifier_filename
+    $data_path,
+    $identifier_filename,
+    VERBOSE ? '-v' : ''
   ) );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "dxa_forearm_right.jpeg"',
+    'php %s/prepare_data.php %s %s %s -g "dxa_forearm_right.jpeg" %s',
     __DIR__,
     $release_name,
-    $data_phase,
-    $identifier_filename
+    $data_path,
+    $identifier_filename,
+    VERBOSE ? '-v' : ''
   ) );
 }
 else if( 'hip' == $type )
 {
   $data_path = sprintf( 'supplementary/clsa/%d/dxa', $phase );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "dxa_hip_left.reanalysed.jpeg"',
+    'php %s/prepare_data.php %s %s %s -g "dxa_hip_left.reanalysed.jpeg" %s',
     __DIR__,
     $release_name,
     $data_path,
-    $identifier_filename
+    $identifier_filename,
+    VERBOSE ? '-v' : ''
   ) );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "dxa_hip_right.reanalysed.jpeg"',
+    'php %s/prepare_data.php %s %s %s -g "dxa_hip_right.reanalysed.jpeg" %s',
     __DIR__,
     $release_name,
     $data_path,
-    $identifier_filename
+    $identifier_filename,
+    VERBOSE ? '-v' : ''
   ) );
 }
 else if( 'lateral' == $type )
 {
   $data_path = sprintf( 'raw/clsa/%d/dxa', $phase );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "dxa_lateral.dcm"',
+    'php %s/prepare_data.php %s %s %s -g "dxa_lateral.dcm" %s',
     __DIR__,
     $release_name,
     $data_path,
-    $identifier_filename
+    $identifier_filename,
+    VERBOSE ? '-v' : ''
   ) );
 }
 else if( 'wbody' == $type )
 {
   $data_path = sprintf( 'supplementary/clsa/%d/dxa', $phase );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "dxa_wbody_bca.reanalysed.jpeg"',
+    'php %s/prepare_data.php %s %s %s -g "dxa_wbody_bca.reanalysed.jpeg" %s',
     __DIR__,
     $release_name,
     $data_path,
-    $identifier_filename
+    $identifier_filename,
+    VERBOSE ? '-v' : ''
   ) );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "dxa_wbody_bmd.reanalysed.jpeg"',
+    'php %s/prepare_data.php %s %s %s -g "dxa_wbody_bmd.reanalysed.jpeg" %s',
     __DIR__,
     $release_name,
     $data_path,
-    $identifier_filename
+    $identifier_filename,
+    VERBOSE ? '-v' : ''
   ) );
 }
 else if( 'retinal' == $type )
 {
   $data_path = sprintf( 'raw/clsa/%d/retinal', $phase );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "retinal_[lru]*.jpeg"',
+    'php %s/prepare_data.php %s %s %s -g "retinal_[lru]*.jpeg" %s',
     __DIR__,
     $release_name,
     $data_path,
-    $identifier_filename
+    $identifier_filename,
+    VERBOSE ? '-v' : ''
   ) );
 }
