@@ -359,12 +359,12 @@ file-type: gz -> dcm
 path: /raw/clsa/<PHASE>/carotid_intima/<UID>/plaque_cineloop_<N>.dcm.gz
 notes: either left or right as indicated by Measure.SIDE
 
-us report
----------
+us report (done)
+----------------
 Opal BL: clsa-dcs-images / CarotidIntima / Measure.SR (done)
-Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.SR_1
-Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.SR_1
-Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.SR_1
+Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.SR_1 (done)
+Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.SR_1 (done)
+Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.SR_1 (done)
 file-type: gz -> dcm
 path: /raw/clsa/<PHASE>/carotid_intima/<UID>/report.dcm
 notes: either left or right as indicated by Measure.SIDE; not actually repeated
