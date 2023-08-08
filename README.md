@@ -110,248 +110,247 @@ choice_rt, audio, dxa_hip, dxa_forearm, dxa_lateral, dxa_spine, dxa_wbody, ecg, 
 OPAL AND CLSANFS DATA
 =====================
 
-CDTT (done)
------------
+CDTT
+----
 Opal BL: does not exist
 Opal F1: does not exist
-Opal F2: clsa-dcs-f2 / CDTT / RESULT_FILE (done)
-Opal F3: clsa-dcs-f3 / CDTT / RESULT_FILE (done)
+Opal F2: clsa-dcs-f2 / CDTT / RESULT_FILE
+Opal F3: clsa-dcs-f3 / CDTT / RESULT_FILE
 file-type: xlsx
 path: /raw/clsa/<PHASE>/cdtt/<UID>/result_file.xls
 
-choice_rt (done)
-----------------
-Opal BL: clsa-dcs / CognitiveTest / RES_RESULT_FILE (done)
-Opal F1: clsa-dcs-f1 / CognitiveTest / RES_RESULT_FILE (done)
-Opal F2: clsa-dcs-f2 / CognitiveTest / RES_RESULT_FILE (done)
-Opal F3: clsa-dcs-f3 / CognitiveTest / RES_RESULT_FILE (done)
+choice_rt
+---------
+Opal BL: clsa-dcs / CognitiveTest / RES_RESULT_FILE
+Opal F1: clsa-dcs-f1 / CognitiveTest / RES_RESULT_FILE
+Opal F2: clsa-dcs-f2 / CognitiveTest / RES_RESULT_FILE
+Opal F3: clsa-dcs-f3 / CognitiveTest / RES_RESULT_FILE
 file-type: xlsx (but actually csv files)
 path: /raw/clsa/<PHASE>/choice_rt/<UID>/result_file.csv
 
-ecg (done)
-----------
-Opal BL: clsa-dcs / ECG / RES_XML_FILE (done)
-Opal F1: clsa-dcs-f1 / ECG / RES_XML_FILE (done)
-Opal F2: clsa-dcs-f2 / ECG / RES_XML_FILE (done)
-Opal F3: clsa-dcs-f3 / ECG / RES_XML_FILE (done)
+ecg
+---
+Opal BL: clsa-dcs / ECG / RES_XML_FILE
+Opal F1: clsa-dcs-f1 / ECG / RES_XML_FILE
+Opal F2: clsa-dcs-f2 / ECG / RES_XML_FILE
+Opal F3: clsa-dcs-f3 / ECG / RES_XML_FILE
 file-type: xml
 path: /raw/clsa/<PHASE>/ecg/<UID>/ecg.xml
-path: /supplementary/clsa/<PHASE>/ecg/<UID>/ecg.xml (found in "sets", minor changes made) (TODO)
-path: /supplementary/clsa/<PHASE>/ecg/<UID>/ecg.jpeg (found in "sets", generated from xml data) (done)
+path: /supplementary/clsa/<PHASE>/ecg/<UID>/ecg.jpeg (found in "sets", generated from xml data)
 
-frax (done)
------------
+frax
+----
 Opal BL: does not exist
-Opal F1: clsa-dcs-f1 / Frax / RES_RESULT_FILE (done)
-Opal F2: clsa-dcs-f2 / Frax / RES_RESULT_FILE (done)
-Opal F3: clsa-dcs-f3 / Frax / RES_RESULT_FILE (done)
+Opal F1: clsa-dcs-f1 / Frax / RES_RESULT_FILE
+Opal F2: clsa-dcs-f2 / Frax / RES_RESULT_FILE
+Opal F3: clsa-dcs-f3 / Frax / RES_RESULT_FILE
 file-type: txt
 path: /raw/clsa/<PHASE>/frax/<UID>/frax.txt
 
-fas-a recording (done)
-----------------------
-Opal BL: clsa-dcs / NeuropsychologicalBattery / FAS_AREC_DCS (done)
-Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / FAS_AREC_COF1 (done)
-Opal F2: clsa-dcs-f2 / StroopFAS / FAS_AREC_COF2 (done)
-Opal F3: clsa-dcs-f3 / StroopFAS / FAS_AREC_COF3 (done)
+fas-a recording
+---------------
+Opal BL: clsa-dcs / NeuropsychologicalBattery / FAS_AREC_DCS
+Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / FAS_AREC_COF1
+Opal F2: clsa-dcs-f2 / StroopFAS / FAS_AREC_COF2
+Opal F3: clsa-dcs-f3 / StroopFAS / FAS_AREC_COF3
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/a_word_fluency.wav
 
-fas-f recording (done)
-----------------------
-Opal BL: clsa-dcs / NeuropsychologicalBattery / FAS_FREC_DCS (done)
-Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / FAS_FREC_COF1 (done)
-Opal F2: clsa-dcs-f2 / StroopFAS / FAS_FREC_COF2 (done)
-Opal F3: clsa-dcs-f3 / StroopFAS / FAS_FREC_COF3 (done)
+fas-f recording
+---------------
+Opal BL: clsa-dcs / NeuropsychologicalBattery / FAS_FREC_DCS
+Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / FAS_FREC_COF1
+Opal F2: clsa-dcs-f2 / StroopFAS / FAS_FREC_COF2
+Opal F3: clsa-dcs-f3 / StroopFAS / FAS_FREC_COF3
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/f_word_fluency.wav
 
-fas-s recording (done)
-----------------------
-Opal BL: clsa-dcs / NeuropsychologicalBattery / FAS_SREC_DCS (done)
-Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / FAS_SREC_COF1 (done)
-Opal F2: clsa-dcs-f2 / StroopFAS / FAS_SREC_COF2 (done)
-Opal F3: clsa-dcs-f3 / StroopFAS / FAS_SREC_COF3 (done)
+fas-s recording
+---------------
+Opal BL: clsa-dcs / NeuropsychologicalBattery / FAS_SREC_DCS
+Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / FAS_SREC_COF1
+Opal F2: clsa-dcs-f2 / StroopFAS / FAS_SREC_COF2
+Opal F3: clsa-dcs-f3 / StroopFAS / FAS_SREC_COF3
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/s_word_fluency.wav
 
-stroop dot recording (done)
----------------------------
-Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_DOTREC_DCS (done)
-Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_DOTREC_COF1 (done)
-Opal F2: clsa-dcs-f2 / StroopFAS / STP_DOTREC_COF2 (done)
-Opal F3: clsa-dcs-f3 / StroopFAS / STP_DOTREC_COF3 (done)
+stroop dot recording
+--------------------
+Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_DOTREC_DCS
+Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_DOTREC_COF1
+Opal F2: clsa-dcs-f2 / StroopFAS / STP_DOTREC_COF2
+Opal F3: clsa-dcs-f3 / StroopFAS / STP_DOTREC_COF3
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/stroop_dot.wav
 
-stroop word recording (done)
-----------------------------
-Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_WORREC_DCS (done)
-Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_WORREC_COF1 (done)
-Opal F2: clsa-dcs-f2 / StroopFAS / STP_WORREC_COF2 (done)
-Opal F3: clsa-dcs-f3 / StroopFAS / STP_WORREC_COF3 (done)
+stroop word recording
+---------------------
+Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_WORREC_DCS
+Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_WORREC_COF1
+Opal F2: clsa-dcs-f2 / StroopFAS / STP_WORREC_COF2
+Opal F3: clsa-dcs-f3 / StroopFAS / STP_WORREC_COF3
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/stroop_word.wav
 
-stroop colour recording (done)
-------------------------------
-Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_COLREC_DCS (done)
-Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_COLREC_COF1 (done)
-Opal F2: clsa-dcs-f2 / StroopFAS / STP_COLREC_COF2 (done)
-Opal F3: clsa-dcs-f3 / StroopFAS / STP_COLREC_COF3 (done)
+stroop colour recording
+-----------------------
+Opal BL: clsa-dcs / NeuropsychologicalBattery / STP_COLREC_DCS
+Opal F1: clsa-dcs-f1 / NeuropsychologicalBattery / STP_COLREC_COF1
+Opal F2: clsa-dcs-f2 / StroopFAS / STP_COLREC_COF2
+Opal F3: clsa-dcs-f3 / StroopFAS / STP_COLREC_COF3
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/stroop_colour.wav
 
-cog uncategorized (done)
-------------------------
+cog uncategorized
+-----------------
 Opal BL: does not exist
 Opal F1: does not exist
 Opal F2: does not exist
 Opal F3: does not exist
-clsanfs BL: /data/tracking/sabretooth_bl-live/UID/<NN>-out.wav (done)
-clsanfs BL: /data/tracking/sabretooth_bl-live/UID/<NN>-in.wav (operator) (done)
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/<NN>-out.wav (done)
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/<NN>-in.wav (operator) (done)
+clsanfs BL: /data/tracking/sabretooth_bl-live/UID/<NN>-out.wav
+clsanfs BL: /data/tracking/sabretooth_bl-live/UID/<NN>-in.wav (operator)
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/<NN>-out.wav
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/<NN>-in.wav (operator)
 clsanfs F2: does not exist
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/<NN>.wav
 path: /raw/clsa/<PHASE>/audio/<UID>/<NN>-operator.wav
 
-cog alphabet (done)
--------------------
-Opal BL: clsa-inhome / InHome_2 / COG_ALPTME_REC2_COM (done)
-Opal F1: clsa-inhome / InHome_2 / COG_ALPTME_REC2_COF1 (done)
-Opal F2: clsa-inhome-f2 / InHome_2 / COG_ALPTME_REC2_COF2 (done)
-Opal F3: clsa-inhome-f3 / InHome_2 / COG_ALPTME_REC2_COF3 (done)
+cog alphabet
+------------
+Opal BL: clsa-inhome / InHome_2 / COG_ALPTME_REC2_COM
+Opal F1: clsa-inhome / InHome_2 / COG_ALPTME_REC2_COF1
+Opal F2: clsa-inhome-f2 / InHome_2 / COG_ALPTME_REC2_COF2
+Opal F3: clsa-inhome-f3 / InHome_2 / COG_ALPTME_REC2_COF3
 clsanfs BL: not available (files are not categorized)
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/Alphabet-out.wav (done)
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/Alphabet-in.wav (operator) (done)
-clsanfs F2: /data/tracking/sabretooth_f2-live/UID/Alphabet-out.wav (done)
-clsanfs F2: /data/tracking/sabretooth_f2-live/UID/Alphabet-in.wav (operator) (done)
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/Alphabet-out.wav
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/Alphabet-in.wav (operator)
+clsanfs F2: /data/tracking/sabretooth_f2-live/UID/Alphabet-out.wav
+clsanfs F2: /data/tracking/sabretooth_f2-live/UID/Alphabet-in.wav (operator)
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/alphabet.wav
 path: /raw/clsa/<PHASE>/audio/<UID>/alphabet-operator.wav
 
-cog mental alternation (done)
------------------------------
-Opal BL: clsa-inhome / InHome_2 / COG_ALTTME_REC_COM (done)
-Opal F1: clsa-inhome / InHome_2 / COG_ALTTME_REC_COF1 (done)
-Opal F2: clsa-inhome-f2 / InHome_2 / COG_ALTTME_REC_COF2 (done)
-Opal F3: clsa-inhome-f3 / InHome_2 / COG_ALTTME_REC_COF3 (done)
+cog mental alternation
+----------------------
+Opal BL: clsa-inhome / InHome_2 / COG_ALTTME_REC_COM
+Opal F1: clsa-inhome / InHome_2 / COG_ALTTME_REC_COF1
+Opal F2: clsa-inhome-f2 / InHome_2 / COG_ALTTME_REC_COF2
+Opal F3: clsa-inhome-f3 / InHome_2 / COG_ALTTME_REC_COF3
 clsanfs BL: not available (files are not categorized)
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/MAT Alternation-out.wav (done)
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/MAT Alternation-in.wav (operator) (done)
-clsanfs F2: /data/tracking/sabretooth_f2-live/UID/MAT Alternation-out.wav (done)
-clsanfs F2: /data/tracking/sabretooth_f2-live/UID/MAT Alternation-in.wav (operator) (done)
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/MAT Alternation-out.wav
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/MAT Alternation-in.wav (operator)
+clsanfs F2: /data/tracking/sabretooth_f2-live/UID/MAT Alternation-out.wav
+clsanfs F2: /data/tracking/sabretooth_f2-live/UID/MAT Alternation-in.wav (operator)
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/mental_alternation.wav
 path: /raw/clsa/<PHASE>/audio/<UID>/mental_alternation-operator.wav
 
-cog animal list (done)
-----------------------
-Opal BL: clsa-inhome / InHome_2 / COG_ANMLLLIST_REC_COM (done)
-Opal F1: clsa-inhome / InHome_2 / COG_ANMLLLIST_REC_COF1 (done)
-Opal F2: clsa-inhome-f2 / InHome_2 / COG_ANMLLLIST_REC_COF2 (done)
-Opal F3: clsa-inhome-f3 / InHome_2 / COG_ANMLLLIST_REC_COF3 (done)
+cog animal list
+---------------
+Opal BL: clsa-inhome / InHome_2 / COG_ANMLLLIST_REC_COM
+Opal F1: clsa-inhome / InHome_2 / COG_ANMLLLIST_REC_COF1
+Opal F2: clsa-inhome-f2 / InHome_2 / COG_ANMLLLIST_REC_COF2
+Opal F3: clsa-inhome-f3 / InHome_2 / COG_ANMLLLIST_REC_COF3
 clsanfs BL: not available (files are not categorized)
-clsanfs F1: /data/tracking/sabretooth_f1-live/<UID>/Animal List-out.wav (done)
-clsanfs F1: /data/tracking/sabretooth_f1-live/<UID>/Animal List-in.wav (operator) (done)
-clsanfs F2: /data/tracking/sabretooth_f2-live/<UID>/Animal List-out.wav (done)
-clsanfs F2: /data/tracking/sabretooth_f2-live/<UID>/Animal List-in.wav (operator) (done)
+clsanfs F1: /data/tracking/sabretooth_f1-live/<UID>/Animal List-out.wav
+clsanfs F1: /data/tracking/sabretooth_f1-live/<UID>/Animal List-in.wav (operator)
+clsanfs F2: /data/tracking/sabretooth_f2-live/<UID>/Animal List-out.wav
+clsanfs F2: /data/tracking/sabretooth_f2-live/<UID>/Animal List-in.wav (operator)
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/animal_fluency.wav
 path: /raw/clsa/<PHASE>/audio/<UID>/animal_fluency-operator.wav
 
-cog counting (done)
--------------------
-Opal BL: clsa-inhome / InHome_2 / COG_CNTTMEREC_COM (done)
-Opal F1: clsa-inhome / InHome_2 / COG_CNTTMEREC_COF1 (done)
-Opal F2: clsa-inhome-f2 / InHome_2 / COG_CNTTMEREC_COF2 (done)
-Opal F3: clsa-inhome-f3 / InHome_2 / COG_CNTTMEREC_COF3 (done)
+cog counting
+------------
+Opal BL: clsa-inhome / InHome_2 / COG_CNTTMEREC_COM
+Opal F1: clsa-inhome / InHome_2 / COG_CNTTMEREC_COF1
+Opal F2: clsa-inhome-f2 / InHome_2 / COG_CNTTMEREC_COF2
+Opal F3: clsa-inhome-f3 / InHome_2 / COG_CNTTMEREC_COF3
 clsanfs BL: not available (files are not categorized)
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/COUNTING to 20-out.wav (done)
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/COUNTING to 20-in.wav (operator) (done)
-clsanfs F2: /data/tracking/sabretooth_f2-live/UID/COUNTING to 20-out.wav (done)
-clsanfs F2: /data/tracking/sabretooth_f2-live/UID/COUNTING to 20-in.wav (operator) (done)
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/COUNTING to 20-out.wav
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/COUNTING to 20-in.wav (operator)
+clsanfs F2: /data/tracking/sabretooth_f2-live/UID/COUNTING to 20-out.wav
+clsanfs F2: /data/tracking/sabretooth_f2-live/UID/COUNTING to 20-in.wav (operator)
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/counting.wav
 path: /raw/clsa/<PHASE>/audio/<UID>/counting-operator.wav
 
-cog delayed word list (done)
-----------------------------
-Opal BL: clsa-inhome / InHome_2 / COG_WRDLST2_REC_COM (done)
-Opal F1: clsa-inhome / InHome_2 / COG_WRDLST2_REC_COF1 (done)
-Opal F2: clsa-inhome-f2 / InHome_2 / COG_WRDLST2_REC_COF2 (done)
-Opal F3: clsa-inhome-f3 / InHome_2 / COG_WRDLST2_REC_COF3 (done)
+cog delayed word list
+---------------------
+Opal BL: clsa-inhome / InHome_2 / COG_WRDLST2_REC_COM
+Opal F1: clsa-inhome / InHome_2 / COG_WRDLST2_REC_COF1
+Opal F2: clsa-inhome-f2 / InHome_2 / COG_WRDLST2_REC_COF2
+Opal F3: clsa-inhome-f3 / InHome_2 / COG_WRDLST2_REC_COF3
 clsanfs BL: not available (files are not categorized)
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/REY II-out.wav (done)
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/REY II-in.wav (operator) (done)
-clsanfs F2: /data/tracking/sabretooth_f2-live/UID/REY II-out.wav (done)
-clsanfs F2: /data/tracking/sabretooth_f2-live/UID/REY II-in.wav (operator) (done)
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/REY II-out.wav
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/REY II-in.wav (operator)
+clsanfs F2: /data/tracking/sabretooth_f2-live/UID/REY II-out.wav
+clsanfs F2: /data/tracking/sabretooth_f2-live/UID/REY II-in.wav (operator)
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/delayed_word_list.wav
 path: /raw/clsa/<PHASE>/audio/<UID>/delayed_word_list-operator.wav
 
-cog immediate word list (done)
-------------------------------
-Opal BL: clsa-inhome / InHome_2 / COG_WRDLSTREC_COM (done)
-Opal F1: clsa-inhome / InHome_2 / COG_WRDLSTREC_COF1 (done)
-Opal F2: clsa-inhome-f2 / InHome_2 / COG_WRDLSTREC_COF2 (done)
-Opal F3: clsa-inhome-f3 / InHome_2 / COG_WRDLSTREC_COF3 (done)
+cog immediate word list
+-----------------------
+Opal BL: clsa-inhome / InHome_2 / COG_WRDLSTREC_COM
+Opal F1: clsa-inhome / InHome_2 / COG_WRDLSTREC_COF1
+Opal F2: clsa-inhome-f2 / InHome_2 / COG_WRDLSTREC_COF2
+Opal F3: clsa-inhome-f3 / InHome_2 / COG_WRDLSTREC_COF3
 clsanfs BL: not available (files are not categorized)
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/REY I-out.wav (done)
-clsanfs F1: /data/tracking/sabretooth_f1-live/UID/REY I-in.wav (operator) (done)
-clsanfs F2: /data/tracking/sabretooth_f2-live/UID/REY I-out.wav (done)
-clsanfs F2: /data/tracking/sabretooth_f2-live/UID/REY I-in.wav (operator) (done)
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/REY I-out.wav
+clsanfs F1: /data/tracking/sabretooth_f1-live/UID/REY I-in.wav (operator)
+clsanfs F2: /data/tracking/sabretooth_f2-live/UID/REY I-out.wav
+clsanfs F2: /data/tracking/sabretooth_f2-live/UID/REY I-in.wav (operator)
 file-type: wav
 path: /raw/clsa/<PHASE>/audio/<UID>/immediate_word_list.wav
 path: /raw/clsa/<PHASE>/audio/<UID>/immediate_word_list-operator.wav
 
-spirometry flow (done)
-----------------------
-Opal BL: clsa-dcs / Spirometry / Measure.RES_FLOW_VALUES (repeated) (done)
-Opal F1: clsa-dcs-f1 / Spirometry / Measure.RES_FLOW_VALUES (repeated) (done)
+spirometry flow
+---------------
+Opal BL: clsa-dcs / Spirometry / Measure.RES_FLOW_VALUES (repeated)
+Opal F1: clsa-dcs-f1 / Spirometry / Measure.RES_FLOW_VALUES (repeated)
 Opal F2: clsa-dcs-f2 / Spirometry / Measure.RES_FLOW_VALUES (repeated)
   -> note: opal often stopped responding during download
-Opal F3: clsa-dcs-f3 / Spirometry / Measure.RES_FLOW_VALUES (repeated) (done)
+Opal F3: clsa-dcs-f3 / Spirometry / Measure.RES_FLOW_VALUES (repeated)
   -> note: opal often stopped responding during download
 file-type: txt
 path: /raw/clsa/<PHASE>/spirometry/<UID>/spirometry_flow_<N>.txt
 
-spirometry volume (done)
-------------------------
-Opal BL: clsa-dcs / Spirometry / Measure.RES_VOLUME_VALUES (repeated) (done)
-Opal F1: clsa-dcs-f1 / Spirometry / Measure.RES_VOLUME_VALUES (repeated) (done)
-Opal F2: clsa-dcs-f2 / Spirometry / Measure.RES_VOLUME_VALUES (repeated) (done)
+spirometry volume
+-----------------
+Opal BL: clsa-dcs / Spirometry / Measure.RES_VOLUME_VALUES (repeated)
+Opal F1: clsa-dcs-f1 / Spirometry / Measure.RES_VOLUME_VALUES (repeated)
+Opal F2: clsa-dcs-f2 / Spirometry / Measure.RES_VOLUME_VALUES (repeated)
   -> note: opal often stopped responding during download
-Opal F3: clsa-dcs-f3 / Spirometry / Measure.RES_VOLUME_VALUES (repeated) (done)
+Opal F3: clsa-dcs-f3 / Spirometry / Measure.RES_VOLUME_VALUES (repeated)
   -> note: opal often stopped responding during download
 file-type: txt
 path: /raw/clsa/<PHASE>/spirometry/<UID>/spirometry_volume_<N>.txt
 
-spirometry report (done)
-------------------------
+spirometry report
+-----------------
 Opal BL: does not exist
-Opal F1: clsa-dcs-f1 / Spirometry / Measure.RES_REPORT (repeated) (done)
-Opal F2: clsa-dcs-f2 / Spirometry / Measure.RES_REPORT (repeated) (done)
-Opal F3: clsa-dcs-f3 / Spirometry / Measure.RES_REPORT (repeated) (done)
+Opal F1: clsa-dcs-f1 / Spirometry / Measure.RES_REPORT (repeated)
+Opal F2: clsa-dcs-f2 / Spirometry / Measure.RES_REPORT (repeated)
+Opal F3: clsa-dcs-f3 / Spirometry / Measure.RES_REPORT (repeated)
 file-type: pdf
 path: /raw/clsa/<PHASE>/spirometry/<UID>/report.pdf
 notes: not actually repeated
 
-cineloop [123] (done)
----------------------
-Opal BL: clsa-dcs-images / CarotidIntima / Measure.CINELOOP_[123] (repeated) (done)
-Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.CINELOOP_1 (repeated) (done)
-Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.CINELOOP_1 (repeated) (done)
-Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.CINELOOP_1 (repeated) (done)
+cineloop [123]
+--------------
+Opal BL: clsa-dcs-images / CarotidIntima / Measure.CINELOOP_[123] (repeated)
+Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.CINELOOP_1 (repeated)
+Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.CINELOOP_1 (repeated)
+Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.CINELOOP_1 (repeated)
 file-type: gz -> dcm
 path: /raw/clsa/<PHASE>/carotid_intima/<UID>/cineloop[123]_<N>.dcm.gz
 notes: either left or right as indicated by Measure.SIDE; "[123]_" for BL only
 
-plaque cineloop (done)
-----------------------
-Opal BL: clsa-dcs-images / Plaque / Measure.CINELOOP_1 (repeated) (done)
+plaque cineloop
+---------------
+Opal BL: clsa-dcs-images / Plaque / Measure.CINELOOP_1 (repeated)
 Opal F1: does not exist
 Opal F2: does not exist
 Opal F3: does not exist
@@ -359,32 +358,32 @@ file-type: gz -> dcm
 path: /raw/clsa/<PHASE>/carotid_intima/<UID>/plaque_cineloop_<N>.dcm.gz
 notes: either left or right as indicated by Measure.SIDE
 
-us report (done)
-----------------
-Opal BL: clsa-dcs-images / CarotidIntima / Measure.SR (done)
-Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.SR_1 (done)
-Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.SR_1 (done)
-Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.SR_1 (done)
+us report
+---------
+Opal BL: clsa-dcs-images / CarotidIntima / Measure.SR
+Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.SR_1
+Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.SR_1
+Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.SR_1
 file-type: gz -> dcm
 path: /raw/clsa/<PHASE>/carotid_intima/<UID>/report.dcm
 notes: either left or right as indicated by Measure.SIDE; not actually repeated
 
 still image [123]
 -----------------
-Opal BL: clsa-dcs-images / CarotidIntima / Measure.STILL_IMAGE (repeated) (done)
-Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.STILL_IMAGE_[123] (repeated) (done)
+Opal BL: clsa-dcs-images / CarotidIntima / Measure.STILL_IMAGE (repeated)
+Opal F1: clsa-dcs-images-f1 / CarotidIntima / Measure.STILL_IMAGE_[123] (repeated)
 Opal F2: clsa-dcs-images-f2 / CarotidIntima / Measure.STILL_IMAGE_[123] (repeated)
 Opal F3: clsa-dcs-images-f3 / CarotidIntima / Measure.STILL_IMAGE_[133] (repeated)
 file-type: gz -> dcm
 path: /raw/clsa/<PHASE>/carotid_intima/<UID>/still[123]_<N>.dcm.gz
 notes: either left or right as indicated by Measure.SIDE
 
-dxa dual hip (done)
--------------------
-Opal BL: clsa-dcs-images / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated) (done)
-Opal F1: clsa-dcs-images-f1 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated) (done)
-Opal F2: clsa-dcs-images-f2 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated) (done)
-Opal F3: clsa-dcs-images-f3 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated) (done)
+dxa dual hip
+------------
+Opal BL: clsa-dcs-images / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated)
+Opal F1: clsa-dcs-images-f1 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated)
+Opal F2: clsa-dcs-images-f2 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated)
+Opal F3: clsa-dcs-images-f3 / DualHipBoneDensity / Measure.RES_HIP_DICOM (repeated)
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_hip_<N>.dcm
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_hip.reanalysed-<SIDE>_<N>.dcm (???)
@@ -393,12 +392,12 @@ notes: either left or right as indicated by Measure.OUTPUT_HIP_SIDE
 notes: this data isn't valid until a paired analysis is done and DICOM image exported from Apex
 notes: participant images can be created with the create_dxa_for_participant.php script
 
-dxa forearm (done)
-------------------
-Opal BL: clsa-dcs-images / ForearmBoneDensity / RES_FA_DICOM (done)
-Opal F1: clsa-dcs-images-f1 / ForearmBoneDensity / RES_FA_DICOM (done)
-Opal F2: clsa-dcs-images-f2 / ForearmBoneDensity / RES_FA_DICOM (done)
-Opal F3: clsa-dcs-images-f3 / ForearmBoneDensity / RES_FA_DICOM (done)
+dxa forearm
+-----------
+Opal BL: clsa-dcs-images / ForearmBoneDensity / RES_FA_DICOM
+Opal F1: clsa-dcs-images-f1 / ForearmBoneDensity / RES_FA_DICOM
+Opal F2: clsa-dcs-images-f2 / ForearmBoneDensity / RES_FA_DICOM
+Opal F3: clsa-dcs-images-f3 / ForearmBoneDensity / RES_FA_DICOM
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_forearm.dcm
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_forearm.jpeg (for applicant release)
@@ -407,7 +406,7 @@ notes: SIDE defined by INPUT_FA_SIDE
 notes: participant images can be created with the create_dxa_for_participant.php script
 
 dxa hip (na/done)
------------------
+----------
 Opal BL: clsa-dcs-images / HipBoneDensity / RES_HIP_DICOM
 Opal F1: clsa-dcs-images-f1 / HipBoneDensity / RES_HIP_DICOM
 Opal F2: clsa-dcs-images-f2 / HipBoneDensity / RES_HIP_DICOM
@@ -416,79 +415,77 @@ file-type: dicom
 path: N/A
 notes: Data not recorded, can be ignored
 
-dxa lateral measure (done)
---------------------------
-Opal BL: clsa-dcs-images / LateralBoneDensity / RES_SEL_DICOM_MEASURE (done)
-Opal F1: clsa-dcs-images-f1 / LateralBoneDensity / RES_SEL_DICOM_MEASURE (done)
-Opal F2: clsa-dcs-images-f2 / LateralBoneDensity / RES_SEL_DICOM_MEASURE (done)
-Opal F3: clsa-dcs-images-f3 / LateralBoneDensity / RES_SEL_DICOM_MEASURE (done)
+dxa lateral measure
+-------------------
+Opal BL: clsa-dcs-images / LateralBoneDensity / RES_SEL_DICOM_MEASURE
+Opal F1: clsa-dcs-images-f1 / LateralBoneDensity / RES_SEL_DICOM_MEASURE
+Opal F2: clsa-dcs-images-f2 / LateralBoneDensity / RES_SEL_DICOM_MEASURE
+Opal F3: clsa-dcs-images-f3 / LateralBoneDensity / RES_SEL_DICOM_MEASURE
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_lateral.dcm
-path: /supplementary/ ... .jpeg (TODO)
 
-dxa lateral ot (done)
----------------------
-Opal BL: clsa-dcs-images / LateralBoneDensity / RES_SEL_DICOM_OT (done)
-Opal F1: clsa-dcs-images-f1 / LateralBoneDensity / RES_SEL_DICOM_OT (done)
-Opal F2: clsa-dcs-images-f2 / LateralBoneDensity / RES_SEL_DICOM_OT (done)
-Opal F3: clsa-dcs-images-f3 / LateralBoneDensity / RES_SEL_DICOM_OT (done)
+dxa lateral ot
+--------------
+Opal BL: clsa-dcs-images / LateralBoneDensity / RES_SEL_DICOM_OT
+Opal F1: clsa-dcs-images-f1 / LateralBoneDensity / RES_SEL_DICOM_OT
+Opal F2: clsa-dcs-images-f2 / LateralBoneDensity / RES_SEL_DICOM_OT
+Opal F3: clsa-dcs-images-f3 / LateralBoneDensity / RES_SEL_DICOM_OT
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_lateral_ot.dcm
 notes: ot is "quantitative morphometry" but all data is empty (was not recorded)
 
-dxa lateral pr (done)
----------------------
-Opal BL: clsa-dcs-images / LateralBoneDensity / RES_SEL_DICOM_PR (done)
-Opal F1: clsa-dcs-images-f1 / LateralBoneDensity / RES_SEL_DICOM_PR (done)
-Opal F2: clsa-dcs-images-f2 / LateralBoneDensity / RES_SEL_DICOM_PR (done)
-Opal F3: clsa-dcs-images-f3 / LateralBoneDensity / RES_SEL_DICOM_PR (done)
+dxa lateral pr
+--------------
+Opal BL: clsa-dcs-images / LateralBoneDensity / RES_SEL_DICOM_PR
+Opal F1: clsa-dcs-images-f1 / LateralBoneDensity / RES_SEL_DICOM_PR
+Opal F2: clsa-dcs-images-f2 / LateralBoneDensity / RES_SEL_DICOM_PR
+Opal F3: clsa-dcs-images-f3 / LateralBoneDensity / RES_SEL_DICOM_PR
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_lateral_pr.dcm
 notes: pr is "structured report file for vertebral markers"
 
-dxa spine (done)
-----------------
+dxa spine
+---------
 Opal BL: does not exist
-Opal F1: clsa-dcs-images-f1 / SpineBoneDensity / RES_SP_DICOM (done)
-Opal F2: clsa-dcs-images-f2 / SpineBoneDensity / RES_SP_DICOM (done)
-Opal F3: clsa-dcs-images-f3 / SpineBoneDensity / RES_SP_DICOM (done)
+Opal F1: clsa-dcs-images-f1 / SpineBoneDensity / RES_SP_DICOM
+Opal F2: clsa-dcs-images-f2 / SpineBoneDensity / RES_SP_DICOM
+Opal F3: clsa-dcs-images-f3 / SpineBoneDensity / RES_SP_DICOM
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_spine.dcm
-path: /supplementary/ ... .jpeg (TODO)
 notes: this data isn't valid until a paired analysis is done and DICOM image exported from Apex
 
-dxa whole body 1 (BMD) (done)
------------------------------
-Opal BL: clsa-dcs-images / WholeBodyBoneDensity / RES_WB_DICOM_1 (done)
-Opal F1: clsa-dcs-images-f1 / WholeBodyBoneDensity / RES_WB_DICOM_1 (done)
-Opal F2: clsa-dcs-images-f2 / WholeBodyBoneDensity / RES_WB_DICOM_1 (done)
-Opal F3: clsa-dcs-images-f3 / WholeBodyBoneDensity / RES_WB_DICOM_1 (done)
+dxa whole body 1 (BMD)
+----------------------
+Opal BL: clsa-dcs-images / WholeBodyBoneDensity / RES_WB_DICOM_1
+Opal F1: clsa-dcs-images-f1 / WholeBodyBoneDensity / RES_WB_DICOM_1
+Opal F2: clsa-dcs-images-f2 / WholeBodyBoneDensity / RES_WB_DICOM_1
+Opal F3: clsa-dcs-images-f3 / WholeBodyBoneDensity / RES_WB_DICOM_1
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bmd.dcm
-path: /supplementary/ ... _reanalysed.dcm (TODO)
-path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_wbody.participant.jpeg (for participant release)
+path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bmd.reanalysed.jpeg
+path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bmd.participant.jpeg (for participant release)
 notes: bmd is "body mass measurement"
 notes: this data isn't valid until a non-paired analysis is done and DICOM image exported from Apex
 notes: participant images can be created with the create_dxa_for_participant.php script
 notes: dean wrote a script to convert to jpeg, not sure if we need those
 
-dxa whole body 2 (BCA) (done)
------------------------------
-Opal BL: clsa-dcs-images / WholeBodyBoneDensity / RES_WB_DICOM_2 (done)
-Opal F1: clsa-dcs-images-f1 / WholeBodyBoneDensity / RES_WB_DICOM_2 (done)
-Opal F2: clsa-dcs-images-f2 / WholeBodyBoneDensity / RES_WB_DICOM_2 (done)
-Opal F3: clsa-dcs-images-f3 / WholeBodyBoneDensity / RES_WB_DICOM_2 (done)
+dxa whole body 2 (BCA)
+----------------------
+Opal BL: clsa-dcs-images / WholeBodyBoneDensity / RES_WB_DICOM_2
+Opal F1: clsa-dcs-images-f1 / WholeBodyBoneDensity / RES_WB_DICOM_2
+Opal F2: clsa-dcs-images-f2 / WholeBodyBoneDensity / RES_WB_DICOM_2
+Opal F3: clsa-dcs-images-f3 / WholeBodyBoneDensity / RES_WB_DICOM_2
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bca.dcm
-path: /supplementary/ ... _reanalysed.dcm (TODO)
-path: /supplementary/ ... .jpeg
+path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bca.reanalysed.jpeg
+path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bca.participant.jpeg (for participant release)
 notes: bca is "body composition analysis"
 notes: this data isn't valid until a non-paired analysis is done and DICOM image exported from Apex
 notes: dean wrote a script to convert to jpeg, not sure if we need those
 
-retinal (done)
---------------
-Opal BL: clsa-dcs-images / RetinalScan / Measure.EYE (repeated) (done)
+retinal
+-------
+Opal BL: clsa-dcs-images / RetinalScan / Measure.EYE (repeated)
 Opal F1: does not exist
 Opal F2: does not exist
 Opal F3: does not exist
@@ -498,74 +495,74 @@ link: /raw/clsa/<PHASE>/retinal/<UID>/retinal_<left|right|unknown>.jpeg
 notes: files need to be numbered since some might have multiple images per side
 notes: SIDE defined by Measure.SIDE
 
-retinal left (done)
--------------------
+retinal left
+------------
 Opal BL: does not exist
-Opal F1: clsa-dcs-images-f1 / RetinalScanLeft / EYE (done)
-Opal F2: clsa-dcs-images-f2 / RetinalScanLeft / EYE (done)
-Opal F3: clsa-dcs-images-f3 / RetinalScanLeft / EYE (done)
+Opal F1: clsa-dcs-images-f1 / RetinalScanLeft / EYE
+Opal F2: clsa-dcs-images-f2 / RetinalScanLeft / EYE
+Opal F3: clsa-dcs-images-f3 / RetinalScanLeft / EYE
 file-type: jpeg
 path: /raw/clsa/<PHASE>/retinal/<UID>/retinal_left.jpeg
 export path: /raw/clsa/<PHASE>/retinal/<UID>/
 export filter for data librarian: -g "retinal_[lru]*.jpeg"
 val notes: export filter will give left/right/unknown scans.
 
-retinal right (done)
---------------------
+retinal right
+-------------
 Opal BL: does not exist
-Opal F1: clsa-dcs-images-f1 / RetinalScanRight / EYE (done)
-Opal F2: clsa-dcs-images-f2 / RetinalScanRight / EYE (done)
-Opal F3: clsa-dcs-images-f3 / RetinalScanRight / EYE (done)
+Opal F1: clsa-dcs-images-f1 / RetinalScanRight / EYE
+Opal F2: clsa-dcs-images-f2 / RetinalScanRight / EYE
+Opal F3: clsa-dcs-images-f3 / RetinalScanRight / EYE
 file-type: jpeg
 path: /raw/clsa/<PHASE>/retinal/<UID>/retinal_right.jpeg
 export path: /raw/clsa/<PHASE>/retinal/<UID>/
 export filter for data librarian: -g "retinal_[lru]*.jpeg"
 val notes: export filter will give left/right/unknown scans.
 
-dxa hip recovery left (done)
-----------------------------
-Opal BL: clsa-dcs-images / HipRecoveryLeft / RES_HIP_DICOM (done)
+dxa hip recovery left
+---------------------
+Opal BL: clsa-dcs-images / HipRecoveryLeft / RES_HIP_DICOM
 Opal F1: does not exist
 Opal F2: does not exist
 Opal F3: does not exist
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_hip_recovery_left.dcm
 
-dxa hip recovery right (done)
------------------------------
-Opal BL: clsa-dcs-images / HipRecoveryRight / RES_HIP_DICOM (done)
+dxa hip recovery right
+----------------------
+Opal BL: clsa-dcs-images / HipRecoveryRight / RES_HIP_DICOM
 Opal F1: does not exist
 Opal F2: does not exist
 Opal F3: does not exist
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_hip_recovery_right.dcm
 
-dxa lateral recovery (done)
----------------------------
-Opal BL: clsa-dcs-images / LateralRecovery / RES_SEL_DICOM_MEASURE (done)
+dxa lateral recovery
+--------------------
+Opal BL: clsa-dcs-images / LateralRecovery / RES_SEL_DICOM_MEASURE
 Opal F1: does not exit
 Opal F2: does not exist
 Opal F3: does not exist
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_lateral_recovery.dcm
 
-dxa whole body recovery (done)
-------------------------------
-Opal BL: clsa-dcs-images / WbodyRecovery / RES_WB_DICOM_1 (done)
+dxa whole body recovery
+-----------------------
+Opal BL: clsa-dcs-images / WbodyRecovery / RES_WB_DICOM_1
 Opal F1: does not exist
 Opal F2: does not exist
 Opal F3: does not exist
 file-type: dicom
 path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_wbody_recovery.dcm
 
-actigraph (done)
-----------------
+actigraph
+---------
 file-type: gt3x
 path: /raw/clsa/<PHASE>/actigraph/<UID>/<date>.gt3x
 notes: all dates are in YYYYMMDD format
 
-ticwatch (done)
----------------
+ticwatch
+--------
 file-type: multiple
 path: /raw/clsa/<PHASE>/ticwatch/<UID>/StartupSettings.json
 path: /raw/clsa/<PHASE>/ticwatch/<UID>/StudySettings.json

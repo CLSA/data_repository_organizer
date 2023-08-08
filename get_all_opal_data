@@ -37,6 +37,9 @@ $category_list = [
   'retinal_right',
   'cineloop',
   'us_report',
+  'still_image_1',
+  'still_image_2',
+  'still_image_3',
 ];
 
 foreach( $category_list as $category )
