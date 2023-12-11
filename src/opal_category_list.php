@@ -122,6 +122,7 @@ $category_list = [
       'table' => 'CDTT',
       'variable' => 'RESULT_FILE',
       'filename' => 'result_file.xls',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'cdtt',
@@ -129,6 +130,7 @@ $category_list = [
       'table' => 'CDTT',
       'variable' => 'RESULT_FILE',
       'filename' => 'result_file.xls',
+      'db_required' => false,
     ],
   ],
   'choice_rt' => [
@@ -138,6 +140,7 @@ $category_list = [
       'table' => 'CognitiveTest',
       'variable' => 'RES_RESULT_FILE',
       'filename' => 'result_file.csv',
+      'db_required' => false,
     ],
   ],
   'ecg' => [
@@ -147,6 +150,7 @@ $category_list = [
       'table' => 'ECG',
       'variable' => 'RES_XML_FILE',
       'filename' => 'ecg.xml',
+      'db_required' => false,
       'post_download_function' => function( $filename ) {
         if( 0 < filesize( $filename ) )
         {
@@ -171,6 +175,7 @@ $category_list = [
       'table' => 'Frax',
       'variable' => 'RES_RESULT_FILE',
       'filename' => 'frax.txt',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'frax',
@@ -178,6 +183,7 @@ $category_list = [
       'table' => 'Frax',
       'variable' => 'RES_RESULT_FILE',
       'filename' => 'frax.txt',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'frax',
@@ -185,6 +191,7 @@ $category_list = [
       'table' => 'Frax',
       'variable' => 'RES_RESULT_FILE',
       'filename' => 'frax.txt',
+      'db_required' => false,
     ],
   ],
   'stroop_dot' => [
@@ -194,6 +201,7 @@ $category_list = [
       'table' => 'NeuropsychologicalBattery',
       'variable' => 'STP_DOTREC_DCS',
       'filename' => 'stroop_dot.wav',
+      'db_required' => false,
     ],
     '2' => [
       'name' => 'audio',
@@ -201,6 +209,7 @@ $category_list = [
       'table' => 'NeuropsychologicalBattery',
       'variable' => 'STP_DOTREC_COF1',
       'filename' => 'stroop_dot.wav',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'audio',
@@ -208,6 +217,7 @@ $category_list = [
       'table' => 'StroopFAS',
       'variable' => 'STP_DOTREC_COF2',
       'filename' => 'stroop_dot.wav',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'audio',
@@ -215,6 +225,7 @@ $category_list = [
       'table' => 'StroopFAS',
       'variable' => 'STP_DOTREC_COF3',
       'filename' => 'stroop_dot.wav',
+      'db_required' => false,
     ],
   ],
   'stroop_word' => [
@@ -224,6 +235,7 @@ $category_list = [
       'table' => 'NeuropsychologicalBattery',
       'variable' => 'STP_WORREC_DCS',
       'filename' => 'stroop_word.wav',
+      'db_required' => false,
     ],
     '2' => [
       'name' => 'audio',
@@ -231,6 +243,7 @@ $category_list = [
       'table' => 'NeuropsychologicalBattery',
       'variable' => 'STP_WORREC_COF1',
       'filename' => 'stroop_word.wav',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'audio',
@@ -238,6 +251,7 @@ $category_list = [
       'table' => 'StroopFAS',
       'variable' => 'STP_WORREC_COF2',
       'filename' => 'stroop_word.wav',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'audio',
@@ -245,6 +259,7 @@ $category_list = [
       'table' => 'StroopFAS',
       'variable' => 'STP_WORREC_COF3',
       'filename' => 'stroop_word.wav',
+      'db_required' => false,
     ],
   ],
   'stroop_colour' => [
@@ -254,6 +269,7 @@ $category_list = [
       'table' => 'NeuropsychologicalBattery',
       'variable' => 'STP_COLREC_DCS',
       'filename' => 'stroop_colour.wav',
+      'db_required' => false,
     ],
     '2' => [
       'name' => 'audio',
@@ -261,6 +277,7 @@ $category_list = [
       'table' => 'NeuropsychologicalBattery',
       'variable' => 'STP_COLREC_COF1',
       'filename' => 'stroop_colour.wav',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'audio',
@@ -268,6 +285,7 @@ $category_list = [
       'table' => 'StroopFAS',
       'variable' => 'STP_COLREC_COF2',
       'filename' => 'stroop_colour.wav',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'audio',
@@ -275,6 +293,7 @@ $category_list = [
       'table' => 'StroopFAS',
       'variable' => 'STP_COLREC_COF3',
       'filename' => 'stroop_colour.wav',
+      'db_required' => false,
     ],
   ],
   'f_word_fluency' => [
@@ -284,6 +303,7 @@ $category_list = [
       'table' => 'NeuropsychologicalBattery',
       'variable' => 'FAS_FREC_DCS',
       'filename' => 'f_word_fluency.wav',
+      'db_required' => false,
     ],
     '2' => [
       'name' => 'audio',
@@ -291,6 +311,7 @@ $category_list = [
       'table' => 'NeuropsychologicalBattery',
       'variable' => 'FAS_FREC_COF1',
       'filename' => 'f_word_fluency.wav',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'audio',
@@ -298,6 +319,7 @@ $category_list = [
       'table' => 'StroopFAS',
       'variable' => 'FAS_FREC_COF2',
       'filename' => 'f_word_fluency.wav',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'audio',
@@ -305,6 +327,7 @@ $category_list = [
       'table' => 'StroopFAS',
       'variable' => 'FAS_FREC_COF3',
       'filename' => 'f_word_fluency.wav',
+      'db_required' => false,
     ],
   ],
   'a_word_fluency' => [
@@ -314,6 +337,7 @@ $category_list = [
       'table' => 'NeuropsychologicalBattery',
       'variable' => 'FAS_AREC_DCS',
       'filename' => 'a_word_fluency.wav',
+      'db_required' => false,
     ],
     '2' => [
       'name' => 'audio',
@@ -321,6 +345,7 @@ $category_list = [
       'table' => 'NeuropsychologicalBattery',
       'variable' => 'FAS_AREC_COF1',
       'filename' => 'a_word_fluency.wav',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'audio',
@@ -328,6 +353,7 @@ $category_list = [
       'table' => 'StroopFAS',
       'variable' => 'FAS_AREC_COF2',
       'filename' => 'a_word_fluency.wav',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'audio',
@@ -335,6 +361,7 @@ $category_list = [
       'table' => 'StroopFAS',
       'variable' => 'FAS_AREC_COF3',
       'filename' => 'a_word_fluency.wav',
+      'db_required' => false,
     ],
   ],
   's_word_fluency' => [
@@ -344,6 +371,7 @@ $category_list = [
       'table' => 'NeuropsychologicalBattery',
       'variable' => 'FAS_SREC_DCS',
       'filename' => 's_word_fluency.wav',
+      'db_required' => false,
     ],
     '2' => [
       'name' => 'audio',
@@ -351,6 +379,7 @@ $category_list = [
       'table' => 'NeuropsychologicalBattery',
       'variable' => 'FAS_SREC_COF1',
       'filename' => 's_word_fluency.wav',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'audio',
@@ -358,6 +387,7 @@ $category_list = [
       'table' => 'StroopFAS',
       'variable' => 'FAS_SREC_COF2',
       'filename' => 's_word_fluency.wav',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'audio',
@@ -365,6 +395,7 @@ $category_list = [
       'table' => 'StroopFAS',
       'variable' => 'FAS_SREC_COF3',
       'filename' => 's_word_fluency.wav',
+      'db_required' => false,
     ],
   ],
   'alphabet' => [
@@ -374,6 +405,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_ALPTME_REC2_COM',
       'filename' => 'alphabet.wav',
+      'db_required' => false,
     ],
     '2' => [
       'name' => 'audio',
@@ -381,6 +413,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_ALPTME_REC2_COF1',
       'filename' => 'alphabet.wav',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'audio',
@@ -388,6 +421,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_ALPTME_REC2_COF2',
       'filename' => 'alphabet.wav',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'audio',
@@ -395,6 +429,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_ALPTME_REC2_COF3',
       'filename' => 'alphabet.wav',
+      'db_required' => false,
     ],
   ],
   'mental_alternation' => [
@@ -404,6 +439,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_ALTTME_REC_COM',
       'filename' => 'mental_alternation.wav',
+      'db_required' => false,
     ],
     '2' => [
       'name' => 'audio',
@@ -411,6 +447,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_ALTTME_REC_COF1',
       'filename' => 'mental_alternation.wav',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'audio',
@@ -418,6 +455,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_ALTTME_REC_COF2',
       'filename' => 'mental_alternation.wav',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'audio',
@@ -425,6 +463,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_ALTTME_REC_COF3',
       'filename' => 'mental_alternation.wav',
+      'db_required' => false,
     ],
   ],
   'animal_fluency' => [
@@ -434,6 +473,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_ANMLLLIST_REC_COM',
       'filename' => 'animal_fluency.wav',
+      'db_required' => false,
     ],
     '2' => [
       'name' => 'audio',
@@ -441,6 +481,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_ANMLLLIST_REC_COF1',
       'filename' => 'animal_fluency.wav',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'audio',
@@ -448,6 +489,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_ANMLLLIST_REC_COF2',
       'filename' => 'animal_fluency.wav',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'audio',
@@ -455,6 +497,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_ANMLLLIST_REC_COF3',
       'filename' => 'animal_fluency.wav',
+      'db_required' => false,
     ],
   ],
   'counting' => [
@@ -464,6 +507,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_CNTTMEREC_COM',
       'filename' => 'counting.wav',
+      'db_required' => false,
     ],
     '2' => [
       'name' => 'audio',
@@ -471,6 +515,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_CNTTMEREC_COF1',
       'filename' => 'counting.wav',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'audio',
@@ -478,6 +523,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_CNTTMEREC_COF2',
       'filename' => 'counting.wav',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'audio',
@@ -485,6 +531,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_CNTTMEREC_COF3',
       'filename' => 'counting.wav',
+      'db_required' => false,
     ],
   ],
   'delayed_word_list' => [
@@ -494,6 +541,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_WRDLST2_REC_COM',
       'filename' => 'delayed_word_list.wav',
+      'db_required' => false,
     ],
     '2' => [
       'name' => 'audio',
@@ -501,6 +549,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_WRDLST2_REC_COF1',
       'filename' => 'delayed_word_list.wav',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'audio',
@@ -508,6 +557,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_WRDLST2_REC_COF2',
       'filename' => 'delayed_word_list.wav',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'audio',
@@ -515,6 +565,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_WRDLST2_REC_COF3',
       'filename' => 'delayed_word_list.wav',
+      'db_required' => false,
     ],
   ],
   'immediate_word_list' => [
@@ -524,6 +575,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_WRDLSTREC_COM',
       'filename' => 'immediate_word_list.wav',
+      'db_required' => false,
     ],
     '2' => [
       'name' => 'audio',
@@ -531,6 +583,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_WRDLSTREC_COF1',
       'filename' => 'immediate_word_list.wav',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'audio',
@@ -538,6 +591,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_WRDLSTREC_COF2',
       'filename' => 'immediate_word_list.wav',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'audio',
@@ -545,6 +599,7 @@ $category_list = [
       'table' => 'InHome_2',
       'variable' => 'COG_WRDLSTREC_COF3',
       'filename' => 'immediate_word_list.wav',
+      'db_required' => false,
     ],
   ],
   'spirometry_flow' => [
@@ -554,6 +609,7 @@ $category_list = [
       'table' => 'Spirometry',
       'variable' => 'Measure.RES_FLOW_VALUES',
       'filename' => 'spirometry_flow_<N>.txt',
+      'db_required' => false,
     ],
   ],
   'spirometry_volume' => [
@@ -563,6 +619,7 @@ $category_list = [
       'table' => 'Spirometry',
       'variable' => 'Measure.RES_VOLUME_VALUES',
       'filename' => 'spirometry_volume_<N>.txt',
+      'db_required' => false,
     ],
   ],
   'spirometry_report' => [
@@ -572,6 +629,7 @@ $category_list = [
       'table' => 'Spirometry',
       'variable' => 'Measure.RES_REPORT',
       'filename' => 'report.pdf', // this data isn't actually repeated, so no <N> is included,
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'spirometry',
@@ -579,6 +637,7 @@ $category_list = [
       'table' => 'Spirometry',
       'variable' => 'Measure.RES_REPORT',
       'filename' => 'report.pdf', // this data isn't actually repeated, so no <N> is included,
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'spirometry',
@@ -586,6 +645,7 @@ $category_list = [
       'table' => 'Spirometry',
       'variable' => 'Measure.RES_REPORT',
       'filename' => 'report.pdf', // this data isn't actually repeated, so no <N> is included,
+      'db_required' => false,
     ],
   ],
   'cineloop1' => [ // baseline had three cineloops
@@ -595,6 +655,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop1_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
   ],
@@ -605,6 +666,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_2',
       'filename' => 'cineloop2_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
   ],
@@ -615,6 +677,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_3',
       'filename' => 'cineloop3_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
   ],
@@ -625,6 +688,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
     '3' => [
@@ -633,6 +697,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
     '4' => [
@@ -641,6 +706,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'cineloop_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
   ],
@@ -651,6 +717,7 @@ $category_list = [
       'table' => 'Plaque',
       'variable' => 'Measure.CINELOOP_1',
       'filename' => 'plaque_cineloop_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
   ],
@@ -660,28 +727,32 @@ $category_list = [
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.SR',
-      'filename' => 'report.dcm.gz' // this data isn't actually repeated, so no <N> is included,
+      'filename' => 'report.dcm.gz', // this data isn't actually repeated, so no <N> is included,
+      'db_required' => false,
     ],
     '2' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.SR_1',
-      'filename' => 'report.dcm.gz' // this data isn't actually repeated, so no <N> is included,
+      'filename' => 'report.dcm.gz', // this data isn't actually repeated, so no <N> is included,
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.SR_1',
-      'filename' => 'report.dcm.gz' // this data isn't actually repeated, so no <N> is included,
+      'filename' => 'report.dcm.gz', // this data isn't actually repeated, so no <N> is included,
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'carotid_intima',
       'datasource' => 'clsa-dcs-images',
       'table' => 'CarotidIntima',
       'variable' => 'Measure.SR_1',
-      'filename' => 'report.dcm.gz' // this data isn't actually repeated, so no <N> is included,
+      'filename' => 'report.dcm.gz', // this data isn't actually repeated, so no <N> is included,
+      'db_required' => false,
     ],
   ],
   'still_image' => [ // baseline only has one still image
@@ -691,6 +762,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE',
       'filename' => 'still_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
   ],
@@ -701,6 +773,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_1',
       'filename' => 'still1_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
     '3' => [
@@ -709,6 +782,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_1',
       'filename' => 'still1_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
     '4' => [
@@ -717,6 +791,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_1',
       'filename' => 'still1_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
   ],
@@ -727,6 +802,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_2',
       'filename' => 'still2_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
     '3' => [
@@ -735,6 +811,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_2',
       'filename' => 'still2_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
     '4' => [
@@ -743,6 +820,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_2',
       'filename' => 'still2_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
   ],
@@ -753,6 +831,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_3',
       'filename' => 'still3_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
     '3' => [
@@ -761,6 +840,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_3',
       'filename' => 'still3_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
     '4' => [
@@ -769,6 +849,7 @@ $category_list = [
       'table' => 'CarotidIntima',
       'variable' => 'Measure.STILL_IMAGE_3',
       'filename' => 'still3_<N>.dcm.gz',
+      'db_required' => false,
       'side' => 'Measure.SIDE',
     ],
   ],
@@ -780,6 +861,7 @@ $category_list = [
       'variable' => 'Measure.RES_HIP_DICOM',
       'side' => 'Measure.OUTPUT_HIP_SIDE',
       'filename' => 'dxa_hip_<N>.dcm',
+      'db_required' => true,
       'post_download_function' => $dxa_post_download_function,
     ],
   ],
@@ -791,6 +873,7 @@ $category_list = [
       'variable' => 'RES_FA_DICOM',
       'side' => 'OUTPUT_FA_SIDE',
       'filename' => 'dxa_forearm.dcm',
+      'db_required' => true,
       'post_download_function' => $dxa_post_download_function,
     ],
   ],
@@ -801,6 +884,7 @@ $category_list = [
       'table' => 'LateralBoneDensity',
       'variable' => 'RES_SEL_DICOM_MEASURE',
       'filename' => 'dxa_lateral.dcm',
+      'db_required' => false,
     ],
   ],
   'dxa_lateral_ot' => [
@@ -810,6 +894,7 @@ $category_list = [
       'table' => 'LateralBoneDensity',
       'variable' => 'RES_SEL_DICOM_OT',
       'filename' => 'dxa_lateral_ot.dcm',
+      'db_required' => false,
     ],
   ],
   'dxa_lateral_pr' => [
@@ -819,6 +904,7 @@ $category_list = [
       'table' => 'LateralBoneDensity',
       'variable' => 'RES_SEL_DICOM_PR',
       'filename' => 'dxa_lateral_pr.dcm',
+      'db_required' => false,
     ],
   ],
   'dxa_spine' => [
@@ -828,6 +914,7 @@ $category_list = [
       'table' => 'SpineBoneDensity',
       'variable' => 'RES_SP_DICOM',
       'filename' => 'dxa_spine.dcm',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'dxa',
@@ -835,6 +922,7 @@ $category_list = [
       'table' => 'SpineBoneDensity',
       'variable' => 'RES_SP_DICOM',
       'filename' => 'dxa_spine.dcm',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'dxa',
@@ -842,6 +930,7 @@ $category_list = [
       'table' => 'SpineBoneDensity',
       'variable' => 'RES_SP_DICOM',
       'filename' => 'dxa_spine.dcm',
+      'db_required' => false,
     ],
   ],
   'dxa_wbody_bmd' => [
@@ -851,6 +940,7 @@ $category_list = [
       'table' => 'WholeBodyBoneDensity',
       'variable' => 'RES_WB_DICOM_1',
       'filename' => 'dxa_wbody_bmd.dcm',
+      'db_required' => true,
       'post_download_function' => $dxa_post_download_function,
     ],
   ],
@@ -861,6 +951,7 @@ $category_list = [
       'table' => 'WholeBodyBoneDensity',
       'variable' => 'RES_WB_DICOM_2',
       'filename' => 'dxa_wbody_bca.dcm',
+      'db_required' => false,
     ],
   ],
   'dxa_hip_recovery_left' => [
@@ -870,6 +961,7 @@ $category_list = [
       'table' => 'HipRecoveryLeft',
       'variable' => 'RES_HIP_DICOM',
       'filename' => 'dxa_hip_recovery_left.dcm',
+      'db_required' => false,
     ],
   ],
   'dxa_hip_recovery_right' => [
@@ -879,6 +971,7 @@ $category_list = [
       'table' => 'HipRecoveryRight',
       'variable' => 'RES_HIP_DICOM',
       'filename' => 'dxa_hip_recovery_right.dcm',
+      'db_required' => false,
     ],
   ],
   'dxa_lateral_recovery' => [
@@ -888,6 +981,7 @@ $category_list = [
       'table' => 'LateralRecovery',
       'variable' => 'RES_SEL_DICOM_MEASURE',
       'filename' => 'dxa_lateral_recovery.dcm',
+      'db_required' => false,
     ],
   ],
   'dxa_wbody_recovery' => [
@@ -897,6 +991,7 @@ $category_list = [
       'table' => 'WbodyRecovery',
       'variable' => 'RES_WB_DICOM_1',
       'filename' => 'dxa_wbody_recovery.dcm',
+      'db_required' => false,
     ],
   ],
   'retinal' => [
@@ -907,6 +1002,7 @@ $category_list = [
       'variable' => 'Measure.EYE',
       'side' => 'Measure.SIDE',
       'filename' => 'retinal_<N>.jpeg',
+      'db_required' => false,
     ],
   ],
   'retinal_left' => [
@@ -916,6 +1012,7 @@ $category_list = [
       'table' => 'RetinalScanLeft',
       'variable' => 'EYE',
       'filename' => 'retinal_left.jpeg',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'retinal',
@@ -923,6 +1020,7 @@ $category_list = [
       'table' => 'RetinalScanLeft',
       'variable' => 'EYE',
       'filename' => 'retinal_left.jpeg',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'retinal',
@@ -930,6 +1028,7 @@ $category_list = [
       'table' => 'RetinalScanLeft',
       'variable' => 'EYE',
       'filename' => 'retinal_left.jpeg',
+      'db_required' => false,
     ],
   ],
   'retinal_right' => [
@@ -939,6 +1038,7 @@ $category_list = [
       'table' => 'RetinalScanRight',
       'variable' => 'EYE',
       'filename' => 'retinal_right.jpeg',
+      'db_required' => false,
     ],
     '3' => [
       'name' => 'retinal',
@@ -946,6 +1046,7 @@ $category_list = [
       'table' => 'RetinalScanRight',
       'variable' => 'EYE',
       'filename' => 'retinal_right.jpeg',
+      'db_required' => false,
     ],
     '4' => [
       'name' => 'retinal',

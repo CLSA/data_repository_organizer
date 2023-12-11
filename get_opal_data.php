@@ -343,7 +343,16 @@ if( !file_exists( $opal_enabled_filename ) )
   exit( 0 );
 }
 
-$cenozo_db = get_cenozo_db();
+// only connect to the database if we have to
+try
+{
+  $cenozo_db = $params['db_required'] ? get_cenozo_db() : NULL;
+}
+catch( \Exception $e )
+{
+  fatal_error( 'Failed to open required connection to cenozo database.', 8 );
+}
+
 if( $uid )
 {
   output( sprintf( 'Downloading %s data from Opal to %s (for UID %s only)', $category, $base_dir, $uid ) );
@@ -397,6 +406,6 @@ output( sprintf(
   $count_list['skipped']
 ) );
 
-$cenozo_db->close();
+if( $cenozo_db ) $cenozo_db->close();
 
 exit( 0 );
