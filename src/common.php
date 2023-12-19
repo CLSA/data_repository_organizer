@@ -26,7 +26,6 @@ function check_directories()
   $test_dir_list = array(
     DATA_DIR,
     sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR ),
-    sprintf( '%s/%s', DATA_DIR, CLEANED_DIR ),
     sprintf( '%s/%s', DATA_DIR, INVALID_DIR )
   );
   foreach( $test_dir_list as $dir )
@@ -93,8 +92,41 @@ function get_study_uid_lookup( $identifier_name, $events = false, $consents = fa
   $select_list = ['participant.uid', 'participant_identifier.value'];
   if( $events )
   {
-    $select_list[] = 'DATE( CONVERT_TZ( home_event.datetime, "UTC", "Canada/Eastern" ) ) AS home_date';
-    $select_list[] = 'DATE( CONVERT_TZ( site_event.datetime, "UTC", "Canada/Eastern" ) ) AS site_date';
+    // create a temporary table for home and site events
+    $cenozo_db->query( 'SELECT id INTO @home_id FROM event_type WHERE name = "completed (Follow-Up 3 Home)"' );
+    $cenozo_db->query( 'DROP TABLE IF EXISTS home_event' );
+    $cenozo_db->query(
+      'CREATE TEMPORARY TABLE home_event '.
+      'SELECT '.
+        'participant.id AS participant_id, '.
+        'DATE( CONVERT_TZ( event.datetime, "UTC", "Canada/Eastern" ) ) AS date '.
+      'FROM participant '.
+      'JOIN participant_last_event AS ple '.
+        'ON participant.id = ple.participant_id '.
+        'AND ple.event_type_id = @home_id '.
+      'JOIN event AS event '.
+        'ON ple.event_id = event.id'
+    );
+    $cenozo_db->query( 'ALTER TABLE home_event ADD PRIMARY KEY (participant_id)' );
+
+    $cenozo_db->query( 'SELECT id INTO @site_id FROM event_type WHERE name = "completed (Follow-Up 3 Site)"' );
+    $cenozo_db->query( 'DROP TABLE IF EXISTS site_event' );
+    $cenozo_db->query(
+      'CREATE TEMPORARY TABLE site_event '.
+      'SELECT '.
+        'participant.id AS participant_id, '.
+        'DATE( CONVERT_TZ( event.datetime, "UTC", "Canada/Eastern" ) ) AS date '.
+      'FROM participant '.
+      'JOIN participant_last_event AS ple '.
+        'ON participant.id = ple.participant_id '.
+       'AND ple.event_type_id = @site_id '.
+      'JOIN event AS event '.
+        'ON ple.event_id = event.id'
+    );
+    $cenozo_db->query( 'ALTER TABLE site_event ADD PRIMARY KEY (participant_id)' );
+
+    $select_list[] = 'home_event.date AS home_date';
+    $select_list[] = 'site_event.date AS site_date';
   }
   if( $consents )
   {
@@ -115,14 +147,8 @@ function get_study_uid_lookup( $identifier_name, $events = false, $consents = fa
   if( $events )
   {
     $sql .=
-      'JOIN participant_last_event AS home_ple ON participant.id = home_ple.participant_id '.
-      'JOIN event_type AS home_event_type ON home_ple.event_type_id = home_event_type.id '.
-        'AND home_event_type.name = "completed (Follow-Up 3 Home)" '.
-      'LEFT JOIN event AS home_event ON home_ple.event_id = home_event.id '.
-      'JOIN participant_last_event AS site_ple ON participant.id = site_ple.participant_id '.
-      'JOIN event_type AS site_event_type ON site_ple.event_type_id = site_event_type.id '.
-        'AND site_event_type.name = "completed (Follow-Up 3 Site)" '.
-      'LEFT JOIN event AS site_event ON site_ple.event_id = site_event.id ';
+      'LEFT JOIN home_event ON participant.id = home_event.participant_id '.
+      'LEFT JOIN site_event ON participant.id = site_event.participant_id ';
   }
 
   if( $consents )
@@ -141,6 +167,8 @@ function get_study_uid_lookup( $identifier_name, $events = false, $consents = fa
   $sql .= sprintf( 'WHERE identifier.name = "%s"', $cenozo_db->real_escape_string( $identifier_name ) );
 
   $result = $cenozo_db->query( $sql );
+  $cenozo_db->query( 'DROP TABLE IF EXISTS home_event' );
+  $cenozo_db->query( 'DROP TABLE IF EXISTS site_event' );
   $cenozo_db->close();
 
   if( false === $result ) throw new Exception( 'Unable to get study UID lookup data.' );
@@ -239,8 +267,9 @@ function process_actigraph_files( $identifier_name, $study, $phase )
   $file_count = 0;
   foreach( glob( sprintf( '%s/[A-Z][A-Z][A-Z]/actigraph/*', $base_dir ) ) as $filename )
   {
+    $preg = '#/([^/]+) \(([0-9]{4}-[0-9]{2}-[0-9]{2})\)(_thigh|_wrist)?\.gt3x$#';
     $matches = [];
-    if( !preg_match( '#/([^/]+) \(([0-9]{4}-[0-9]{2}-[0-9]{2})\)\.gt3x$#', $filename, $matches ) )
+    if( !preg_match( $preg, $filename, $matches ) )
     {
       $reason = sprintf(
         'Cannot transfer actigraph file, "%s", invalid format.',
@@ -252,6 +281,8 @@ function process_actigraph_files( $identifier_name, $study, $phase )
 
     $study_id = strtoupper( trim( $matches[1] ) );
     $date = str_replace( '-', '', $matches[2] );
+    $type = 4 <= count( $matches ) ? trim( $matches[3], '_' ) : 'unknown';
+
     if( !array_key_exists( $study_id, $study_uid_lookup ) )
     {
       $reason = sprintf(
@@ -267,13 +298,16 @@ function process_actigraph_files( $identifier_name, $study, $phase )
     $home_date = $study_uid_lookup[$study_id]['home_date'];
     $site_date = $study_uid_lookup[$study_id]['site_date'];
 
-    // determine if the device was on the thigh or wrist
-    $file = file_get_contents( $filename );
-    $type = 'unknown';
-    if( $file )
+    // if the thigh/wrist type wasn't in the filename, look in the file's data instead
+    if( 'unknown' == $type )
     {
-      if( preg_match( '/"Limb":"Thigh"/', $file ) ) $type = 'thigh';
-      else if( preg_match( '/"Limb":"Wrist"/', $file ) ) $type = 'wrist';
+      $file = file_get_contents( $filename );
+      $type = 'unknown';
+      if( $file )
+      {
+        if( preg_match( '/"Limb":"Thigh"/', $file ) ) $type = 'thigh';
+        else if( preg_match( '/"Limb":"Wrist"/', $file ) ) $type = 'wrist';
+      }
     }
 
     if( 'wrist' == $type )

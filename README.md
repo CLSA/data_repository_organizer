@@ -65,15 +65,6 @@ DIRECTORIES
 │       ├── modality1
 │       ├── modality2
 │       └── etc...
-├── cleaned
-│   ├── CAL (DAL, HAM, MAN, MCG, NUM, OTT, SFU, SHE, VIC)
-│   │   ├── modality1
-│   │   ├── modality2
-│   │   └── etc...
-│   └── nosite
-│       ├── modality1
-│       ├── modality2
-│       └── etc...
 ├── supplementary
 │   └── clsa
 │       ├── 1

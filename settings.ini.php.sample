@@ -17,8 +17,5 @@ define( 'DATA_DIR', '/data' );
 // The relative directory to look for files to be sorted
 define( 'TEMPORARY_DIR', 'temporary' );
 
-// The relative directory to look for cleaned files to be re-sorted
-define( 'CLEANED_DIR', 'cleaned' );
-
 // THe relative directory to move files which cannot be sorted
 define( 'INVALID_DIR', 'invalid' );
