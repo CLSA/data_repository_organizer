@@ -355,22 +355,8 @@ function process_actigraph_files( $identifier_name, $study, $phase )
     // the wrist is done after the site interview
     else if( 'wrist' == $type && $site_date ) $diff = $date_object->diff( new DateTime( $site_date ) );
 
-    $valid = false;
-    if( !is_null( $diff ) )
-    {
-      if( $diff->invert )
-      {
-        // allow up to one day before
-        if( 1 >= $diff->days ) $valid = true;
-      }
-      else
-      {
-        // allow up to two days after
-        if( 2 >= $diff->days ) $valid = true;
-      }
-    }
-
-    if( !$valid )
+    // only allow up to two days before or after
+    if( is_null( $diff ) || 2 < $diff->days )
     {
       $reason = sprintf(
         'Invalid date found in %s actigraph file, "%s".',
