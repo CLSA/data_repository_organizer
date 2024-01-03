@@ -1054,6 +1054,7 @@ $category_list = [
       'table' => 'RetinalScanRight',
       'variable' => 'EYE',
       'filename' => 'retinal_right.jpeg',
+      'db_required' => false,
     ],
   ],
 ];
