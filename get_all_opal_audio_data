@@ -1,18 +1,13 @@
 #!/usr/bin/php
 <?php
 /**
- * A script that downloads all new binary data from Opal
+ * A script that downloads all new audio data from Opal
  * This is a temporary script that will be run on a regular basis until binary data is no longer
  * uploaded to Opal.  After that time it will no longer be required.
  */
 
 $phase = 4;
 $category_list = [
-  'cdtt',
-  'choice_rt',
-  'ecg',
-  'frax',
-  /* downloading recordings daily instead of weekly
   'f_word_fluency',
   'a_word_fluency',
   's_word_fluency',
@@ -25,23 +20,6 @@ $category_list = [
   'stroop_dot',
   'stroop_word',
   'stroop_colour',
-  */
-  'spirometry_flow',
-  'spirometry_volume',
-  'spirometry_report',
-  'dxa_forearm',
-  'dxa_hip',
-  'dxa_lateral_pr',
-  'dxa_spine',
-  'dxa_wbody_bmd',
-  'dxa_wbody_bca',
-  'retinal_left',
-  'retinal_right',
-  'cineloop',
-  'us_report',
-  'still_image_1',
-  'still_image_2',
-  'still_image_3',
 ];
 
 foreach( $category_list as $category )
