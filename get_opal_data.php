@@ -206,6 +206,11 @@ function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db )
                 basename( $new_filename )
               );
               if( !file_exists( $link ) ) symlink( basename( $new_filename ), $link );
+
+              if( array_key_exists( 'post_link_function', $params ) )
+              {
+                $params['post_link_function']( $new_filename, $link, $cenozo_db );
+              }
             }
           }
 
@@ -268,6 +273,11 @@ function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db )
           chdir( dirname( $new_filename ) );
           $link = preg_replace( '/^([^.]+)/', sprintf( '$1_%s', $side ), $params['filename'] );
           if( !file_exists( $link ) ) symlink( basename( $new_filename ), $link );
+
+          if( array_key_exists( 'post_link_function', $params ) )
+          {
+            $params['post_link_function']( $new_filename, $link, $cenozo_db );
+          }
         }
       }
 

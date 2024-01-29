@@ -910,3 +910,37 @@ function prepare_file( $type, $filename, $identifier )
   if( 0 < $result_code ) printf( implode( "\n", $output ) );
   return $result_code;
 }
+
+/**
+ * Decompresses a gzipped file and returns the full path to the decompressed file
+ */
+function decompress_file( $gzip_filename )
+{
+  // /data/raw/clsa/4/carotid_intima/A004547/report_1.dcm.gz: gzip compressed data, from FAT filesystem (MS-DOS, OS/2, NT), original size modulo 2^32 8544
+  $decompressed_filename = NULL;
+
+  // determine if the input is a gzipped file
+  $output = NULL;
+  $result_code = NULL;
+  exec( sprintf( 'file %s', $gzip_filename ), $output, $result_code );
+  if( 0 == $result_code && 0 < count( $output ) && preg_match( '#gzip compressed data#', $output[0] ) )
+  {
+    // create a temporary file to copy the original gzipped to
+    $working_gzfilename = sprintf(
+      '/tmp/%s_%s',
+      bin2hex( openssl_random_pseudo_bytes( 8 ) ),
+      basename( $gzip_filename )
+    );
+
+    // add the .gz extension if there isn't one already
+    if( !preg_match( '#\.gz$#', $working_gzfilename ) ) $working_gzfilename .= '.gz';
+
+    copy( $gzip_filename, $working_gzfilename );
+    exec( sprintf( 'gunzip -f %s', $working_gzfilename ), $output, $result_code );
+
+    // determine what the decompressed file will be
+    if( 0 == $result_code ) $decompressed_filename = preg_replace( '#\.gz$#', '', $working_gzfilename );
+  }
+
+  return $decompressed_filename;
+}

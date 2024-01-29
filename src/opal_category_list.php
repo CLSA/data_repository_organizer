@@ -1,7 +1,104 @@
 <?php
 require_once( 'common.php' );
 
-// post download function used by all dxa files
+/**
+ * Post link function used by all us_report "SR" files
+ * 
+ * This function will parse the cIMT values from the SR report file and add them to the report_summary.csv
+ * file found in the root of the supplementary's carotid_intima folder.
+ */
+$us_report_post_link_function = function( $filename, $link ) {
+  // determine the report summary filename
+  $matches = [];
+  if( !preg_match( '#raw/([^/]+/[0-9]+)/carotid_intima#', $filename, $matches ) ) return;
+  $summary_filename = sprintf( '/data/supplementary/%s/carotid_intima/report_summary.csv', $matches[1] );
+
+  // get the UID from the filename
+  $matches = [];
+  $uid = preg_match( '#/([A-Z0-9]+)/report_#', $filename, $matches ) ? $matches[1] : NULL;
+
+  // get the side from the link
+  $matches = [];
+  $side = preg_match( '#report_(.+)\.dcm.gz#', $link, $matches ) ? $matches[1] : NULL;
+
+  // only continue if we have a uid and side
+  if( is_null( $uid ) || is_null( $side ) ) return;
+
+  // remove this participant-side's entry in the report summary
+  exec( sprintf(
+    'sed -i "/^%s,%s,/d" %s',
+    $uid,
+    $side,
+    $summary_filename
+  ) );
+
+  // decompress the report file
+  $decompressed_filename = decompress_file( $filename );
+
+  // only continue if we successfully got a decompressed file
+  if( is_null( $decompressed_filename ) ) return;
+
+  // get the report values from the dcm file
+  $summary_data = [];
+  $result_code = NULL;
+  exec(
+    sprintf( 'php %s/get_us_pr_data.php %s', __DIR__, $decompressed_filename ),
+    $summary_data,
+    $result_code
+  );
+
+  // delete the temporary decompressed file now that we're done with it
+  unlink( $decompressed_filename );
+
+  if( 0 == $result_code )
+  {
+    // add the uid and side to each line parsed from the report file
+    foreach( $summary_data as $index => $line )
+      $summary_data[$index] = sprintf( '%s,%s,%s', $uid, $side, $line );
+
+    // now find where to insert the new data
+    $insert_index = NULL;
+    foreach( explode( "\n", file_get_contents( $summary_filename ) ) as $index => $line )
+    {
+      // skip the header
+      if( 0 == $index ) continue;
+
+      $line_uid = substr( $line, 0, 7 );
+      if( $line_uid > $uid )
+      {
+        $insert_index = $index;
+        break;
+      }
+    }
+
+    if( is_null( $insert_index ) )
+    {
+      // add the data to the end of the file
+      exec( sprintf(
+        "echo '%s' >> %s",
+        implode( "\n", $summary_data ), // join the data with newlines
+        $summary_filename
+      ) );
+    }
+    else
+    {
+      // insert data at the given index
+      exec( sprintf(
+        'sed -i "%d i %s" %s',
+        $insert_index + 1,
+        implode( '\n', $summary_data ), // join the data with \n (as a string)
+        $summary_filename
+      ) );
+    }
+  }
+};
+
+/**
+ * Post download function used by all dxa files
+ * 
+ * This will generate jpeg versions of forearm, hip and wbody DICOM files for release to participants.
+ * It will also create jpeg versions of forearm DICOM files for release to reserachers.
+ */
 $dxa_post_download_function = function( $filename, $cenozo_db ) {
   $new_filename_list = [];
 
@@ -730,6 +827,7 @@ $category_list = [
       'filename' => 'report_<N>.dcm.gz',
       'db_required' => false,
       'side' => 'Measure.SIDE',
+      // 'post_link_function' => $us_report_post_link_function, TODO: uncomment once re-download is done
     ],
     '2' => [
       'name' => 'carotid_intima',
@@ -739,6 +837,7 @@ $category_list = [
       'filename' => 'report_<N>.dcm.gz',
       'db_required' => false,
       'side' => 'Measure.SIDE',
+      'post_link_function' => $us_report_post_link_function,
     ],
     '3' => [
       'name' => 'carotid_intima',
@@ -748,6 +847,7 @@ $category_list = [
       'filename' => 'report_<N>.dcm.gz',
       'db_required' => false,
       'side' => 'Measure.SIDE',
+      'post_link_function' => $us_report_post_link_function,
     ],
     '4' => [
       'name' => 'carotid_intima',
@@ -757,6 +857,7 @@ $category_list = [
       'filename' => 'report_<N>.dcm.gz',
       'db_required' => false,
       'side' => 'Measure.SIDE',
+      'post_link_function' => $us_report_post_link_function,
     ],
   ],
   'still_image' => [ // baseline only has one still image
