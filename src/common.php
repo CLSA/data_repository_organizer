@@ -184,21 +184,26 @@ function get_study_uid_lookup( $identifier_name, $events = false, $consents = fa
  * Sends a curl request to the opal server(s)
  * 
  * @param array(key->value) $arguments The url arguments as key->value pairs (value may be null)
+ * @param boolean $alternate Whether to use the alternate Opal server (updated daily instead of weekly)
  * @return curl resource
  */
-function opal_send( $arguments, $file_handle = NULL )
+function opal_send( $arguments, $alternate = false )
 {
   $curl = curl_init();
 
   $code = 0;
+  
+  $user = $alternate ? OPALALT_USERNAME : OPAL_USERNAME;
+  $pass = $alternate ? OPALALT_PASSWORD : OPAL_PASSWORD;
+  $url = $alternate ? OPALALT_URL : OPAL_URL;
+  $timeout = $alternate ? OPALALT_TIMEOUT : OPAL_TIMEOUT;
 
   // prepare cURL request
   $headers = array(
-    sprintf( 'Authorization: X-Opal-Auth %s',
-             base64_encode( sprintf( '%s:%s', OPAL_USERNAME, OPAL_PASSWORD ) ) ),
-    'Accept: application/json' );
+    sprintf( 'Authorization: X-Opal-Auth %s', base64_encode( sprintf( '%s:%s', $user, $pass ) ) ),
+    'Accept: application/json'
+  );
 
-  $url = OPAL_URL;
   $postfix = array();
   foreach( $arguments as $key => $value )
   {
@@ -213,17 +218,7 @@ function opal_send( $arguments, $file_handle = NULL )
   curl_setopt( $curl, CURLOPT_URL, $url );
   curl_setopt( $curl, CURLOPT_SSL_VERIFYPEER, false );
   curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
-  curl_setopt( $curl, CURLOPT_CONNECTTIMEOUT, OPAL_TIMEOUT );
-
-  if( !is_null( $file_handle ) )
-  {
-    //curl_setopt( $curl, CURLOPT_CUSTOMREQUEST, 'PUT' );
-    curl_setopt( $curl, CURLOPT_PUT, true );
-    curl_setopt( $curl, CURLOPT_INFILE, $file_handle );
-    curl_setopt( $curl, CURLOPT_INFILESIZE, fstat( $file_handle )['size'] );
-    $headers[] = 'Content-Type: application/json';
-  }
-
+  curl_setopt( $curl, CURLOPT_CONNECTTIMEOUT, $timeout );
   curl_setopt( $curl, CURLOPT_HTTPHEADER, $headers );
 
   $response = curl_exec( $curl );

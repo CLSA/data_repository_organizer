@@ -11,6 +11,12 @@ define( 'OPAL_PASSWORD', '' );
 define( 'OPAL_URL', '' );
 define( 'OPAL_TIMEOUT', 5 );
 
+// Alternate Opal settings
+define( 'OPALALT_USERNAME', '' );
+define( 'OPALALT_PASSWORD', '' );
+define( 'OPALALT_URL', '' );
+define( 'OPALALT_TIMEOUT', 5 );
+
 // The absolute base directory of the data repository to transfer files to
 define( 'DATA_DIR', '/data' );
 

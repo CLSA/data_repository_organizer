@@ -17,12 +17,12 @@ function get_side( $uid, $params )
     'datasource' => $params['datasource'],
     'table' => $params['table'],
     'valueSet' => $uid,
-    'variable' => $params['side']
+    'variable' => $params['side'],
   ];
 
   if( preg_match( '/Measure\./', $params['side'] ) )
   {
-    $response = opal_send( $opal_params );
+    $response = opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
     if( !$response ) return NULL;
 
     $object = json_decode( $response );
@@ -39,7 +39,7 @@ function get_side( $uid, $params )
 
   // not repeated
   $opal_params['value'] = NULL;
-  $response = opal_send( $opal_params );
+  $response = opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
   return strtolower( $response );
 }
 
@@ -86,7 +86,7 @@ function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db )
       $params['pre_download_function']( $first_output_filename, $cenozo_db );
     }
 
-    $response = opal_send( $opal_params );
+    $response = opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
     $object = NULL;
     $missing = false;
     if( !$response )
@@ -157,7 +157,7 @@ function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db )
       }
 
       // now download the data for this iteration
-      $response = opal_send( $opal_params );
+      $response = opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
 
       if( $response )
       {
@@ -237,7 +237,7 @@ function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db )
     }
 
     $opal_params['value'] = NULL;
-    $response = opal_send( $opal_params );
+    $response = opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
     if( !$response )
     {
       // Create an empty file so that we know for the future that the data is missing.
@@ -369,11 +369,12 @@ if( $uid )
 }
 else
 {
-  $response = opal_send( [
+  $opal_params = [
     'datasource' => $params['datasource'],
     'table' => $params['table'],
-    'counts' => 'true'
-  ] );
+    'counts' => 'true',
+  ];
+  $response = opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
 
   $object = json_decode( $response );
   $total = $object->valueSetCount;
