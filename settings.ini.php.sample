@@ -20,8 +20,17 @@ define( 'OPALALT_TIMEOUT', 5 );
 // The absolute base directory of the data repository to transfer files to
 define( 'DATA_DIR', '/data' );
 
+// The relative directory to store all raw data
+define( 'RAW_DIR', 'raw' );
+
 // The relative directory to look for files to be sorted
 define( 'TEMPORARY_DIR', 'temporary' );
 
-// THe relative directory to move files which cannot be sorted
+// The relative directory to move files which cannot be sorted
 define( 'INVALID_DIR', 'invalid' );
+
+// The relative directory to copy prepared data for release
+define( 'RELEASE_DIR', 'release' );
+
+// The relative directory to write supplementary files
+define( 'SUPPLEMENTARY_DIR', 'supplementary' );

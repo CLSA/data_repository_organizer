@@ -1,6 +1,7 @@
+#!/usr/bin/php
 <?php
-require_once( 'common.php' );
-require_once( 'arguments.class.php' );
+require_once( __DIR__.'/../lib/util.class.php' );
+require_once( __DIR__.'/../lib/arguments.class.php' );
 
 /**
  * Generates a redacted JPEG representation of a DXA DICOM image
@@ -49,7 +50,7 @@ function create_dxa_for_researcher( $type, $dicom_filename, $image_filename )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // build the command argument details, then parse the passed args
-$arguments = new arguments;
+$arguments = new arguments( __FILE__ );
 $arguments->set_description(
   "Generates a cropped JPEG representation of a DXA DICOM image\n".
   "This script will convert a DXA DICOM file to a JPEG file specifically for release to researchers."

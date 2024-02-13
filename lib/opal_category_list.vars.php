@@ -1,215 +1,5 @@
 <?php
-require_once( 'common.php' );
-
-/**
- * Post link function used by all us_report "SR" files
- * 
- * This function will parse the cIMT values from the SR report file and add them to the report_summary.csv
- * file found in the root of the supplementary's carotid_intima folder.
- */
-$us_report_post_link_function = function( $filename, $link ) {
-  // determine the report summary filename
-  $matches = [];
-  if( !preg_match( '#raw/([^/]+/[0-9]+)/carotid_intima#', $filename, $matches ) ) return;
-  $summary_filename = sprintf( '/data/supplementary/%s/carotid_intima/report_summary.csv', $matches[1] );
-
-  // get the UID from the filename
-  $matches = [];
-  $uid = preg_match( '#/([A-Z0-9]+)/report_#', $filename, $matches ) ? $matches[1] : NULL;
-
-  // get the side from the link
-  $matches = [];
-  $side = preg_match( '#report_(.+)\.dcm.gz#', $link, $matches ) ? $matches[1] : NULL;
-
-  // only continue if we have a uid and side
-  if( is_null( $uid ) || is_null( $side ) ) return;
-
-  // remove this participant-side's entry in the report summary
-  exec( sprintf(
-    'sed -i "/^%s,%s,/d" %s',
-    $uid,
-    $side,
-    $summary_filename
-  ) );
-
-  // decompress the report file
-  $decompressed_filename = decompress_file( $filename );
-
-  // only continue if we successfully got a decompressed file
-  if( is_null( $decompressed_filename ) ) return;
-
-  // get the report values from the dcm file
-  $summary_data = [];
-  $result_code = NULL;
-  exec(
-    sprintf( 'php %s/get_us_pr_data.php %s', __DIR__, $decompressed_filename ),
-    $summary_data,
-    $result_code
-  );
-
-  // delete the temporary decompressed file now that we're done with it
-  unlink( $decompressed_filename );
-
-  if( 0 == $result_code )
-  {
-    // add the uid and side to each line parsed from the report file
-    foreach( $summary_data as $index => $line )
-      $summary_data[$index] = sprintf( '%s,%s,%s', $uid, $side, $line );
-
-    // now find where to insert the new data
-    $insert_index = NULL;
-    foreach( explode( "\n", file_get_contents( $summary_filename ) ) as $index => $line )
-    {
-      // skip the header
-      if( 0 == $index ) continue;
-
-      $line_uid = substr( $line, 0, 7 );
-      if( $line_uid > $uid )
-      {
-        $insert_index = $index;
-        break;
-      }
-    }
-
-    if( is_null( $insert_index ) )
-    {
-      // add the data to the end of the file
-      exec( sprintf(
-        "echo '%s' >> %s",
-        implode( "\n", $summary_data ), // join the data with newlines
-        $summary_filename
-      ) );
-    }
-    else
-    {
-      // insert data at the given index
-      exec( sprintf(
-        'sed -i "%d i %s" %s',
-        $insert_index + 1,
-        implode( '\n', $summary_data ), // join the data with \n (as a string)
-        $summary_filename
-      ) );
-    }
-  }
-};
-
-/**
- * Post download function used by all dxa files
- * 
- * This will generate jpeg versions of forearm, hip and wbody DICOM files for release to participants.
- * It will also create jpeg versions of forearm DICOM files for release to reserachers.
- */
-$dxa_post_download_function = function( $filename, $cenozo_db ) {
-  $new_filename_list = [];
-
-  // need to create redacted participant versions of hip, forearm and BMD images
-  $matches = [];
-  if( preg_match( '#/([^/]+)/(dxa_hip|dxa_forearm|dxa_wbody_bmd)#', $filename, $matches ) )
-  {
-    $uid = $matches[1];
-    $type = $matches[2];
-    if( 'dxa_hip' == $type ) $type = 'hip';
-    else if( 'dxa_forearm' == $type ) $type = 'forearm';
-    else $type = 'wbody';
-    $participant_image_filename = preg_replace(
-      ['#/raw/#', '#\.dcm$#'],
-      ['/supplementary/', '.participant.jpeg'],
-      $filename
-    );
-    $researcher_image_filename = preg_replace(
-      ['#/raw/#', '#\.dcm$#'],
-      ['/supplementary/', '.jpeg'],
-      $filename
-    );
-    $directory = dirname( $participant_image_filename );
-    if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-
-    // get the Results Correspondence identifier
-    $identifier = NULL;
-    if( !preg_match( '/^[A-Z][0-9][0-9][0-9][0-9][0-9][0-9]$/', $uid ) )
-      throw new Exception( sprintf( 'Invalid UID "%s" found while creating participant DXA image.', $uid ) );
-
-    $result = $cenozo_db->query( sprintf(
-      'SELECT participant_identifier.value '.
-      'FROM participant_identifier '.
-      'JOIN identifier ON participant_identifier.identifier_id = identifier.id '.
-      'JOIN participant ON participant_identifier.participant_id = participant.id '.
-      'WHERE identifier.name = "Results Correspondence" '.
-      'AND participant.uid = "%s"',
-      $uid
-    ) );
-
-    if( false === $result )
-    {
-      throw new Exception( sprintf(
-        'Unable to get participant identifier for UID "%s" while creating participant DXA image.',
-        $uid
-      ) );
-    }
-
-    while( $row = $result->fetch_assoc() )
-    {
-      $identifier = $row['value'];
-      break;
-    }
-    $result->free();
-
-    // convert from dcm to participant jpeg
-    $output = [];
-    $result_code = NULL;
-    exec(
-      sprintf(
-        'php %s/create_dxa_for_participant.php -t %s -i %s %s %s',
-        __DIR__,
-        $type,
-        $identifier,
-        $filename,
-        $participant_image_filename
-      ),
-      $output,
-      $result_code
-    );
-    if( 0 < $result_code )
-    {
-      // there was an error, so throw away any generated file
-      if( file_exists( $participant_image_filename ) ) unlink( $participant_image_filename );
-    }
-    else
-    {
-      $new_filename_list[] = $participant_image_filename;
-    }
-
-    // convert forearms from dcm to researcher jpeg
-    if( 'forearm' == $type )
-    {
-      $output = [];
-      $result_code = NULL;
-      exec(
-        sprintf(
-          'php %s/create_dxa_for_researcher.php -t %s %s %s',
-          __DIR__,
-          $type,
-          $filename,
-          $researcher_image_filename
-        ),
-        $output,
-        $result_code
-      );
-      if( 0 < $result_code )
-      {
-        // there was an error, so throw away any generated file
-        if( file_exists( $researcher_image_filename ) ) unlink( $researcher_image_filename );
-      }
-      else
-      {
-        $new_filename_list[] = $researcher_image_filename;
-      }
-    }
-  }
-
-  // return all new files created by this function
-  return $new_filename_list;
-};
+require_once( __DIR__.'/util.class.php' );
 
 $category_list = [
   'cdtt' => [
@@ -249,19 +39,8 @@ $category_list = [
       'filename' => 'ecg.xml',
       'db_required' => false,
       'post_download_function' => function( $filename ) {
-        if( 0 < filesize( $filename ) )
-        {
-          $image_filename = preg_replace( ['#/raw/#', '#\.xml$#'], ['/supplementary/', '.jpeg'], $filename );
-          $directory = dirname( $image_filename );
-          if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
-
-          exec( sprintf(
-            'php %s/plot_ecg.php -r %s %s',
-            __DIR__,
-            $filename,
-            $image_filename
-          ) );
-        }
+        // no need to return the generated files since there is no SIDE data to ECG
+        \data_type\ecg::generate_supplementary( $filename );
       },
     ],
   ],
@@ -827,7 +606,9 @@ $category_list = [
       'filename' => 'report_<N>.dcm.gz',
       'db_required' => false,
       'side' => 'Measure.SIDE',
-      // 'post_link_function' => $us_report_post_link_function, TODO: uncomment once re-download is done
+      'post_link_function' => function( $filename, $link ) {
+        \data_type\cimt::generate_supplementary( $filename, $link );
+      },
     ],
     '2' => [
       'name' => 'carotid_intima',
@@ -837,7 +618,9 @@ $category_list = [
       'filename' => 'report_<N>.dcm.gz',
       'db_required' => false,
       'side' => 'Measure.SIDE',
-      'post_link_function' => $us_report_post_link_function,
+      'post_link_function' => function( $filename, $link ) {
+        \data_type\cimt::generate_supplementary( $filename, $link );
+      },
     ],
     '3' => [
       'name' => 'carotid_intima',
@@ -847,7 +630,9 @@ $category_list = [
       'filename' => 'report_<N>.dcm.gz',
       'db_required' => false,
       'side' => 'Measure.SIDE',
-      'post_link_function' => $us_report_post_link_function,
+      'post_link_function' => function( $filename, $link ) {
+        \data_type\cimt::generate_supplementary( $filename, $link );
+      },
     ],
     '4' => [
       'name' => 'carotid_intima',
@@ -857,7 +642,9 @@ $category_list = [
       'filename' => 'report_<N>.dcm.gz',
       'db_required' => false,
       'side' => 'Measure.SIDE',
-      'post_link_function' => $us_report_post_link_function,
+      'post_link_function' => function( $filename, $link ) {
+        \data_type\cimt::generate_supplementary( $filename, $link );
+      },
     ],
   ],
   'still_image' => [ // baseline only has one still image
@@ -967,7 +754,9 @@ $category_list = [
       'side' => 'Measure.OUTPUT_HIP_SIDE',
       'filename' => 'dxa_hip_<N>.dcm',
       'db_required' => true,
-      'post_download_function' => $dxa_post_download_function,
+      'post_download_function' => function( $filename, $cenozo_db ) {
+        return \data_type\dxa::generate_supplementary( $filename, $cenozo_db );
+      }
     ],
   ],
   'dxa_forearm' => [
@@ -979,7 +768,9 @@ $category_list = [
       'side' => 'OUTPUT_FA_SIDE',
       'filename' => 'dxa_forearm.dcm',
       'db_required' => true,
-      'post_download_function' => $dxa_post_download_function,
+      'post_download_function' => function( $filename, $cenozo_db ) {
+        return \data_type\dxa::generate_supplementary( $filename, $cenozo_db );
+      }
     ],
   ],
   'dxa_lateral' => [
@@ -1046,7 +837,9 @@ $category_list = [
       'variable' => 'RES_WB_DICOM_1',
       'filename' => 'dxa_wbody_bmd.dcm',
       'db_required' => true,
-      'post_download_function' => $dxa_post_download_function,
+      'post_download_function' => function( $filename, $cenozo_db ) {
+        return \data_type\dxa::generate_supplementary( $filename, $cenozo_db );
+      }
     ],
   ],
   'dxa_wbody_bca' => [

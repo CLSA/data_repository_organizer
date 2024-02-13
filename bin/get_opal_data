@@ -1,15 +1,16 @@
+#!/usr/bin/php
 <?php
 /**
- * This script downloads binary data from Opal directly to the raw/ directory.
+ * This script downloads binary data from Opal directly to the RAW directory.
  * 
  * @author Patrick Emond <emondpd@mcmaster.ca>
  * @date 2023-03-14
  */
 
-require_once( 'settings.ini.php' );
-require_once( 'src/common.php' );
-require_once( 'src/arguments.class.php' );
-require_once( 'src/opal_category_list.php' );
+require_once( __DIR__.'/../settings.ini.php' );
+require_once( __DIR__.'/../lib/util.class.php' );
+require_once( __DIR__.'/../lib/arguments.class.php' );
+require_once( __DIR__.'/../lib/opal_category_list.vars.php' );
 
 function get_side( $uid, $params )
 {
@@ -22,7 +23,7 @@ function get_side( $uid, $params )
 
   if( preg_match( '/Measure\./', $params['side'] ) )
   {
-    $response = opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
+    $response = util::opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
     if( !$response ) return NULL;
 
     $object = json_decode( $response );
@@ -39,7 +40,7 @@ function get_side( $uid, $params )
 
   // not repeated
   $opal_params['value'] = NULL;
-  $response = opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
+  $response = util::opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
   return strtolower( $response );
 }
 
@@ -86,7 +87,7 @@ function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db )
       $params['pre_download_function']( $first_output_filename, $cenozo_db );
     }
 
-    $response = opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
+    $response = util::opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
     $object = NULL;
     $missing = false;
     if( !$response )
@@ -157,7 +158,7 @@ function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db )
       }
 
       // now download the data for this iteration
-      $response = opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
+      $response = util::opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
 
       if( $response )
       {
@@ -187,7 +188,7 @@ function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db )
             if( file_exists( $new_filename ) && 0 < filesize( $new_filename ) )
             {
               // increment the side index, but only when we get a new raw file (all others need the same number)
-              if( '/data/raw' == substr( $new_filename, 0, 9 ) )
+              if( sprintf( '%s/%s', DATA_DIR, RAW_DIR ) == substr( $new_filename, 0, 9 ) )
               {
                 if( !array_key_exists( $side, $side_number ) ) $side_number[$side] = 0;
                 $side_number[$side]++;
@@ -237,7 +238,7 @@ function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db )
     }
 
     $opal_params['value'] = NULL;
-    $response = opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
+    $response = util::opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
     if( !$response )
     {
       // Create an empty file so that we know for the future that the data is missing.
@@ -289,8 +290,13 @@ function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // build the command argument details, then parse the passed args
-$arguments = new arguments;
-$arguments->set_description( "Downloads data from Opal and stores it directly in the raw/ directory." );
+$arguments = new arguments( __FILE__ );
+$arguments->set_description(
+  sprintf(
+    'Downloads data from Opal and stores it directly in the %s/ directory.',
+    RAW_DIR
+  )
+);
 $arguments->add_option( 'd', 'debug', 'Runs in test mode, no files will be affected.' );
 $arguments->add_option( 'k', 'keep_files', 'Do not delete any files from the temporary directory.' );
 $arguments->add_option( 'v', 'verbose', 'Shows more details when running the script.' );
@@ -341,10 +347,10 @@ if( 1 < $phase ) $params['datasource'] .= sprintf( '-f%d', $phase-1 );
 
 // Download binary data from Opal
 $count_list = [ 'skipped' => 0, 'download' => 0, 'missing' => 0 ];
-$base_dir = sprintf( '%s/raw/clsa/%d/%s', DATA_DIR, $phase, $params['name'] );
+$base_dir = sprintf( '%s/%s/clsa/%d/%s', DATA_DIR, RAW_DIR, $phase, $params['name'] );
 
 // make sure the opal_enabled file exists
-$opal_enabled_filename = sprintf( '%s/opal_enabled', __DIR__ );
+$opal_enabled_filename = sprintf( '%s/../opal_enabled', __DIR__ );
 
 if( !file_exists( $opal_enabled_filename ) )
 {
@@ -355,7 +361,7 @@ if( !file_exists( $opal_enabled_filename ) )
 // only connect to the database if we have to
 try
 {
-  $cenozo_db = $params['db_required'] ? get_cenozo_db() : NULL;
+  $cenozo_db = $params['db_required'] ? util::get_cenozo_db() : NULL;
 }
 catch( \Exception $e )
 {
@@ -374,7 +380,7 @@ else
     'table' => $params['table'],
     'counts' => 'true',
   ];
-  $response = opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
+  $response = util::opal_send( $opal_params, preg_match( '/\.wav$/', $params['filename'] ) );
 
   $object = json_decode( $response );
   $total = $object->valueSetCount;
@@ -384,7 +390,7 @@ else
   for( $offset = $initial_offset; $offset < $total; $offset += $limit )
   {
     if( VERBOSE ) output( sprintf( 'Downloading files %d to %d', $offset, $offset + $limit - 1 ) );
-    $response = opal_send( [
+    $response = util::opal_send( [
       'datasource' => $params['datasource'],
       'table' => $params['table'],
       'valueSets' => NULL,

@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 /**
  * This script reads all choice_rt CSV result files and compiles the data into a single table.
@@ -6,9 +7,8 @@
  * @date 2022-12-14
  */
 
-error_reporting( E_ALL | E_STRICT );
-ini_set( 'date.timezone', 'US/Eastern' );
-require_once( 'src/arguments.class.php' );
+require_once( __DIR__.'/../settings.ini.php' );
+require_once( __DIR__.'/../lib/arguments.class.php' );
 
 function parse_result_file( $filename )
 {
@@ -93,7 +93,7 @@ function parse_result_file( $filename )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // build the command argument details, then parse the passed args
-$arguments = new arguments;
+$arguments = new arguments( __FILE__ );
 $arguments->set_description( "Compiles all choice_rt data from CSV result files into a single CSV file." );
 $arguments->add_input( 'PHASE', 'The study phase such that 1 is baseline, 2 is follow-up 1, etc...' );
 
@@ -104,7 +104,7 @@ $phase = $args['input_list']['PHASE'];
 
 // get data from all participants
 $data = [];
-$path = sprintf( '/data/raw/clsa/%d/choice_rt', $phase );
+$path = sprintf( '%s/%s/clsa/%d/choice_rt', DATA_DIR, RAW_DIR, $phase );
 $file_list = glob( sprintf( '%s/*/result_file.csv', $path ) );
 if( 0 == count( $file_list ) )
 {

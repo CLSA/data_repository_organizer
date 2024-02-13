@@ -25,7 +25,7 @@ DEFINITIONS
 
 PREPARING DATA
 ==============
-The prepare_data.php script is used to collect requested data into a directory while de-identifying in order to prepare binary files to deliver to researchers.
+The bin/prepare_data script is used to collect requested data into a directory while de-identifying in order to prepare binary files to deliver to researchers.
 In order to do that you will need a CSV file that includes CLSA IDs and anonymized IDs as well as a list of requested binary data types and wave(s).
 Example: 22009933.csv requires retinal images, carotid intima, cineloops for baseline and followup 1.
 
@@ -34,8 +34,8 @@ Depending on the volume of data, you will either be preparing the data in /data/
 
 You can find the location of the exportable data and the filter used to grab the right files in the sections below for each binary type.
 
-Example of using the prepare_data.php to prepare data into the /data/release/ directory:
-  nohup php prepare_data.php 22009933_Retinal_Baseline raw/clsa/1/retinal/ /data/release/22009933.csv -g "retinal_[lru]*.jpeg" > /nohup.out &
+Example of using the prepare_data script to prepare data into the /data/release/ directory:
+  nohup bin/prepare_data 22009933_Retinal_Baseline raw/clsa/1/retinal/ /data/release/22009933.csv -g "retinal_[lru]*.jpeg" > /nohup.out &
 
 Example for an external drive:
 
@@ -93,7 +93,7 @@ DIRECTORIES
             ├── modality1
             ├── modality2
             └── etc...
- 
+
 Where modality1, modality2, etc, can be any of the following:
 choice_rt, audio, dxa_hip, dxa_forearm, dxa_lateral, dxa_spine, dxa_wbody, ecg, frax, retinal, spirometry, cineloop, report, actigraph, ticwatch, etc...
 
@@ -381,7 +381,7 @@ path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_hip.reanalysed-<SIDE>_<N>.dcm (?
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_hip_<SIDE>.participant.jpeg (for participant release)
 notes: either left or right as indicated by Measure.OUTPUT_HIP_SIDE
 notes: this data isn't valid until a paired analysis is done and DICOM image exported from Apex
-notes: participant images can be created with the create_dxa_for_participant.php script
+notes: participant images can be created with the bin/create_dxa_for_participant script
 
 dxa forearm
 -----------
@@ -394,7 +394,7 @@ path: /raw/clsa/<PHASE>/dxa/<UID>/dxa_forearm.dcm
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_forearm.jpeg (for applicant release)
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_forearm.participant.jpeg (for participant release)
 notes: SIDE defined by INPUT_FA_SIDE
-notes: participant images can be created with the create_dxa_for_participant.php script
+notes: participant images can be created with the bin/create_dxa_for_participant script
 
 dxa hip (na/done)
 ----------
@@ -457,7 +457,7 @@ path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bmd.reanalysed.jpeg
 path: /supplementary/clsa/<PHASE>/dxa/<UID>/dxa_wbody_bmd.participant.jpeg (for participant release)
 notes: bmd is "body mass measurement"
 notes: this data isn't valid until a non-paired analysis is done and DICOM image exported from Apex
-notes: participant images can be created with the create_dxa_for_participant.php script
+notes: participant images can be created with the bin/create_dxa_for_participant script
 notes: dean wrote a script to convert to jpeg, not sure if we need those
 
 dxa whole body 2 (BCA)

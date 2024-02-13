@@ -1,11 +1,12 @@
+#!/usr/bin/php
 <?php
-require_once( 'settings.ini.php' );
-require_once( 'src/common.php' );
-require_once( 'src/arguments.class.php' );
+require_once( __DIR__.'/../settings.ini.php' );
+require_once( __DIR__.'/../lib/util.class.php' );
+require_once( __DIR__.'/../lib/arguments.class.php' );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // build the command argument details, then parse the passed args
-$arguments = new arguments;
+$arguments = new arguments( __FILE__ );
 $arguments->set_description(
   "Prepares a standard data release.\n".
   "This script will create a copy of standardized participant data and apply a custom identifier.  ".
@@ -64,9 +65,9 @@ else
 // Implement any new data categories here
 if( 'forearm' == $type )
 {
-  $data_path = sprintf( 'supplementary/clsa/%d/dxa', $phase );
+  $data_path = sprintf( '%s/clsa/%d/dxa', SUPPLEMENTARY_DIR, $phase );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "dxa_forearm_left.jpeg" %s',
+    '%s/prepare_data %s %s %s -g "dxa_forearm_left.jpeg" %s',
     __DIR__,
     $release_name,
     $data_path,
@@ -74,7 +75,7 @@ if( 'forearm' == $type )
     VERBOSE ? '-v' : ''
   ) );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "dxa_forearm_right.jpeg" %s',
+    '%s/prepare_data %s %s %s -g "dxa_forearm_right.jpeg" %s',
     __DIR__,
     $release_name,
     $data_path,
@@ -84,9 +85,9 @@ if( 'forearm' == $type )
 }
 else if( 'hip' == $type )
 {
-  $data_path = sprintf( 'supplementary/clsa/%d/dxa', $phase );
+  $data_path = sprintf( '%s/clsa/%d/dxa', SUPPLEMENTARY_DIR, $phase );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "dxa_hip_left.reanalysed.jpeg" %s',
+    '%s/prepare_data %s %s %s -g "dxa_hip_left.reanalysed.jpeg" %s',
     __DIR__,
     $release_name,
     $data_path,
@@ -94,7 +95,7 @@ else if( 'hip' == $type )
     VERBOSE ? '-v' : ''
   ) );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "dxa_hip_right.reanalysed.jpeg" %s',
+    '%s/prepare_data %s %s %s -g "dxa_hip_right.reanalysed.jpeg" %s',
     __DIR__,
     $release_name,
     $data_path,
@@ -104,9 +105,9 @@ else if( 'hip' == $type )
 }
 else if( 'lateral' == $type )
 {
-  $data_path = sprintf( 'raw/clsa/%d/dxa', $phase );
+  $data_path = sprintf( '%s/clsa/%d/dxa', RAW_DIR, $phase );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "dxa_lateral.dcm" %s',
+    '%s/prepare_data %s %s %s -g "dxa_lateral.dcm" %s',
     __DIR__,
     $release_name,
     $data_path,
@@ -116,9 +117,9 @@ else if( 'lateral' == $type )
 }
 else if( 'wbody' == $type )
 {
-  $data_path = sprintf( 'supplementary/clsa/%d/dxa', $phase );
+  $data_path = sprintf( '%s/clsa/%d/dxa', SUPPLEMENTARY_DIR, $phase );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "dxa_wbody_bca.reanalysed.jpeg" %s',
+    '%s/prepare_data %s %s %s -g "dxa_wbody_bca.reanalysed.jpeg" %s',
     __DIR__,
     $release_name,
     $data_path,
@@ -126,7 +127,7 @@ else if( 'wbody' == $type )
     VERBOSE ? '-v' : ''
   ) );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "dxa_wbody_bmd.reanalysed.jpeg" %s',
+    '%s/prepare_data %s %s %s -g "dxa_wbody_bmd.reanalysed.jpeg" %s',
     __DIR__,
     $release_name,
     $data_path,
@@ -136,9 +137,9 @@ else if( 'wbody' == $type )
 }
 else if( 'retinal' == $type )
 {
-  $data_path = sprintf( 'raw/clsa/%d/retinal', $phase );
+  $data_path = sprintf( '%s/clsa/%d/retinal', RAW_DIR, $phase );
   passthru( sprintf(
-    'php %s/prepare_data.php %s %s %s -g "retinal_[lru]*.jpeg" %s',
+    '%s/prepare_data %s %s %s -g "retinal_[lru]*.jpeg" %s',
     __DIR__,
     $release_name,
     $data_path,

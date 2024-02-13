@@ -1,6 +1,7 @@
+#!/usr/bin/php
 <?php
-require_once( 'common.php' );
-require_once( 'arguments.class.php' );
+require_once( __DIR__.'/../lib/util.class.php' );
+require_once( __DIR__.'/../lib/arguments.class.php' );
 
 /**
  * Generates a redacted JPEG representation of a DXA DICOM image
@@ -103,7 +104,7 @@ function create_dxa_for_participant( $type, $identifier, $dicom_filename, $image
     $height - $label['y_offset'] + $label['height'],
   ];
 
-  $command = sprintf( 'convert %s', format_filename( $dicom_filename ) );
+  $command = sprintf( 'convert %s', util::format_filename( $dicom_filename ) );
 
   // draw the redact boxes
   if( 0 < count( $redact_box_list ) )
@@ -168,7 +169,7 @@ function create_dxa_for_participant( $type, $identifier, $dicom_filename, $image
     );
   }
 
-  $command .= sprintf( ' %s', format_filename( $image_filename ) );
+  $command .= sprintf( ' %s', util::format_filename( $image_filename ) );
   shell_exec( $command );
   return true;
 }
@@ -176,7 +177,7 @@ function create_dxa_for_participant( $type, $identifier, $dicom_filename, $image
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // build the command argument details, then parse the passed args
-$arguments = new arguments;
+$arguments = new arguments( __FILE__ );
 $arguments->set_description(
   "Generates a redacted JPEG representation of a DXA DICOM image\n".
   "This script will convert a DXA DICOM file to a JPEG file, redacting identifying information and adding ".

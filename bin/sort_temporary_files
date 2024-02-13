@@ -1,11 +1,15 @@
+#!/usr/bin/php
 <?php
-require_once( 'settings.ini.php' );
-require_once( 'src/common.php' );
-require_once( 'src/arguments.class.php' );
+require_once( __DIR__.'/../settings.ini.php' );
+require_once( __DIR__.'/../lib/util.class.php' );
+require_once( __DIR__.'/../lib/arguments.class.php' );
+require_once( __DIR__.'/../lib/data_type/actigraph.class.php' );
+require_once( __DIR__.'/../lib/data_type/audio.class.php' );
+require_once( __DIR__.'/../lib/data_type/ticwatch.class.php' );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // build the command argument details, then parse the passed args
-$arguments = new arguments;
+$arguments = new arguments( __FILE__ );
 $arguments->set_description(
   "Analyses unsorted files in the temporary directory and files them appropriately."
 );
@@ -35,16 +39,16 @@ if( !in_array( $data_type, ['actigraph', 'audio', 'ticwatch'] ) )
   );
 }
 
-check_directories();
+util::check_directories();
 
 if( in_array( $data_type, ['actigraph', 'ticwatch'] ) )
 {
   // make sure an identifier name was provided
   if( !$identifier_name ) fatal_error( "No identifier provided, aborting", 11 );
 
-  if( 'actigraph' == $data_type ) process_actigraph_files( $identifier_name, $study, $phase );
-  else if( 'ticwatch' == $data_type ) process_ticwatch_files( $identifier_name, $study, $phase );
+  if( 'actigraph' == $data_type ) \data_type\actigraph::process_files( $identifier_name, $study, $phase );
+  else if( 'ticwatch' == $data_type ) \data_type\ticwatch::process_files( $identifier_name, $study, $phase );
 }
-else if( 'audio' == $data_type ) process_audio_files();
+else if( 'audio' == $data_type ) \data_type\audio::process_files();
 
 exit( 0 );

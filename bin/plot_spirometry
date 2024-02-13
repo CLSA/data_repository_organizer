@@ -1,19 +1,9 @@
+#!/usr/bin/php
 <?php
-error_reporting( E_ALL | E_STRICT );
-require_once( 'common.php' );
-require_once( 'arguments.class.php' );
-require_once( '/usr/local/lib/PHPlot/src/phplot.php' );
-
-define( 'VERSION', '1.0' );
-
-/**
- * Prints datetime-indexed messages to stdout
- * @param string $message
- */
-function out( $message )
-{
-  if( VERBOSE ) printf( "%s\n", $message );
-}
+require_once( __DIR__.'/../settings.ini.php' );
+require_once( __DIR__.'/../lib/util.class.php' );
+require_once( __DIR__.'/../lib/arguments.class.php' );
+require_once( __DIR__.'/../vendor/autoload.php' );
 
 /**
  * Generates a plot of Spirometry data in volume and flow files
@@ -87,7 +77,7 @@ function plot( $input_directory, $output_filename )
     }
   }
 
-  $plot = new \PHPlot\PHPlot\PHPlot( 1280, 720 );
+  $plot = new \Phplot\Phplot\phplot( 1280, 720 );
   $black = imagecolorresolve( $plot->img, 0, 0, 0 );
   $plot->SetIsInline( true );
   $plot->SetOutputFile( $output_filename );
@@ -112,10 +102,9 @@ function plot( $input_directory, $output_filename )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // build the command argument details, then parse the passed args
-$arguments = new arguments;
-$arguments->set_version( VERSION );
+$arguments = new arguments( __FILE__ );
 $arguments->set_description(
-  "Plots Spirometry raw data found in space-delimited txt files, generating the plot as a PNG file."
+  "Plots Spirometry data found in space-delimited txt files, generating the plot as a PNG file."
 );
 $arguments->add_option( 'd', 'debug', 'Outputs the script\'s commands without executing them' );
 $arguments->add_option( 'v', 'verbose', 'Shows more details when running the script' );
@@ -128,6 +117,7 @@ $arguments->add_input( 'OUTPUT', 'The name of the output PNG file' );
 
 $args = $arguments->parse_arguments( $argv );
 
+define( 'DEBUG', array_key_exists( 'debug', $args['option_list'] ) );
 define( 'VERBOSE', array_key_exists( 'verbose', $args['option_list'] ) );
 
 $input_directory = $args['input_list']['INPUT'];

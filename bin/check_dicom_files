@@ -1,12 +1,13 @@
+#!/usr/bin/php
 <?php
-require_once( 'settings.ini.php' );
-require_once( 'src/common.php' );
-require_once( 'src/arguments.class.php' );
+require_once( __DIR__.'/../settings.ini.php' );
+require_once( __DIR__.'/../lib/util.class.php' );
+require_once( __DIR__.'/../lib/arguments.class.php' );
 
 /**
  * Checks for invalid DICOM files
  * @param string $data_path The relative path to the data to prepare (study/phase/category)
- * @param string $file_glob The relative path to the data to prepare (study/phase/category)
+ * @param string $file_glob Restrict to files matching a particular glob (eg: *.dcm)
  */
 function check_dicom_files( $data_path, $file_glob )
 {
@@ -36,7 +37,7 @@ function check_dicom_files( $data_path, $file_glob )
       $result_code = 0;
       $output = NULL;
       exec(
-        sprintf( "dcmdump -q %s", format_filename( $filename ) ),
+        sprintf( "dcmdump -q %s", util::format_filename( $filename ) ),
         $output,
         $result_code
       );
@@ -49,14 +50,17 @@ function check_dicom_files( $data_path, $file_glob )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // build the command argument details, then parse the passed args
-$arguments = new arguments;
+$arguments = new arguments( __FILE__ );
 $arguments->set_description(
   "Scans for invalid DICOM files.\n".
   "This script will check all DICOM files of non-zero length to make sure they are valid."
 );
 $arguments->add_option( 'v', 'verbose', 'Shows more details when running the script' );
 $arguments->add_option( 'g', 'glob', 'Restrict to files matching a particular glob (eg: *.dcm)', true, '*' );
-$arguments->add_input( 'DATA_PATH', 'The relative path to the data to prepare (eg: raw/clsa/1/dxa)' );
+$arguments->add_input(
+  'DATA_PATH',
+  sprintf( 'The relative path to the data to prepare (eg: %s/clsa/1/dxa)', RAW_DIR )
+);
 
 $args = $arguments->parse_arguments( $argv );
 

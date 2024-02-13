@@ -1,10 +1,11 @@
+#!/usr/bin/php
 <?php
-require_once( 'common.php' );
-require_once( 'arguments.class.php' );
+require_once( __DIR__.'/../lib/util.class.php' );
+require_once( __DIR__.'/../lib/arguments.class.php' );
 
 /**
  * Creates an array of relevant numerical values (in cIMT SR report DICOM files
- * @param string $dcm_filename The input cIMT SR DICOM report filename
+ * @param string $filename The input cIMT SR DICOM report filename (gzipped or not)
  */
 
 /**
@@ -19,24 +20,30 @@ require_once( 'arguments.class.php' );
  * 
  * All values refer to "IMT Posterior"
  */
-function parse_cimt_sr_file( $dcm_filename )
+function parse_cimt_sr_file( $filename )
 {
+  // unzip the file if needed
+  $decompressed_filename = util::decompress_file( $filename );
+
   $output = NULL;
   $result_code = NULL;
   exec(
     sprintf(
       'dcmdump +T %s | strings | grep "CodeMeaning\|NumericValue"',
-      $dcm_filename
+      $decompressed_filename
     ),  
     $output,
     $result_code
   );  
 
+  // delete the decompressed file
+  if( $decompressed_filename != $filename ) unlink( $decompressed_filename );
+
   if( 0 != $result_code )
   {
     fatal_error( sprintf(
       'Unable to parse DCM report file "%s" (error code %d)',
-      $dcm_filename,
+      $decompressed_filename,
       $result_code
     ) );
   }
@@ -70,7 +77,7 @@ function parse_cimt_sr_file( $dcm_filename )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // build the command argument details, then parse the passed args
-$arguments = new arguments;
+$arguments = new arguments( __FILE__ );
 $arguments->set_description(
   "Parses a cIMT SR report DICOM file for all IMG Posterior values.  One CSV line will be printed for each ".
   "iteration of IMT posterior values (usually 4, but there may be anywhere from 1 to 18 iterations).  Each ".

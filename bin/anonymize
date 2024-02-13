@@ -1,0 +1,62 @@
+#!/usr/bin/php
+<?php
+require_once( __DIR__.'/../settings.ini.php' );
+require_once( __DIR__.'/../lib/util.class.php' );
+require_once( __DIR__.'/../lib/arguments.class.php' );
+require_once( __DIR__.'/../lib/data_type/cimt.class.php' );
+require_once( __DIR__.'/../lib/data_type/dxa.class.php' );
+require_once( __DIR__.'/../lib/data_type/ecg.class.php' );
+
+set_time_limit( 60 ); // one minute
+
+/**
+ * Anonymizes a file (gzipped or not) based on the data_type
+ */
+function anonymize( $filename, $data_type )
+{
+  // unzip the file if needed
+  $decompressed_filename = util::decompress_file( $filename );
+  $decompressed = !is_null( $decompressed_filename );
+  $working_filename = $decompressed ? $decompressed_filename : $filename;
+
+  if( 'cimt' == $data_type ) \data_type\cimt::anonymize( $working_filename, '', DEBUG );
+  else if( 'dxa' == $data_type ) \data_type\dxa::anonymize( $working_filename, '', DEBUG );
+  else if( 'ecg' == $data_type ) \data_type\ecg::anonymize( $working_filename, '', DEBUG );
+
+  // if we decompressed the file then recompress and move it to the destination
+  if( $decompressed ) rename( util::compress_file( $decompressed_filename ), $filename );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// build the command argument details, then parse the passed args
+$arguments = new arguments( __FILE__ );
+$arguments->set_description(
+  "Removes all identifying information from cIMT DICOM, DXA DICOM, and ECG XML files.\n".
+  "WARNING: the target file will be overwritten so make sure a backup exists before running this utility."
+);
+$arguments->add_option( 'd', 'debug', 'Outputs the script\'s commands without executing them' );
+$arguments->add_option( 't', 'data_type', 'The type of file being anonymized', true );
+$arguments->add_input( 'FILENAME', 'The name of the file to anonymize' );
+
+$args = $arguments->parse_arguments( $argv );
+
+define( 'DEBUG', array_key_exists( 'debug', $args['option_list'] ) );
+
+if( !array_key_exists( 'data_type', $args['option_list'] ) )
+{
+  fatal_error( 'Cannot proceed without specifying the data type', 10 );
+}
+
+$data_type = $args['option_list']['data_type'];
+$filename = $args['input_list']['FILENAME'];
+
+if( !in_array( $data_type, ['cimt', 'dxa', 'ecg'] ) )
+{
+  fatal_error(
+    sprintf( "Invalid DATA_TYPE \"%s\", aborting", $data_type ),
+    11
+  );
+}
+
+out( sprintf( 'Anonymizing file "%s"', $filename ) );
+anonymize( $filename, $data_type );

@@ -3,9 +3,13 @@ class arguments
 {
   /**
    * The constructor
+   * 
+   * @param string $filename The filename of the parent script
    */
-  public function __construct()
+  public function __construct( $filename = NULL )
   {
+    $this->executable = !is_null( $filename ) && is_file( $filename ) && is_executable( $filename );
+
     // always add the help option
     $this->add_option( 'h', 'help', 'Displays this usage message' );
   }
@@ -75,7 +79,7 @@ class arguments
   }
 
   /**
-   * 
+   * TODO: document
    */
   public function add_input( $name, $description = NULL, $optional = false )
   {
@@ -118,11 +122,12 @@ class arguments
 
     // add the name, version and usage example
     $usage = sprintf(
-      "Script: %s%s\n".
-      "Usage: php %s%s %s\n",
+      "Script: %s%s%s\n".
+      "Usage: %s%s %s\n",
+      $this->executable ? '' : 'php ',
       basename( $_SERVER['SCRIPT_FILENAME'] ),
       !is_null( $this->version ) ? sprintf( ' version %s', $this->version ) : '',
-      $_SERVER['SCRIPT_FILENAME'],
+      basename( $_SERVER['SCRIPT_FILENAME'] ),
       0 < count( $this->option_list ) ? ' [OPTION]' : '',
       implode( ' ', $input_print_list )
     );
@@ -248,7 +253,7 @@ class arguments
           $this->usage();
           exit( 0 );
         }
-        
+
         // make sure the next argument is a parameter
         $parameter = NULL;
         if( $option['parameter'] )
@@ -305,6 +310,12 @@ class arguments
     // if we got here then the parsed options and inputs are valid
     return $parsed_arguments;
   }
+
+  /**
+   * Whether the script is executable
+   * @var string
+   */
+  private $executable = false;
 
   /**
    * The script's version

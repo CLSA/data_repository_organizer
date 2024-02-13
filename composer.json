@@ -1,0 +1,5 @@
+{
+    "require": {
+        "phplot/phplot": "^8.0"
+    }
+}

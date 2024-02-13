@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 /**
  * data_transfer.php
@@ -6,18 +7,11 @@
  * author: Patrick Emond <emondpd@mcmaster.ca>
  */
 
-set_time_limit( 7200 ); // two hours
-error_reporting( E_ALL | E_STRICT );
-require_once( 'src/arguments.class.php' );
+require_once( __DIR__.'/../settings.ini.php' );
+require_once( __DIR__.'/../lib/util.class.php' );
+require_once( __DIR__.'/../lib/arguments.class.php' );
 
-/**
- * Prints datetime-indexed messages to stdout
- * @param string $message
- */
-function out( $message )
-{
-  if( !DEBUG ) printf( "%s: %s\n", date( 'Y-m-d H:i:s' ), $message );
-}
+set_time_limit( 7200 ); // two hours
 
 /**
  * Transfers files to the remote server, returning true when successful and false when not.
@@ -40,7 +34,7 @@ function rsync( $local_path, $remote_path, $port = NULL, $timeout = 10 )
 
   if( 0 == $files )
   {
-    out( sprintf( 'No files to transfer', $files ) );
+    !DEBUG && output( sprintf( 'No files to transfer', $files ) );
   }
   else
   {
@@ -79,11 +73,11 @@ function rsync( $local_path, $remote_path, $port = NULL, $timeout = 10 )
       else if( 30 == $result_code ) $error = "Timeout in data send/receive";
       else if( 35 == $result_code ) $error = "Timeout waiting for daemon connection";
 
-      out( sprintf( 'Transfer failed: %s', $error ) );
+      !DEBUG && output( sprintf( 'Transfer failed: %s', $error ) );
       return false;
     }
 
-    out( sprintf( 'Done, %d file(s) transferred', $files ) );
+    !DEBUG && output( sprintf( 'Done, %d file(s) transferred', $files ) );
   }
 
   return 0 < $files;
@@ -120,7 +114,11 @@ function archive( $path )
 
   if( 0 < $result_code )
   {
-    out( sprintf( 'Unable to archive files in "%s", received error code "%d".', $filename, $result_code ) );
+    !DEBUG && output( sprintf(
+      'Unable to archive files in "%s", received error code "%d".',
+      $filename,
+      $result_code
+    ) );
     return false;
   }
 
@@ -133,7 +131,11 @@ function archive( $path )
 
   if( 0 < $result_code )
   {
-    out( sprintf( 'Unable to remove files in "%s", received error code "%d".', $path, $result_code ) );
+    !DEBUG && output( sprintf(
+      'Unable to remove files in "%s", received error code "%d".',
+      $path,
+      $result_code
+    ) );
     return false;
   }
 
@@ -158,11 +160,15 @@ function purge( $path, $days_old )
 
   if( 0 < $result_code )
   {
-    out( sprintf( 'Unable to remove files in "%s", received error code "%d".', $path, $result_code ) );
+    !DEBUG && output( sprintf(
+      'Unable to remove files in "%s", received error code "%d".',
+      $path,
+      $result_code
+    ) );
     return false;
   }
 
-  out( sprintf( 'Deleted all archived files older than %d days', $days_old ) );
+  !DEBUG && output( sprintf( 'Deleted all archived files older than %d days', $days_old ) );
 
   return true;
 }
@@ -170,7 +176,7 @@ function purge( $path, $days_old )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // build the command argument details, then parse the passed args
-$arguments = new arguments;
+$arguments = new arguments( __FILE__ );
 $arguments->set_description(
   "A script that will attempt to transfer collected data files from a local to a remote directory.\n".
   "If the transfer fails it can be run again, once successful local files will be archived."
@@ -199,7 +205,11 @@ $arguments->add_option(
 $arguments->add_input( 'LOCAL_DIRECTORY', 'The local directory containing files for transfer' );
 $arguments->add_input(
   'REMOTE_DIRECTORY',
-  'The remote directory to transfer files into (ex: 1.1.1.1:/data/temporary/HAM/actigraph)'
+  sprintf(
+    'The remote directory to transfer files into (ex: 1.1.1.1:%s/%s/HAM/actigraph)',
+    DATA_DIR,
+    TEMPORARY_DIR
+  )
 );
 
 $args = $arguments->parse_arguments( $argv );
@@ -223,7 +233,7 @@ if( !is_null( $purge_days_old ) && (
   exit( 10 );
 }
 
-out( sprintf( 'Transfering files from "%s"', $local_dir ) );
+!DEBUG && output( sprintf( 'Transfering files from "%s"', $local_dir ) );
 if( rsync( $local_dir, $remote_dir, $port, $timeout ) )
 {
   // the rsync was successful so archive the data

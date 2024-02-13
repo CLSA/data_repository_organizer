@@ -1,0 +1,65 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "f557482c0a64c824e219a31ca696e72c",
+    "packages": [
+        {
+            "name": "phplot/phplot",
+            "version": "v8.0.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPlot/phplot.git",
+                "reference": "e36d9513e1e0df5d75784e98e6ca4ae745ba27c9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPlot/phplot/zipball/e36d9513e1e0df5d75784e98e6ca4ae745ba27c9",
+                "reference": "e36d9513e1e0df5d75784e98e6ca4ae745ba27c9",
+                "shasum": ""
+            },
+            "require": {
+                "ext-gd": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Phplot\\Phplot\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "AJRepo",
+                    "email": "AJRepo@users.noreply.github.com"
+                }
+            ],
+            "description": "PHP graph library for dynamic scientific, business, and stock-market charts and graphs.",
+            "support": {
+                "issues": "https://github.com/PHPlot/phplot/issues",
+                "source": "https://github.com/PHPlot/phplot/tree/v8.0.0.3"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/ajrepo",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-08-21T14:54:51+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
+}

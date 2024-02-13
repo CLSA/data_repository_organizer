@@ -1,7 +1,11 @@
+#!/usr/bin/php
 <?php
-require_once( 'settings.ini.php' );
-require_once( 'src/common.php' );
-require_once( 'src/arguments.class.php' );
+require_once( __DIR__.'/../settings.ini.php' );
+require_once( __DIR__.'/../lib/util.class.php' );
+require_once( __DIR__.'/../lib/arguments.class.php' );
+require_once( __DIR__.'/../lib/data_type/cimt.class.php' );
+require_once( __DIR__.'/../lib/data_type/dxa.class.php' );
+require_once( __DIR__.'/../lib/data_type/ecg.class.php' );
 
 /**
  * Prepares data for a particular study, phase and category using identifiers in the provided file
@@ -21,15 +25,15 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
   }
 
   // make sure the identifier file exists and is valid
-  $file = @fopen( $identifier_filename, 'r' );
-  if( false === $file )
+  $identifier_file = @fopen( $identifier_filename, 'r' );
+  if( false === $identifier_file )
   {
     fatal_error( sprintf( 'Identifier filename "%s" is not a valid CSV file', $identifier_filename ), 11 );
   }
 
   $potential_participants = exec( sprintf(
     'grep -c \'\<[A-Z][0-9]\{6\}\>\' %s',
-    format_filename( $identifier_filename )
+    util::format_filename( $identifier_filename )
   ) );
   output( sprintf(
     'Identifier CSV file contains %s potential participants for release, checking files...',
@@ -40,7 +44,7 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
   $csv_count = 0;
   $participant_list = [];
   $file_count = 0;
-  while( ($row = fgetcsv( $file )) !== false )
+  while( ($row = fgetcsv( $identifier_file )) !== false )
   {
     $uid = $row[0];
 
@@ -77,7 +81,7 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
 
     $csv_count++;
   }
-  fclose( $file );
+  fclose( $identifier_file );
 
   $participant_count = count( $participant_list );
 
@@ -140,25 +144,34 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
         if( preg_match( '/.gz$/', $destination_filename ) )
         {
           VERBOSE && output( 'Uncompressing destination file' );
-          exec( sprintf( 'gzip -d -f %s', format_filename( $destination_filename ) ) );
+          exec( sprintf( 'gzip -d -f %s', util::format_filename( $destination_filename ) ) );
         }
 
-        $prepare_file_type = NULL;
+        $result = NULL;
         if( true == preg_match( '/.dcm$/', $final_filename ) )
         {
-          if( preg_match( '#/carotid_intima/#', $source_filename ) ) $prepare_file_type = 'cimt';
-          else if( preg_match( '#/dxa/#', $source_filename ) ) $prepare_file_type = 'dxa';
+          if( preg_match( '#/carotid_intima/#', $source_filename ) )
+          {
+            $result = \data_type\cimt::anonymize( $file_filename, $participant['identifier'] );
+          }
+          else if( preg_match( '#/dxa/#', $source_filename ) )
+          {
+            $result = \data_type\dxa::anonymize( $file_filename, $participant['identifier'] );
+          }
           else throw new Exception( sprintf( 'Tried to prepare unknown DICOM file "%s"', $source_filename ) );
         }
-        else if( true == preg_match( '/.xml$/', $final_filename ) ) $prepare_file_type = 'xml';
+        else if( true == preg_match( '/.xml$/', $final_filename ) )
+        {
+          $result = \data_type\ecg::anonymize( $file_filename, $participant['identifier'] );
+        }
 
-        if( !is_null( $prepare_file_type ) )
+        if( !is_null( $result ) )
         {
           VERBOSE && output( sprintf(
             'Setting destination file\'s identifier to "%s"',
             $participant['identifier']
           ) );
-          $result = prepare_file( $prepare_file_type, $final_filename, $participant['identifier'] );
+
           if( 0 < $result )
           {
             // delete the invalid file and stop
@@ -183,7 +196,7 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // build the command argument details, then parse the passed args
-$arguments = new arguments;
+$arguments = new arguments( __FILE__ );
 $arguments->set_description(
   "Prepares a data release.\n".
   "This script will create a copy of participant data and apply a custom identifier.  ".
@@ -194,7 +207,10 @@ $arguments->add_option( 'v', 'verbose', 'Shows more details when running the scr
 $arguments->add_option( 'g', 'glob', 'Restrict to files matching a particular glob (eg: *.dcm)', true, '*' );
 $arguments->add_option( 'k', 'keep_files', 'Keep files which have already been copied.' );
 $arguments->add_input( 'RELEASE_NAME', 'The name of the release where files will be copied to' );
-$arguments->add_input( 'DATA_PATH', 'The relative path to the data to prepare (eg: raw/clsa/1/dxa)' );
+$arguments->add_input(
+  'DATA_PATH',
+  sprintf( 'The relative path to the data to prepare (eg: %s/clsa/1/dxa)', RAW_DIR )
+);
 $arguments->add_input( 'IDENTIFIER_FILENAME', 'The CSV file containing the CLSA ID and identifier' );
 
 $args = $arguments->parse_arguments( $argv );
