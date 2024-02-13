@@ -1,0 +1,13 @@
+#!/usr/bin/php
+<?php
+/**
+ * A script that sorts all temporary data downloaded from remote sites
+ */
+$phase = 4;
+
+// Organize new data downloaded from sites to the /data/temporary directory
+passthru( sprintf( '%s/sort_temporary_files -i "Weston HBHA" -p %d actigraph', __DIR__, $phase ) );
+passthru( sprintf( '%s/sort_temporary_files -i "Weston HBHA" -p %d ticwatch', __DIR__, $phase ) ); 
+
+// Orgalize new recordings downloalded from the asterisk server (the transfer is done at 4am)
+passthru( sprintf( '%s/sort_temporary_files audio', __DIR__ ) );
