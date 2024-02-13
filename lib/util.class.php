@@ -2,7 +2,6 @@
 ini_set( 'display_errors', '0' );
 error_reporting( E_ALL | E_STRICT );
 ini_set( 'date.timezone', 'US/Eastern' );
-mysqli_report( MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT );
 
 function out( $message ) { if( !defined( 'DEBUG' ) || !DEBUG ) printf( "%s\n", $message ); }
 function output( $message ) { printf( "%s> %s\n", date( 'Y-m-d (D) H:i:s' ), $message ); }
@@ -16,6 +15,7 @@ class util
 {
   public static function get_cenozo_db()
   {
+    mysqli_report( MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT );
     return new \mysqli( CENOZO_DB_HOSTNAME, CENOZO_DB_USERNAME, CENOZO_DB_PASSWORD, CENOZO_DB_DATABASE );
   }
 
