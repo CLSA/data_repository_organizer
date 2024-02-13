@@ -219,9 +219,9 @@ $port = $args['option_list']['port'];
 $timeout = $args['option_list']['timeout'];
 $purge_days_old = array_key_exists( 'remove', $args['option_list'] ) ? $args['option_list']['remove'] : NULL;
 $local_dir = $args['input_list']['LOCAL_DIRECTORY'];
-if( '/' != $local_dir[strlen( $local_dir )-1] ) $local_dir .= '/';
+if( !preg_match( '#/$#', $local_dir ) ) $local_dir .= '/';
 $remote_dir = $args['input_list']['REMOTE_DIRECTORY'];
-if( '/' != $remote_dir[strlen( $remote_dir )-1] ) $remote_dir .= '/';
+if( !preg_match( '#[/:]$#', $remote_dir ) ) $remote_dir .= '/';
 
 // sanitize the purge days old parameter (must be an integer >= 0)
 if( !is_null( $purge_days_old ) && (
