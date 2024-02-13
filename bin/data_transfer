@@ -234,12 +234,8 @@ if( !is_null( $purge_days_old ) && (
 }
 
 !DEBUG && output( sprintf( 'Transfering files from "%s"', $local_dir ) );
-if( rsync( $local_dir, $remote_dir, $port, $timeout ) )
-{
-  // the rsync was successful so archive the data
-  archive( $local_dir );
-}
-
+if( !rsync( $local_dir, $remote_dir, $port, $timeout ) ) exit( 11 );
+if( !archive( $local_dir ) ) exit( 12 );
 if( !is_null( $purge_days_old ) ) purge( $local_dir, $purge_days_old );
 
 exit( 0 );
