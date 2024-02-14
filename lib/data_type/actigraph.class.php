@@ -16,9 +16,8 @@ class actigraph extends base
    * 
    * @param string $identifier_name The name of the identifier used in actigraph filenames
    * @param string $study The name of the study that files come from
-   * @param integer $phase The phase of the study that files come from
    */
-  public static function process_files( $identifier_name, $study, $phase )
+  public static function process_files( $identifier_name, $study )
   {
     $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
     $study_uid_lookup = self::get_study_uid_lookup( $identifier_name, true, true ); // include event and consent data
@@ -26,12 +25,14 @@ class actigraph extends base
     // Each site has their own directory, and in each site directory there are sub-directories for
     // each modality (actigraph, ticwatch, etc).  Within the actigraph directory there is one file
     // per participant named after the participant's study_id and the date of the data:
-    // For example: "temporary/XXX/actigraph/<study_id> <date>.gt3x"
+    // For example: "temporary/XXX/4/actigraph/<study_id> <date>.gt3x" (where 4 is the phase)
     output( sprintf( 'Processing actigraph files in "%s"', $base_dir ) );
     $file_count = 0;
-    foreach( glob( sprintf( '%s/[A-Z][A-Z][A-Z]/actigraph/*', $base_dir ) ) as $filename )
+
+    $glob = sprintf( '%s/[A-Z][A-Z][A-Z]/[0-9]/actigraph/*', $base_dir );
+    foreach( glob( $glob ) as $filename )
     {
-      $preg = '#/([^/]+) \(([0-9]{4}-[0-9]{2}-[0-9]{2})\)(_thigh|_wrist)?\.gt3x$#';
+      $preg = '#/([0-9])/actigraph/([^/]+) \(([0-9]{4}-[0-9]{2}-[0-9]{2})\)(_thigh|_wrist)?\.gt3x$#';
       $matches = [];
       if( !preg_match( $preg, $filename, $matches ) )
       {
@@ -43,9 +44,10 @@ class actigraph extends base
         continue;
       }
 
-      $study_id = strtoupper( trim( $matches[1] ) );
-      $date = str_replace( '-', '', $matches[2] );
-      $type = 4 <= count( $matches ) ? trim( $matches[3], '_' ) : 'unknown';
+      $phase = $matches[1];
+      $study_id = strtoupper( trim( $matches[2] ) );
+      $date = str_replace( '-', '', $matches[3] );
+      $type = 5 <= count( $matches ) ? trim( $matches[4], '_' ) : 'unknown';
 
       if( !array_key_exists( $study_id, $study_uid_lookup ) )
       {

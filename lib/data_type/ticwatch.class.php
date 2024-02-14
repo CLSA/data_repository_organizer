@@ -16,9 +16,8 @@ class ticwatch extends base
    * 
    * @param string $identifier_name The name of the identifier used in ticwatch filenames
    * @param string $study The name of the study that files come from
-   * @param integer $phase The phase of the study that files come from
    */
-  public static function process_files( $identifier_name, $study, $phase )
+  public static function process_files( $identifier_name, $study )
   {
     $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
     $study_uid_lookup = self::get_study_uid_lookup( $identifier_name, false, true ); // include consent data
@@ -31,16 +30,18 @@ class ticwatch extends base
     output( sprintf( 'Processing ticwatch directories in "%s"', $base_dir ) );
     $dir_count = 0;
     $file_count = 0;
-    foreach( glob( sprintf( '%s/[A-Z][A-Z][A-Z]/ticwatch/*/*', $base_dir ), GLOB_ONLYDIR ) as $serial_dirname )
+    $glob = sprintf( '%s/[A-Z][A-Z][A-Z]/[0-9]/ticwatch/*/*', $base_dir );
+    foreach( glob( $glob, GLOB_ONLYDIR ) as $serial_dirname )
     {
       $study_dirname = preg_replace( '#/[^/]+$#', '', $serial_dirname );
       $matches = [];
-      if( false === preg_match( '#/([^/]+)/([^/]+)$#', $serial_dirname, $matches ) )
+      if( false === preg_match( '#/([0-9])/ticwatch/([^/]+)/([^/]+)$#', $serial_dirname, $matches ) )
       {
         fatal_error( sprintf( 'Error while processing directory "%s"', $serial_dirname ), 4 );
       }
 
-      $original_study_id = $matches[1];
+      $phase = $matches[1];
+      $original_study_id = $matches[2];
       $study_id = strtoupper( trim( $original_study_id ) );
       if( !array_key_exists( $study_id, $study_uid_lookup ) )
       {

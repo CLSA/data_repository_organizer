@@ -17,7 +17,6 @@ $arguments->add_option( 'd', 'debug', 'Runs in test mode, no files will be affec
 $arguments->add_option( 'k', 'keep_files', 'Do not delete any files from the temporary directory.' );
 $arguments->add_option( 'v', 'verbose', 'Shows more details when running the script.' );
 $arguments->add_option( 's', 'study', 'The name of the study the data belongs to', true, 'clsa' );
-$arguments->add_option( 'p', 'phase', 'The phase of the study the data belongs to', true, 1 );
 $arguments->add_option( 'i', 'identifier', 'The name of the identifier used by filenames', true, false );
 $arguments->add_input( 'DATA_TYPE', 'The type of data to process (actigraph, audio, ticwatch)' );
 
@@ -28,7 +27,6 @@ define( 'KEEP_FILES', array_key_exists( 'keep_files', $args['option_list'] ) );
 define( 'VERBOSE', array_key_exists( 'verbose', $args['option_list'] ) );
 $identifier_name = $args['option_list']['identifier'];
 $study = $args['option_list']['study'];
-$phase = $args['option_list']['phase'];
 $data_type = $args['input_list']['DATA_TYPE'];
 
 if( !in_array( $data_type, ['actigraph', 'audio', 'ticwatch'] ) )
@@ -46,8 +44,8 @@ if( in_array( $data_type, ['actigraph', 'ticwatch'] ) )
   // make sure an identifier name was provided
   if( !$identifier_name ) fatal_error( "No identifier provided, aborting", 11 );
 
-  if( 'actigraph' == $data_type ) \data_type\actigraph::process_files( $identifier_name, $study, $phase );
-  else if( 'ticwatch' == $data_type ) \data_type\ticwatch::process_files( $identifier_name, $study, $phase );
+  if( 'actigraph' == $data_type ) \data_type\actigraph::process_files( $identifier_name, $study );
+  else if( 'ticwatch' == $data_type ) \data_type\ticwatch::process_files( $identifier_name, $study );
 }
 else if( 'audio' == $data_type ) \data_type\audio::process_files();
 

@@ -12,7 +12,7 @@ abstract class base
   /**
    * Reads the id_lookup file and returns an array containing Study ID => UID pairs
    */
-  function get_study_uid_lookup( $identifier_name, $events = false, $consents = false )
+  public static function get_study_uid_lookup( $identifier_name, $events = false, $consents = false )
   {
     $cenozo_db = \util::get_cenozo_db();
 
@@ -110,10 +110,10 @@ abstract class base
   /**
    * Find and remove all empty directories
    */
-  function remove_dir( $dir )
+  public static function remove_dir( $dir )
   {
     // first remove all empty sub directories
-    foreach( glob( sprintf( '%s/*', $dir ), GLOB_ONLYDIR ) as $subdir ) remove_dir( $subdir );
+    foreach( glob( sprintf( '%s/*', $dir ), GLOB_ONLYDIR ) as $subdir ) self::remove_dir( $subdir );
 
     // now see if the directory is empty and remove it is it is
     if( 0 == count( glob( sprintf( '%s/*', $dir ) ) ) ) rmdir( $dir );
