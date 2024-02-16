@@ -32,7 +32,7 @@ class actigraph extends base
     $glob = sprintf( '%s/[A-Z][A-Z][A-Z]/[0-9]/actigraph/*', $base_dir );
     foreach( glob( $glob ) as $filename )
     {
-      $preg = '#/([0-9])/actigraph/([^/]+) \(([0-9]{4}-[0-9]{2}-[0-9]{2})\)(_thigh|_wrist)?\.gt3x$#';
+      $preg = '#/([0-9])/actigraph/([^/]+) \(([0-9]{4}-[0-9]{2}-[0-9]{2})\)(_thigh|_wrist)? *\.gt3x$#';
       $matches = [];
       if( !preg_match( $preg, $filename, $matches ) )
       {
@@ -113,13 +113,13 @@ class actigraph extends base
       }
 
       // make sure the date aligns with the participant's events
-      $date_object = new DateTime( $date );
+      $date_object = new \DateTime( $date );
       $diff = NULL;
 
       // the thigh is done after the home interview
-      if( 'thigh' == $type && $home_date ) $diff = $date_object->diff( new DateTime( $home_date ) );
+      if( 'thigh' == $type && $home_date ) $diff = $date_object->diff( new \DateTime( $home_date ) );
       // the wrist is done after the site interview
-      else if( 'wrist' == $type && $site_date ) $diff = $date_object->diff( new DateTime( $site_date ) );
+      else if( 'wrist' == $type && $site_date ) $diff = $date_object->diff( new \DateTime( $site_date ) );
 
       // only allow up to two days before or after
       if( is_null( $diff ) || 2 < $diff->days )

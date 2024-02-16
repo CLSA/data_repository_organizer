@@ -32,10 +32,7 @@ Example: 22009933.csv requires retinal images, carotid intima, cineloops for bas
 Once you have that information, you will need to place the CSV file in the /data/release/ directory.
 Depending on the volume of data, you will either be preparing the data in /data/release/<APPLICANT>_<CATEGORY>_<PHASE>/ or on an encrypted hard disk.
 
-You can find the location of the exportable data and the filter used to grab the right files in the sections below for each binary type.
-
-Example of using the prepare_data script to prepare data into the /data/release/ directory:
-  nohup bin/prepare_data 22009933_Retinal_Baseline raw/clsa/1/retinal/ /data/release/22009933.csv -g "retinal_[lru]*.jpeg" > /nohup.out &
+You can then either use the bin/prepare_standard_data script (to prepare standard data releases that have been done before), or you can use the more generic bin/prepare_data script which allows you to prepare any data you want but will require additional arguments.
 
 Example for an external drive:
 
