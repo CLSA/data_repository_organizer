@@ -1,5 +1,8 @@
 <?php
 require_once( __DIR__.'/util.class.php' );
+require_once( __DIR__.'/data_type/cimt.class.php' );
+require_once( __DIR__.'/data_type/dxa.class.php' );
+require_once( __DIR__.'/data_type/ecg.class.php' );
 
 $category_list = [
   'cdtt' => [

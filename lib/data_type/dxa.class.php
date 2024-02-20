@@ -140,7 +140,7 @@ class dxa extends base
       $result_code = NULL;
       exec(
         sprintf(
-          '%s/bin/create_dxa_for_participant -t %s -i %s %s %s',
+          '%s/../../bin/create_dxa_for_participant -t %s -i %s %s %s',
           __DIR__,
           $type,
           $identifier,
@@ -167,7 +167,7 @@ class dxa extends base
         $result_code = NULL;
         exec(
           sprintf(
-            '%s/bin/create_dxa_for_researcher -t %s %s %s',
+            '%s/../../bin/create_dxa_for_researcher -t %s %s %s',
             __DIR__,
             $type,
             $filename,

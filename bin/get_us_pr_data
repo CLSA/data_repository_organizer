@@ -24,28 +24,33 @@ function parse_cimt_sr_file( $filename )
 {
   // unzip the file if needed
   $decompressed_filename = util::decompress_file( $filename );
+  $working_filename = is_null( $decompressed_filename ) ? $filename : $decompressed_filename;
 
   $output = NULL;
   $result_code = NULL;
   exec(
     sprintf(
       'dcmdump +T %s | strings | grep "CodeMeaning\|NumericValue"',
-      $decompressed_filename
+      util::format_filename( $working_filename )
     ),  
     $output,
     $result_code
   );  
 
   // delete the decompressed file
-  if( $decompressed_filename != $filename ) unlink( $decompressed_filename );
+  if( !is_null( $decompressed_filename ) && $decompressed_filename != $filename )
+    unlink( $decompressed_filename );
 
   if( 0 != $result_code )
   {
-    fatal_error( sprintf(
-      'Unable to parse DCM report file "%s" (error code %d)',
-      $decompressed_filename,
-      $result_code
-    ) );
+    fatal_error(
+      sprintf(
+        'Unable to parse DCM report file "%s" (error code %d)',
+        $working_filename,
+        $result_code
+      ),
+      22
+    );
   }
 
   $data = [ 'Average' => [], 'Max' => [], 'Min' => [], 'SD' => [], 'nMeas' => [] ];

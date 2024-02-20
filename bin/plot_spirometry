@@ -33,13 +33,13 @@ function plot( $input_directory, $output_filename )
     $volume_file = @file_get_contents( $file_pair['volume'] );
     if( false === $volume_file )
     {
-      fatal_error( sprintf( 'Cannot read volume file "%s"', $file_pair['volume'] ), 10 );
+      fatal_error( sprintf( 'Cannot read volume file "%s"', $file_pair['volume'] ), 13 );
     }
 
     $flow_file = @file_get_contents( $file_pair['flow'] );
     if( false === $flow_file )
     {
-      fatal_error( sprintf( 'Cannot read flow file "%s"', $file_pair['flow'] ), 11 );
+      fatal_error( sprintf( 'Cannot read flow file "%s"', $file_pair['flow'] ), 14 );
     }
 
     $volume_data = explode( ' ', $volume_file );
@@ -50,11 +50,11 @@ function plot( $input_directory, $output_filename )
 
     if( 0 == $volume_count )
     {
-      fatal_error( 'No data found in volume file', 12 );
+      fatal_error( 'No data found in volume file', 15 );
     }
     else if( 0 == $flow_count )
     {
-      fatal_error( 'No data found in flow file', 13 );
+      fatal_error( 'No data found in flow file', 16 );
     }
     else if( $volume_count != $flow_count )
     {
@@ -64,7 +64,7 @@ function plot( $input_directory, $output_filename )
           $volume_count,
           $flow_count
         ),
-        14
+        17
       );
     }
 

@@ -141,7 +141,7 @@ class audio extends base
             else if( 'counting to 20' == $variable ) $destination_filename = 'counting';
             else if( 'rey i' == $variable ) $destination_filename = 'immediate_word_list';
             else if( 'rey ii' == $variable ) $destination_filename = 'delayed_word_list';
-            else fatal_error( sprintf( 'Invalid filename "%s"', $filename ), 3 );
+            else fatal_error( sprintf( 'Invalid filename "%s"', $filename ), 31 );
 
             // add the operator tag if the audio is of the operator (in)
             if( !is_null( $destination_filename ) && $operator ) $destination_filename .= '-operator';

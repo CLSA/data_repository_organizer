@@ -21,14 +21,14 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
   $data_path = sprintf( '%s/%s', DATA_DIR, $data_path );
   if( !file_exists( $data_path ) )
   {
-    fatal_error( sprintf( 'No files exist for data path "%s"', $data_path ), 10 );
+    fatal_error( sprintf( 'No files exist for data path "%s"', $data_path ), 19 );
   }
 
   // make sure the identifier file exists and is valid
   $identifier_file = @fopen( $identifier_filename, 'r' );
   if( false === $identifier_file )
   {
-    fatal_error( sprintf( 'Identifier filename "%s" is not a valid CSV file', $identifier_filename ), 11 );
+    fatal_error( sprintf( 'Identifier filename "%s" is not a valid CSV file', $identifier_filename ), 19 );
   }
 
   $potential_participants = exec( sprintf(
@@ -103,7 +103,7 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
     {
       if( !@mkdir( $release_path ) )
       {
-        fatal_error( sprintf( 'Unable to create release directory "%s"', $release_path ), 12 );
+        fatal_error( sprintf( 'Unable to create release directory "%s"', $release_path ), 20 );
       }
     }
 
@@ -182,7 +182,7 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
                 $final_filename,
                 $result
               ),
-              13
+              21
             );
           }
         }

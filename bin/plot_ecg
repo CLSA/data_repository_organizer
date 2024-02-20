@@ -108,14 +108,14 @@ function plot( $xml_filename, $jpeg_filename )
   $simple_xml_obj = @simplexml_load_file( $xml_filename );
   if( false === $simple_xml_obj )
   {
-    fatal_error( sprintf( 'Input file "%s" is not a valid XML file', $xml_filename ), 10 );
+    fatal_error( sprintf( 'Input file "%s" is not a valid XML file', $xml_filename ), 27 );
   }
 
   $path = get_xpath( $strip_xml['root'], $strip_xml['data'] );
   $match = $simple_xml_obj->xpath( $path );
   if( false === $match )
   {
-    fatal_error( sprintf( 'Expected XML structure not found in input file "%s"', $xml_filename ), 11 );
+    fatal_error( sprintf( 'Expected XML structure not found in input file "%s"', $xml_filename ), 28 );
   }
 
   // lead sampling rate in Hz
@@ -671,7 +671,7 @@ function plot( $xml_filename, $jpeg_filename )
       $match = $simple_xml_obj->xpath( $path );
       if( false === $match )
       {
-        fatal_error( sprintf( 'Expected XML structure not found in input file "%s"', $xml_filename ), 12 );
+        fatal_error( sprintf( 'Expected XML structure not found in input file "%s"', $xml_filename ), 29 );
       }
 
       $group_data[$group_key][$data_key]['value'] = [];

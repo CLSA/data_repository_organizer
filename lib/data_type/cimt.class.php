@@ -103,23 +103,14 @@ class cimt extends base
       $summary_filename
     ) );
 
-    // decompress the report file
-    $decompressed_filename = \util::decompress_file( $filename );
-
-    // only continue if we successfully got a decompressed file
-    if( is_null( $decompressed_filename ) ) return;
-
     // get the report values from the dcm file
     $summary_data = [];
     $result_code = NULL;
     exec(
-      sprintf( '%s/bin/get_us_pr_data %s', __DIR__, $decompressed_filename ),
+      sprintf( '%s/../../bin/get_us_pr_data %s', __DIR__, $filename ),
       $summary_data,
       $result_code
     );
-
-    // delete the temporary decompressed file now that we're done with it
-    unlink( $decompressed_filename );
 
     if( 0 == $result_code )
     {

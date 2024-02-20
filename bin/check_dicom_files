@@ -15,7 +15,7 @@ function check_dicom_files( $data_path, $file_glob )
   $data_path = sprintf( '%s/%s', DATA_DIR, $data_path );
   if( !file_exists( $data_path ) )
   {
-    fatal_error( sprintf( 'No files exist for data path "%s"', $data_path ), 10 );
+    fatal_error( sprintf( 'No files exist for data path "%s"', $data_path ), 30 );
   }
 
   $glob = sprintf( '%s/*/%s', $data_path, $file_glob );

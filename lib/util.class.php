@@ -30,8 +30,8 @@ class util
     );
     foreach( $test_dir_list as $dir )
     {
-      if( !is_dir( $dir ) ) fatal_error( sprintf( 'Expected directory, "%s", not found', $dir ), 1 );
-      if( !TEST_ONLY && !is_writable( $dir ) ) fatal_error( sprintf( 'Cannot write to directory "%s"', $dir ), 2 );
+      if( !is_dir( $dir ) ) fatal_error( sprintf( 'Expected directory, "%s", not found', $dir ), 33 );
+      if( !TEST_ONLY && !is_writable( $dir ) ) fatal_error( sprintf( 'Cannot write to directory "%s"', $dir ), 34 );
     }
   }
 
@@ -157,6 +157,7 @@ class util
       // add the .gz extension if there isn't one already
       if( !preg_match( '#\.gz$#', $working_gzfilename ) ) $working_gzfilename .= '.gz';
 
+      $output = NULL;
       copy( $gzip_filename, $working_gzfilename );
       exec( sprintf( 'gunzip -f %s', $working_gzfilename ), $output, $result_code );
 

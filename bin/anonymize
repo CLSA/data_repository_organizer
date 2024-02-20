@@ -44,7 +44,7 @@ define( 'DEBUG', array_key_exists( 'debug', $args['option_list'] ) );
 
 if( !array_key_exists( 'data_type', $args['option_list'] ) )
 {
-  fatal_error( 'Cannot proceed without specifying the data type', 10 );
+  fatal_error( 'Cannot proceed without specifying the data type', 23 );
 }
 
 $data_type = $args['option_list']['data_type'];
@@ -54,7 +54,7 @@ if( !in_array( $data_type, ['cimt', 'dxa', 'ecg'] ) )
 {
   fatal_error(
     sprintf( "Invalid DATA_TYPE \"%s\", aborting", $data_type ),
-    11
+    24
   );
 }
 

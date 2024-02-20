@@ -33,7 +33,7 @@ if( !in_array( $data_type, ['actigraph', 'audio', 'ticwatch'] ) )
 {
   fatal_error(
     sprintf( "Invalid DATA_TYPE \"%s\", aborting", $data_type ),
-    10
+    25
   );
 }
 
@@ -42,7 +42,7 @@ util::check_directories();
 if( in_array( $data_type, ['actigraph', 'ticwatch'] ) )
 {
   // make sure an identifier name was provided
-  if( !$identifier_name ) fatal_error( "No identifier provided, aborting", 11 );
+  if( !$identifier_name ) fatal_error( "No identifier provided, aborting", 26 );
 
   if( 'actigraph' == $data_type ) \data_type\actigraph::process_files( $identifier_name, $study );
   else if( 'ticwatch' == $data_type ) \data_type\ticwatch::process_files( $identifier_name, $study );

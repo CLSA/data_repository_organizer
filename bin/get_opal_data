@@ -327,7 +327,7 @@ if( !array_key_exists( $category, $category_list ) )
       "\n",
       implode( ', ', array_keys( $category_list ) )
     ),
-    6
+    10
   );
 }
 
@@ -336,7 +336,7 @@ if( !array_key_exists( 'all', $category_list[$category] ) &&
 {
   fatal_error(
     sprintf( 'Category "%s" does not exist for phase "%d".', $category, $phase ),
-    7
+    11
   );
 }
 
@@ -368,7 +368,7 @@ try
 }
 catch( \Exception $e )
 {
-  fatal_error( 'Failed to open required connection to cenozo database.', 8 );
+  fatal_error( 'Failed to open required connection to cenozo database.', 12 );
 }
 
 if( $uid )

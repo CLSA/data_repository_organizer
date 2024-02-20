@@ -86,7 +86,7 @@ class ecg extends base
       if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
 
       exec( sprintf(
-        '%s/bin/plot_ecg -r %s %s',
+        '%s/../../bin/plot_ecg -r %s %s',
         __DIR__,
         $filename,
         $image_filename

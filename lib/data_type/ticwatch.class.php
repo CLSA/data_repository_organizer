@@ -37,7 +37,7 @@ class ticwatch extends base
       $matches = [];
       if( false === preg_match( '#/([0-9])/ticwatch/([^/]+)/([^/]+)$#', $serial_dirname, $matches ) )
       {
-        fatal_error( sprintf( 'Error while processing directory "%s"', $serial_dirname ), 4 );
+        fatal_error( sprintf( 'Error while processing directory "%s"', $serial_dirname ), 32 );
       }
 
       $phase = $matches[1];
