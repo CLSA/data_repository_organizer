@@ -28,7 +28,7 @@ function rsync( $local_path, $remote_path, $port = NULL, $timeout = 10 )
   if( is_dir( $local_path ) )
   {
     $output = NULL;
-    $command = exec( sprintf( 'find %s -type f | wc -l 2> /dev/null', $local_path ), $output );
+    $command = exec( sprintf( 'find "%s" -type f | wc -l 2> /dev/null', $local_path ), $output );
     $files = intval( current( $output ) );
   }
 
@@ -39,8 +39,9 @@ function rsync( $local_path, $remote_path, $port = NULL, $timeout = 10 )
   else
   {
     $command = sprintf(
-      'rsync -rtcvz --timeout=%d %s %s %s',
+      'rsync -rtcvz --timeout=%d --rsync-path="mkdir -p \"%s\" && rsync" %s "%s" "%s"',
       $timeout,
+      preg_replace( '/.*:/', '', $remote_path ), // the remote path after "hostname:"
       is_null( $port ) ? '' : sprintf( '-e "ssh -p %d"', $port ),
       $local_path,
       $remote_path
@@ -93,9 +94,8 @@ function archive( $path )
   $current_dir = getcwd();
 
   // get the parent and child (final) directory from the path
-  preg_match( '#[^/]+/$#', $path, $matches );
-  $child_dir = substr( current( $matches ), 0, -1 );
-  $parent_dir = str_replace( sprintf( '/%s', $child_dir ), '', $path );
+  $parent_dir = dirname( $path );
+  $child_dir = basename( $path );
 
   // move into the parent directory
   DEBUG ? printf( "cd %s\n", $parent_dir ) : chdir( $parent_dir );
@@ -123,11 +123,11 @@ function archive( $path )
   }
 
   // now that they are archived, delete all files in the path
-  $command = sprintf( 'rm -rf %s*', $path );
+  $command = sprintf( 'rm -rf "%s"*', $path );
 
   $result_code = 0;
   $output = NULL;
-  DEBUG ? printf( "%s\n", $command ) : exec( sprintf( '%s 2> /dev/null', $command ), $output, $result_code );
+  DEBUG ? printf( "%s\n", $command ) : exec( sprintf( '%s &> /dev/null', $command ), $output, $result_code );
 
   if( 0 < $result_code )
   {
@@ -152,7 +152,7 @@ function purge( $path, $days_old )
 {
   // delete all files older than the input argument
   $zip_glob = preg_replace( '#/$#', '.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].zip', $path );
-  $command = sprintf( 'find %s -mtime +%d -exec rm {} \;', $zip_glob, $days_old );
+  $command = sprintf( 'find "%s" -mtime +%d -exec rm {} \;', $zip_glob, $days_old );
 
   $result_code = 0;
   $output = NULL;
