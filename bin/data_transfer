@@ -196,6 +196,12 @@ $arguments->add_option(
   true
 );
 $arguments->add_option(
+  'R',
+  'remove_only',
+  'Purge files only (no data transfer) after they are ARGUMENT days old',
+  true
+);
+$arguments->add_option(
   't',
   'timeout',
   'How long to wait before giving up on a remote connection',
@@ -217,7 +223,17 @@ $args = $arguments->parse_arguments( $argv );
 define( 'DEBUG', array_key_exists( 'debug', $args['option_list'] ) );
 $port = $args['option_list']['port'];
 $timeout = $args['option_list']['timeout'];
-$purge_days_old = array_key_exists( 'remove', $args['option_list'] ) ? $args['option_list']['remove'] : NULL;
+$purge_only = false;
+$purge_days_old = NULL;
+if( array_key_exists( 'remove_only', $args['option_list'] ) )
+{
+  $purge_only = true;
+  $purge_days_old = $args['option_list']['remove_only'];
+}
+else if( array_key_exists( 'remove', $args['option_list'] ) )
+{
+  $purge_days_old = $args['option_list']['remove'];
+}
 $local_dir = $args['input_list']['LOCAL_DIRECTORY'];
 if( !preg_match( '#/$#', $local_dir ) ) $local_dir .= '/';
 $remote_dir = $args['input_list']['REMOTE_DIRECTORY'];
@@ -233,9 +249,16 @@ if( !is_null( $purge_days_old ) && (
   exit( 10 );
 }
 
-!DEBUG && output( sprintf( 'Transfering files from "%s"', $local_dir ) );
-if( !rsync( $local_dir, $remote_dir, $port, $timeout ) ) exit( 11 );
-if( !archive( $local_dir ) ) exit( 12 );
-if( !is_null( $purge_days_old ) ) purge( $local_dir, $purge_days_old );
+if( !$purge_only )
+{
+  !DEBUG && output( sprintf( 'Transfering files from "%s"', $local_dir ) );
+  if( !rsync( $local_dir, $remote_dir, $port, $timeout ) ) exit( 11 );
+  if( !archive( $local_dir ) ) exit( 12 );
+}
+if( !is_null( $purge_days_old ) )
+{
+  !DEBUG && output( sprintf( 'Purging files from "%s"', $local_dir ) );
+  purge( $local_dir, $purge_days_old );
+}
 
 exit( 0 );

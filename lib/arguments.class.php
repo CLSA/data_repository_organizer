@@ -157,8 +157,8 @@ class arguments
     // add the option list
     if( 0 < count( $this->option_list ) )
     {
-      // sort the option list by short name
-      ksort( $this->option_list );
+      // sort the option list by short name (case insensitive)
+      ksort( $this->option_list, SORT_NATURAL | SORT_FLAG_CASE  );
 
       $usage .= "\nOPTIONS";
       foreach( $this->option_list as $short => $option )
