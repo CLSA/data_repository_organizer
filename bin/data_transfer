@@ -103,7 +103,7 @@ function archive( $path )
   $filename = sprintf( '%s.%s.zip', $child_dir, date( 'Y-m-d' ) );
 
   // zip all the files in the child directory
-  $command = sprintf( 'zip -r %s %s', $filename, $child_dir );
+  $command = sprintf( 'zip -r "%s" "%s"', $filename, $child_dir );
 
   $result_code = 0;
   $output = NULL;
