@@ -8,5 +8,9 @@
 passthru( sprintf( '%s/sort_temporary_files -i "Weston HBHA" actigraph', __DIR__ ) );
 passthru( sprintf( '%s/sort_temporary_files -i "Weston HBHA" ticwatch', __DIR__ ) );
 
-// Orgalize new recordings downloalded from the asterisk server (the transfer is done at 4am)
+// Organize new recordings (from asterosk ser at 4am, and from Pine)
 passthru( sprintf( '%s/sort_temporary_files audio', __DIR__ ) );
+passthru( sprintf( '%s/sort_temporary_files cdtt', __DIR__ ) );
+passthru( sprintf( '%s/sort_temporary_files choice_rt', __DIR__ ) );
+passthru( sprintf( '%s/sort_temporary_files retinal', __DIR__ ) );
+passthru( sprintf( '%s/sort_temporary_files spirometry', __DIR__ ) );

@@ -1,11 +1,12 @@
 #!/usr/bin/php
 <?php
+$data_type_list = ['actigraph', 'audio', 'cdtt', 'choice_rt', 'retinal', 'spirometry', 'ticwatch'];
+
 require_once( __DIR__.'/../settings.ini.php' );
 require_once( __DIR__.'/../lib/util.class.php' );
 require_once( __DIR__.'/../lib/arguments.class.php' );
-require_once( __DIR__.'/../lib/data_type/actigraph.class.php' );
-require_once( __DIR__.'/../lib/data_type/audio.class.php' );
-require_once( __DIR__.'/../lib/data_type/ticwatch.class.php' );
+foreach( $data_type_list as $data_type )
+  require_once( sprintf( '%s/../lib/data_type/%s.class.php', __DIR__, $data_type ) );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // build the command argument details, then parse the passed args
@@ -18,7 +19,10 @@ $arguments->add_option( 'k', 'keep_files', 'Do not delete any files from the tem
 $arguments->add_option( 'v', 'verbose', 'Shows more details when running the script.' );
 $arguments->add_option( 's', 'study', 'The name of the study the data belongs to', true, 'clsa' );
 $arguments->add_option( 'i', 'identifier', 'The name of the identifier used by filenames', true, false );
-$arguments->add_input( 'DATA_TYPE', 'The type of data to process (actigraph, audio, ticwatch)' );
+$arguments->add_input(
+  'DATA_TYPE',
+  sprintf( 'The type of data to process (%s)', implode( ', ', $data_type_list ) )
+);
 
 $args = $arguments->parse_arguments( $argv );
 
@@ -29,7 +33,7 @@ $identifier_name = $args['option_list']['identifier'];
 $study = $args['option_list']['study'];
 $data_type = $args['input_list']['DATA_TYPE'];
 
-if( !in_array( $data_type, ['actigraph', 'audio', 'ticwatch'] ) )
+if( !in_array( $data_type, $data_type_list ) )
 {
   fatal_error(
     sprintf( "Invalid DATA_TYPE \"%s\", aborting", $data_type ),
@@ -47,6 +51,10 @@ if( in_array( $data_type, ['actigraph', 'ticwatch'] ) )
   if( 'actigraph' == $data_type ) \data_type\actigraph::process_files( $identifier_name, $study );
   else if( 'ticwatch' == $data_type ) \data_type\ticwatch::process_files( $identifier_name, $study );
 }
-else if( 'audio' == $data_type ) \data_type\audio::process_files();
+else if( in_array( $data_type, $data_type_list ) )
+{
+  $class_name = sprintf( '\data_type\%s', $data_type );
+  $class_name::process_files();
+}
 
 exit( 0 );

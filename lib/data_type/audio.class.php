@@ -66,7 +66,7 @@ class audio extends base
 
       $matches = [];
       // pine-based comprehensive recordings
-      if( preg_match( '#nosite/Follow-up ([0-9]) (Home|Site)/([^/]+)/([^/]+)/audio.wav$#', $filename, $matches ) )
+      if( preg_match( '#nosite/Follow-up ([0-9]) (Home|Site)/([^/]+)/([^/]+)/audio\.wav$#', $filename, $matches ) )
       {
         $phase = $matches[1] + 1;
         $variable = $matches[3];
@@ -89,7 +89,7 @@ class audio extends base
         else if( 'COG_WRDLSTREC' == $variable ) $destination_filename = 'immediate_word_list';
       }
       // CATI tracking and onyx-based comprehensive recordings
-      else if( preg_match( '#nosite/audio/([^/]+)/([^/]+)/([^/]+)/([^/]+).wav$#', $filename, $matches ) )
+      else if( preg_match( '#nosite/audio/([^/]+)/([^/]+)/([^/]+)/([^/]+)\.wav$#', $filename, $matches ) )
       {
         $cohort = $matches[1];
         $phase_name = $matches[2];
@@ -206,7 +206,6 @@ class audio extends base
           if( !TEST_ONLY ) mkdir( $destination_directory, 0755, true );
         }
 
-        // determine the destination filename based on
         $destination = sprintf( '%s/%s.wav', $destination_directory, $destination_filename );
         if( TEST_ONLY ? true : copy( $filename, $destination ) )
         {
