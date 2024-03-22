@@ -26,8 +26,10 @@ class spirometry extends base
     $file_count = 0;
     foreach( glob( sprintf( '%s/nosite/Follow-up * Site/SP_AUTO/*/*', $base_dir ) ) as $filename )
     {
+      $re1 = '#nosite/Follow-up ([0-9]) Site/SP_AUTO/([^/]+)/report\.pdf$#';
+      $re2 = '#nosite/Follow-up ([0-9]) Site/SP_AUTO/([^/]+)/data\.xml$#';
       $matches = [];
-      if( preg_match( '#nosite/Follow-up ([0-9]) Site/SP_AUTO/([^/]+)/report\.pdf$#', $filename, $matches ) )
+      if( preg_match( $re1, $filename, $matches ) )
       {
         $destination_directory = sprintf(
           '%s/%s/clsa/%s/spirometry/%s',
@@ -36,75 +38,36 @@ class spirometry extends base
           $matches[1] + 1, // phase
           $matches[2] // UID
         );
-
-        // make sure the directory exists (recursively)
-        if( !is_dir( $destination_directory ) )
-        {
-          if( VERBOSE ) output( sprintf( 'mkdir -m 0755 %s', $destination_directory ) );
-          if( !TEST_ONLY ) mkdir( $destination_directory, 0755, true );
-        }
-
         $destination = sprintf( '%s/report.pdf', $destination_directory );
-        if( TEST_ONLY ? true : copy( $filename, $destination ) )
+
+        if( self::process_file( $destination_directory, $filename, $destination ) ) $file_count++;
+      }
+      else if( preg_match( $re2, $filename, $matches ) )
+      {
+        $destination_directory = sprintf(
+          '%s/%s/clsa/%s/spirometry/%s',
+          DATA_DIR,
+          RAW_DIR,
+          $matches[1] + 1, // phase
+          $matches[2] // UID
+        );
+        $destination = sprintf( '%s/data.xml', $destination_directory );
+
+        self::mkdir( $destination_directory );
+        if( self::copy( $filename, $destination ) )
         {
-          if( VERBOSE ) output( sprintf( 'cp "%s" "%s"', $filename, $destination ) );
-          if( !TEST_ONLY && !KEEP_FILES ) unlink( $filename );
+          if( !TEST_ONLY ) static::generate_raw_data( $filename, $destination_directory );
+          self::unlink( $filename );
           $file_count++;
-        }
-        else
-        {
-          $reason = sprintf(
-            'Failed to copy "%s" to "%s"',
-            $filename,
-            $destination
-          );
-          self::move_from_temporary_to_invalid( $filename, $reason );
         }
       }
-
-      $matches = [];
-      if( preg_match( '#nosite/Follow-up ([0-9]) Site/SP_AUTO/([^/]+)/data\.xml$#', $filename, $matches ) )
+      else
       {
-        $destination_directory = sprintf(
-          '%s/%s/clsa/%s/spirometry/%s',
-          DATA_DIR,
-          RAW_DIR,
-          $matches[1] + 1, // phase
-          $matches[2] // UID
+        self::move_from_temporary_to_invalid(
+          $filename,
+          sprintf( 'Invalid filename: "%s"', $filename )
         );
-
-        // make sure the directory exists (recursively)
-        if( !is_dir( $destination_directory ) )
-        {
-          if( VERBOSE ) output( sprintf( 'mkdir -m 0755 %s', $destination_directory ) );
-          if( !TEST_ONLY ) mkdir( $destination_directory, 0755, true );
-        }
-
-        $destination = sprintf( '%s/data.xml', $destination_directory );
-        if( TEST_ONLY ? true : copy( $filename, $destination ) )
-        {
-          if( VERBOSE )
-          {
-            output( sprintf( 'cp "%s" "%s"', $filename, $destination ) );
-            output( 'generating raw data files from XML data' );
-          }
-          if( !TEST_ONLY )
-          {
-            // create raw data files
-            static::generate_raw_data( $filename, $destination_directory );
-            if( !KEEP_FILES ) unlink( $filename );
-          }
-          $file_count++;
-        }
-        else
-        {
-          $reason = sprintf(
-            'Failed to copy "%s" to "%s"',
-            $filename,
-            $destination
-          );
-          self::move_from_temporary_to_invalid( $filename, $reason );
-        }
+        continue;
       }
     }
 

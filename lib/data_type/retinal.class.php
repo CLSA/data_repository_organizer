@@ -24,44 +24,31 @@ class retinal extends base
 
     // This data only comes from the Pine Site interview
     $file_count = 0;
-    foreach( glob( sprintf( '%s/nosite/Follow-up * Site/RET_[RL]/*/EYE_*.jpg', $base_dir ) ) as $filename )
+    foreach( glob( sprintf( '%s/nosite/Follow-up * Site/RET_[RL]/*/*', $base_dir ) ) as $filename )
     {
+      $re = '#nosite/Follow-up ([0-9]) Site/RET_[RL]/([^/]+)/EYE_(RIGHT|LEFT)\.jpg$#';
       $matches = [];
-      if( preg_match( '#nosite/Follow-up ([0-9]) Site/RET_[RL]/([^/]+)/EYE_(RIGHT|LEFT)\.jpg$#', $filename, $matches ) )
+
+      if( !preg_match( $re, $filename, $matches ) )
       {
-        $side = strtolower( $matches[3] );
-        $destination_directory = sprintf(
-          '%s/%s/clsa/%s/retinal/%s',
-          DATA_DIR,
-          RAW_DIR,
-          $matches[1] + 1, // phase
-          $matches[2] // UID
+        self::move_from_temporary_to_invalid(
+          $filename,
+          sprintf( 'Invalid filename: "%s"', $filename )
         );
-
-        // make sure the directory exists (recursively)
-        if( !is_dir( $destination_directory ) )
-        {
-          if( VERBOSE ) output( sprintf( 'mkdir -m 0755 %s', $destination_directory ) );
-          if( !TEST_ONLY ) mkdir( $destination_directory, 0755, true );
-        }
-
-        $destination = sprintf( '%s/retinal_%s.jpeg', $destination_directory, $side );
-        if( TEST_ONLY ? true : copy( $filename, $destination ) )
-        {
-          if( VERBOSE ) output( sprintf( 'cp "%s" "%s"', $filename, $destination ) );
-          if( !TEST_ONLY && !KEEP_FILES ) unlink( $filename );
-          $file_count++;
-        }
-        else
-        {
-          $reason = sprintf(
-            'Failed to copy "%s" to "%s"',
-            $filename,
-            $destination
-          );
-          self::move_from_temporary_to_invalid( $filename, $reason );
-        }
+        continue;
       }
+
+      $side = strtolower( $matches[3] );
+      $destination_directory = sprintf(
+        '%s/%s/clsa/%s/retinal/%s',
+        DATA_DIR,
+        RAW_DIR,
+        $matches[1] + 1, // phase
+        $matches[2] // UID
+      );
+      $destination = sprintf( '%s/retinal_%s.jpeg', $destination_directory, $side );
+
+      if( self::process_file( $destination_directory, $filename, $destination ) ) $file_count++;
     }
 
     // now remove all empty directories

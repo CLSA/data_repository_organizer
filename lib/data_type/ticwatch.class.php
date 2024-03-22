@@ -45,11 +45,10 @@ class ticwatch extends base
       $study_id = strtoupper( trim( $original_study_id ) );
       if( !array_key_exists( $study_id, $study_uid_lookup ) )
       {
-        $reason = sprintf(
-          'Cannot transfer ticwatch directory due to missing UID lookup for study ID "%s"',
-          $study_id
+        self::move_from_temporary_to_invalid(
+          $study_dirname,
+          sprintf( 'Cannot transfer ticwatch directory due to missing UID lookup for study ID "%s"', $study_id )
         );
-        self::move_from_temporary_to_invalid( $study_dirname, $reason );
         continue;
       }
       $uid = $study_uid_lookup[$study_id]['uid'];
@@ -58,11 +57,10 @@ class ticwatch extends base
       // make sure the participant has consented to mobility trackers
       if( !$mobility_consent )
       {
-        $reason = sprintf(
-          'Ticwatch data without mobility consent, "%s".',
-          $study_dirname
+        self::move_from_temporary_to_invalid(
+          $study_dirname,
+          sprintf( 'Ticwatch data without mobility consent, "%s".', $study_dirname )
         );
-        self::move_from_temporary_to_invalid( $study_dirname, $reason );
         continue;
       }
 
@@ -76,7 +74,7 @@ class ticwatch extends base
       );
 
       // make sure the directory exists (recursively)
-      if( !TEST_ONLY && !is_dir( $destination_directory ) ) mkdir( $destination_directory, 0755, true );
+      self::mkdir( $destination_directory );
 
       // make a list of all files to be copied and note the latest date
       $latest_date = NULL;
@@ -145,20 +143,13 @@ class ticwatch extends base
         $success = true;
         foreach( $file_pair_list as $file_pair )
         {
-          $copy = TEST_ONLY ? true : copy( $file_pair['source'], $file_pair['destination'] );
-          if( $copy )
+          if( self::copy( $file_pair['source'], $file_pair['destination'] ) )
           {
-            if( VERBOSE ) output( sprintf( '"%s" => "%s"', $file_pair['source'], $file_pair['destination'] ) );
-            if( !TEST_ONLY && !KEEP_FILES ) unlink( $file_pair['source'] );
+            self::unlink( $file_pair['source'] );
             $file_count++;
           }
           else
           {
-            output( sprintf(
-              'Failed to copy "%s" to "%s"',
-              $file_pair['source'],
-              $file_pair['destination']
-            ) );
             $success = false;
           }
         }
@@ -173,11 +164,10 @@ class ticwatch extends base
           else
           {
             // move the remaining files to the invalid directory
-            $reason = sprintf(
-              'Unable to sort directory, "%s"',
-              $study_dirname
+            self::move_from_temporary_to_invalid(
+              $study_dirname,
+              sprintf( 'Unable to sort directory, "%s"', $study_dirname )
             );
-            self::move_from_temporary_to_invalid( $study_dirname, $reason );
           }
         }
       }

@@ -12,5 +12,6 @@ passthru( sprintf( '%s/sort_temporary_files -i "Weston HBHA" ticwatch', __DIR__ 
 passthru( sprintf( '%s/sort_temporary_files audio', __DIR__ ) );
 passthru( sprintf( '%s/sort_temporary_files cdtt', __DIR__ ) );
 passthru( sprintf( '%s/sort_temporary_files choice_rt', __DIR__ ) );
+passthru( sprintf( '%s/sort_temporary_files cimt', __DIR__ ) );
 passthru( sprintf( '%s/sort_temporary_files retinal', __DIR__ ) );
 passthru( sprintf( '%s/sort_temporary_files spirometry', __DIR__ ) );

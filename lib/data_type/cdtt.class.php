@@ -24,43 +24,29 @@ class cdtt extends base
 
     // This data only comes from the Pine Site interview
     $file_count = 0;
-    foreach( glob( sprintf( '%s/nosite/Follow-up * Site/CDTT/*/cdtt.xlsx', $base_dir ) ) as $filename )
+    foreach( glob( sprintf( '%s/nosite/Follow-up * Site/CDTT/*/*', $base_dir ) ) as $filename )
     {
+      $re = '#nosite/Follow-up ([0-9]) Site/CDTT/([^/]+)/cdtt\.xlsx$#';
       $matches = [];
-      if( preg_match( '#nosite/Follow-up ([0-9]) Site/CDTT/([^/]+)/cdtt\.xlsx$#', $filename, $matches ) )
+      if( !preg_match( $re, $filename, $matches ) )
       {
-        $destination_directory = sprintf(
-          '%s/%s/clsa/%s/cdtt/%s',
-          DATA_DIR,
-          RAW_DIR,
-          $matches[1] + 1, // phase
-          $matches[2] // UID
-        );
-
-        // make sure the directory exists (recursively)
-        if( !is_dir( $destination_directory ) )
-        {
-          if( VERBOSE ) output( sprintf( 'mkdir -m 0755 %s', $destination_directory ) );
-          if( !TEST_ONLY ) mkdir( $destination_directory, 0755, true );
-        }
-
-        $destination = sprintf( '%s/result_file.xls', $destination_directory );
-        if( TEST_ONLY ? true : copy( $filename, $destination ) )
-        {
-          if( VERBOSE ) output( sprintf( 'cp "%s" "%s"', $filename, $destination ) );
-          if( !TEST_ONLY && !KEEP_FILES ) unlink( $filename );
-          $file_count++;
-        }
-        else
-        {
-          $reason = sprintf(
-            'Failed to copy "%s" to "%s"',
-            $filename,
-            $destination
-          );
-          self::move_from_temporary_to_invalid( $filename, $reason );
-        }
+        self::move_from_temporary_to_invalid(
+          $filename,
+          sprintf( 'Invalid filename: "%s"', $filename )
+        );  
+        continue;
       }
+
+      $destination_directory = sprintf(
+        '%s/%s/clsa/%s/cdtt/%s',
+        DATA_DIR,
+        RAW_DIR,
+        $matches[1] + 1, // phase
+        $matches[2] // UID
+      );
+      $destination = sprintf( '%s/result_file.xls', $destination_directory );
+
+      if( self::process_file( $destination_directory, $filename, $destination ) ) $file_count++;
     }
 
     // now remove all empty directories

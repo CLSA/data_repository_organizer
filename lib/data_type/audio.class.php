@@ -78,7 +78,7 @@ class audio extends base
         else if( 'FAS_AREC' == $variable ) $destination_filename = 'a_word_fluency';
         else if( 'FAS_SREC' == $variable ) $destination_filename = 's_word_fluency';
         else if( 'STP_DOTREC' == $variable ) $destination_filename = 'stroop_dot';
-        else if( 'STP_WORREC' == $variable ) $destination_filename = 'stroop_word';
+        else if( 'STP_WORDREC' == $variable ) $destination_filename = 'stroop_word';
         else if( 'STP_COLREC' == $variable ) $destination_filename = 'stroop_colour';
         else if( 'COG_ALPTME_REC2' == $variable ) $destination_filename = 'alphabet';
         else if( in_array( $variable, ['COG_ALTTME_REC', 'COG_ALTTME_REC2'] ) )
@@ -110,7 +110,7 @@ class audio extends base
           else if( 'FAS_AREC' == $variable ) $destination_filename = 'a_word_fluency';
           else if( 'FAS_SREC' == $variable ) $destination_filename = 's_word_fluency';
           else if( 'STP_DOTREC' == $variable ) $destination_filename = 'stroop_dot';
-          else if( 'STP_WORREC' == $variable ) $destination_filename = 'stroop_word';
+          else if( 'STP_WORDREC' == $variable ) $destination_filename = 'stroop_word';
           else if( 'STP_COLREC' == $variable ) $destination_filename = 'stroop_colour';
           else if( 'COG_ALPTME_REC2' == $variable ) $destination_filename = 'alphabet';
           else if( 'COG_ALTTME_REC' == $variable ) $destination_filename = 'mental_alternation';
@@ -125,11 +125,10 @@ class audio extends base
           // sabretooth_f1-live, sabretooth_f2-live, sabretooth_c1-live, etc
           if( 0 === preg_match( '/sabretooth_(bl|cb|[cf][1-9])-live/', $phase_name, $matches ) )
           {
-            $reason = sprintf(
-              'Ignoring invalid audio file: "%s"',
-              $filename
+            self::move_from_temporary_to_invalid(
+              $filename,
+              sprintf( 'Ignoring invalid audio file: "%s"', $filename )
             );
-            self::move_from_temporary_to_invalid( $filename, $reason );
             continue;
           }
 
@@ -149,11 +148,10 @@ class audio extends base
           }
           else
           {
-            $reason = sprintf(
-              'Ignoring invalid audio file "%s"',
-              $filename
+            self::move_from_temporary_to_invalid(
+              $filename,
+              sprintf( 'Ignoring invalid audio file "%s"', $filename )
             );
-            self::move_from_temporary_to_invalid( $filename, $reason );
             continue;
           }
 
@@ -180,11 +178,10 @@ class audio extends base
       }
       else
       {
-        $reason = sprintf(
-          'Ignoring invalid audio file: "%s"',
-          $filename
+        self::move_from_temporary_to_invalid(
+          $filename,
+          sprintf( 'Ignoring invalid audio file: "%s"', $filename )
         );
-        self::move_from_temporary_to_invalid( $filename, $reason );
         continue;
       }
 
@@ -198,38 +195,17 @@ class audio extends base
           $phase,
           $uid
         );
-
-        // make sure the directory exists (recursively)
-        if( !is_dir( $destination_directory ) )
-        {
-          if( VERBOSE ) output( sprintf( 'mkdir -m 0755 %s', $destination_directory ) );
-          if( !TEST_ONLY ) mkdir( $destination_directory, 0755, true );
-        }
-
         $destination = sprintf( '%s/%s.wav', $destination_directory, $destination_filename );
-        if( TEST_ONLY ? true : copy( $filename, $destination ) )
-        {
-          if( VERBOSE ) output( sprintf( 'cp "%s" "%s"', $filename, $destination ) );
-          if( !TEST_ONLY && !KEEP_FILES ) unlink( $filename );
-          $file_count++;
-        }
-        else
-        {
-          $reason = sprintf(
-            'Failed to copy "%s" to "%s"',
-            $filename,
-            $destination
-          );
-          self::move_from_temporary_to_invalid( $filename, $reason );
-        }
+
+        if( self::process_file( $destination_directory, $filename, $destination ) ) $file_count++;
       }
       else
       {
-        $reason = sprintf(
-          'Unable to process file "%s"',
-          $filename
+        self::move_from_temporary_to_invalid(
+          $filename,
+          sprintf( 'Unable to process file "%s"', $filename )
         );
-        self::move_from_temporary_to_invalid( $filename, $reason );
+        continue;
       }
     }
 
@@ -242,11 +218,10 @@ class audio extends base
     // any remaining files are to be moved to the invalid directory for data cleaning
     foreach( glob( sprintf( '%s/*/audio/*/*/*/*', $base_dir ) ) as $dirname )
     {
-      $reason = sprintf(
-        'Unable to sort directory, "%s"',
-        $dirname
+      self::move_from_temporary_to_invalid(
+        $dirname,
+        sprintf( 'Unable to sort directory, "%s"', $dirname)
       );
-      self::move_from_temporary_to_invalid( $dirname, $reason );
     }
 
     output( sprintf(

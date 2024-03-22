@@ -32,15 +32,14 @@ class actigraph extends base
     $glob = sprintf( '%s/[A-Z][A-Z][A-Z]/[0-9]/actigraph/*', $base_dir );
     foreach( glob( $glob ) as $filename )
     {
-      $preg = '#/([0-9])/actigraph/([^/]+) \(([0-9]{4}-[0-9]{2}-[0-9]{2})\)(_thigh|_wrist)? *\.gt3x$#';
+      $re = '#/([0-9])/actigraph/([^/]+) \(([0-9]{4}-[0-9]{2}-[0-9]{2})\)(_thigh|_wrist)? *\.gt3x$#';
       $matches = [];
-      if( !preg_match( $preg, $filename, $matches ) )
+      if( !preg_match( $re, $filename, $matches ) )
       {
-        $reason = sprintf(
-          'Cannot transfer actigraph file, "%s", invalid format.',
-          $filename
+        self::move_from_temporary_to_invalid(
+          $filename,
+          sprintf( 'Cannot transfer actigraph file, "%s", invalid format.', $filename )
         );
-        self::move_from_temporary_to_invalid( $filename, $reason );
         continue;
       }
 
@@ -141,27 +140,9 @@ class actigraph extends base
         $phase,
         $uid
       );
-
-      // make sure the directory exists (recursively)
-      if( !TEST_ONLY && !is_dir( $destination_directory ) ) mkdir( $destination_directory, 0755, true );
-
       $destination = sprintf( '%s/%s_%s.gt3x', $destination_directory, $type, $date );
-      $copy = TEST_ONLY ? true : copy( $filename, $destination );
-      if( $copy )
-      {
-        if( VERBOSE ) output( sprintf( '"%s" => "%s"', $filename, $destination ) );
-        if( !TEST_ONLY && !KEEP_FILES ) unlink( $filename );
-        $file_count++;
-      }
-      else
-      {
-        $reason = sprintf(
-          'Failed to copy "%s" to "%s"',
-          $filename,
-          $destination
-        );
-        self::move_from_temporary_to_invalid( $filename, $reason );
-      }
+
+      if( self::process_file( $destination_directory, $filename, $destination ) ) $file_count++;
     }
 
     output( sprintf(
