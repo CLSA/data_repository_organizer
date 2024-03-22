@@ -19,10 +19,52 @@ class ecg extends base
     $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
 
     // Process all ecg recordings
-    // TODO: describe expected file tree format
+    // There is a single file named Ecg.xml for each participant
     output( sprintf( 'Processing ecg files in "%s"', $base_dir ) );
 
-    // call self::generate_supplementary()
+    // This data only comes from the Pine Site interview
+    $file_count = 0;
+    foreach( glob( sprintf( '%s/nosite/Follow-up * Site/ECG/*/*', $base_dir ) ) as $filename )
+    {
+      $re = '#nosite/Follow-up ([0-9]) Site/ECG/([^/]+)/Ecg\.xml$#';
+      $matches = [];
+      if( !preg_match( $re, $filename, $matches ) )
+      {
+        self::move_from_temporary_to_invalid(
+          $filename,
+          sprintf( 'Invalid filename: "%s"', $filename )
+        );
+        continue;
+      }
+
+      $destination_directory = sprintf(
+        '%s/%s/clsa/%s/ecg/%s',
+        DATA_DIR,
+        RAW_DIR,
+        $matches[1] + 1, // phase
+        $matches[2] // UID
+      );
+      $destination = sprintf( '%s/ecg.xml', $destination_directory );
+
+      if( self::process_file( $destination_directory, $filename, $destination ) )
+      {
+        // generate supplementary data from the xml file
+        if( !TEST_ONLY ) self::generate_supplementary( $destination );
+        $file_count++;
+      }
+    }
+
+    // now remove all empty directories
+    foreach( glob( sprintf( '%s/nosite/*/*/*', $base_dir ) ) as $dirname )
+    {
+      if( is_dir( $dirname ) ) self::remove_dir( $dirname );
+    }
+
+    output( sprintf(
+      'Done, %d files %stransferred',
+      $file_count,
+      TEST_ONLY ? 'would be ' : ''
+    ) );
   }
 
   /**
@@ -65,7 +107,6 @@ class ecg extends base
     if( 0 < $result_code ) printf( implode( "\n", $output ) );
     return $result_code;
   }
-
 
   /**
    * Generates all supplementary files
