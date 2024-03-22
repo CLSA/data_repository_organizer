@@ -79,7 +79,11 @@ class arguments
   }
 
   /**
-   * TODO: document
+   * Adds an input argument
+   * 
+   * @param string $name The name of the input
+   * @param string $description An optional description of the input used in the help text
+   * @param boolean $optional Whether the input is optional (default false)
    */
   public function add_input( $name, $description = NULL, $optional = false )
   {
