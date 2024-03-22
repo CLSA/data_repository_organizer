@@ -19,10 +19,139 @@ class dxa extends base
     $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
 
     // Process all dxa recordings
-    // TODO: describe expected file tree format
+    // DXA files are found in DXA1 (left/right hip) and DXA2 (lateral, spine, wbody, forearm)
     output( sprintf( 'Processing dxa files in "%s"', $base_dir ) );
 
-    // call self::generate_supplementary()
+    try
+    {
+      $cenozo_db = \util::get_cenozo_db();
+    }
+    catch( \Exception $e )
+    {
+      fatal_error( 'Failed to open required connection to cenozo database.', 12 );
+    }
+
+    // This data only comes from the Pine Site interview
+    $file_count = 0;
+    foreach( glob( sprintf( '%s/nosite/Follow-up * Site/DXA[12]/*/*', $base_dir ) ) as $filename )
+    {
+      $hip_re = '#nosite/Follow-up ([0-9]) Site/DXA1/([^/]+)/([LR])_HIP_DICOM.dcm$#';
+      $lateral_re = '#nosite/Follow-up ([0-9]) Site/DXA2/([^/]+)/SEL_DICOM_(MEASURE|OT|PR).dcm$#';
+      $spine_re = '#nosite/Follow-up ([0-9]) Site/DXA2/([^/]+)/SP_DICOM_([0-9]+).dcm$#';
+      $wbody_re = '#nosite/Follow-up ([0-9]) Site/DXA2/([^/]+)/WB_DICOM_([0-9]+).dcm$#';
+      $forearm_re = '#nosite/Follow-up ([0-9]) Site/DXA2/([^/]+)/FA_[LR]_DICOM_([0-9]+).dcm$#';
+      $matches = [];
+      if( preg_match( $hip_re, $filename, $matches ) )
+      {
+        // hip scan (left or right)
+        $destination_directory = sprintf(
+          '%s/%s/clsa/%s/dxa/%s',
+          DATA_DIR,
+          RAW_DIR,
+          $matches[1] + 1, //phase
+          $matches[2] // UID
+        );
+
+        $destination = sprintf(
+          '%s/dxa_hip_%s.dcm',
+          $destination_directory,
+          'L' == $matches[3] ? 'left' : 'right'
+        );
+      }
+      else if( preg_match( $lateral_re, $filename, $matches ) )
+      {
+        // lateral scans (base, OT or PR)
+        $destination_directory = sprintf(
+          '%s/%s/clsa/%s/dxa/%s',
+          DATA_DIR,
+          RAW_DIR,
+          $matches[1] + 1, //phase
+          $matches[2] // UID
+        );
+
+        $destination = sprintf(
+          '%s/dxa_lateral%s.dcm',
+          $destination_directory,
+          'MEASURE' == $matches[3] ? '' : ('_'.strtolower( $matches[3] ))
+        );
+      }
+      else if( preg_match( $spine_re, $filename, $matches ) )
+      {
+        // spine scan
+        $destination_directory = sprintf(
+          '%s/%s/clsa/%s/dxa/%s',
+          DATA_DIR,
+          RAW_DIR,
+          $matches[1] + 1, //phase
+          $matches[2] // UID
+        );
+
+        $destination = sprintf( '%s/dxa_spine.dcm', $destination_directory );
+      }
+      else if( preg_match( $wbody_re, $filename, $matches ) )
+      {
+        // wbody scan (BCA or BMD)
+        $destination_directory = sprintf(
+          '%s/%s/clsa/%s/dxa/%s',
+          DATA_DIR,
+          RAW_DIR,
+          $matches[1] + 1, //phase
+          $matches[2] // UID
+        );
+
+        $destination = sprintf(
+          '%s/dxa_wbody_%s.dcm',
+          $destination_directory,
+          '1' == $matches[3] ? 'bmd' : 'bca' // TODO: bmd vs bca needs confirmation
+        );
+      }
+      else if( preg_match( $forearm_re, $filename, $matches ) )
+      {
+        // forearm scan (left or right)
+        $destination_directory = sprintf(
+          '%s/%s/clsa/%s/dxa/%s',
+          DATA_DIR,
+          RAW_DIR,
+          $matches[1] + 1, //phase
+          $matches[2] // UID
+        );
+
+        $destination = sprintf(
+          '%s/dxa_forearm_%s.dcm',
+          $destination_directory.
+          'L' == $matches[3] ? 'left' : 'right'
+        );
+      }
+      else
+      {
+        self::move_from_temporary_to_invalid(
+          $filename,
+          sprintf( 'Invalid filename: "%s"', $filename )
+        );
+        continue;
+      }
+
+      if( self::process_file( $destination_directory, $filename, $destination ) )
+      {
+        // generate supplementary data from the xml file
+        if( !TEST_ONLY ) self::generate_supplementary( $destination, $cenozo_db );
+        $file_count++;
+      }
+    }
+
+    $cenozo_db->close();
+
+    // now remove all empty directories
+    foreach( glob( sprintf( '%s/nosite/*/*/*', $base_dir ) ) as $dirname )
+    {
+      if( is_dir( $dirname ) ) self::remove_dir( $dirname );
+    }
+
+    output( sprintf(
+      'Done, %d files %stransferred',
+      $file_count,
+      TEST_ONLY ? 'would be ' : ''
+    ) );
   }
 
   /**
@@ -76,7 +205,7 @@ class dxa extends base
    * Generates all supplementary files
    * 
    * This will generate jpeg versions of forearm, hip and wbody DICOM files for release to participants.
-   * It will also create jpeg versions of forearm DICOM files for release to reserachers.  It should only
+   * It will also create jpeg versions of forearm DICOM files for release to researchers.  It should only
    * be used as the post download function for dxa_hip, dxa_forearm and dxa_wbody_bmd DICOM files.
    */
   public static function generate_supplementary( $filename, $cenozo_db )

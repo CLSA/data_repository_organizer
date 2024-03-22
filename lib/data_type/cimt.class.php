@@ -16,7 +16,6 @@ class cimt extends base
    */
   public static function process_files()
   {
-    $cwd = getcwd();
     $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
 
     // Process all cimt recordings

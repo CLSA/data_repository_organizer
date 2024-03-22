@@ -1,6 +1,8 @@
 #!/usr/bin/php
 <?php
-$data_type_list = ['actigraph', 'audio', 'cdtt', 'choice_rt', 'cimt', 'ecg', 'retinal', 'spirometry', 'ticwatch'];
+$data_type_list = [
+  'actigraph', 'audio', 'cdtt', 'choice_rt', 'cimt', 'dxa', 'ecg', 'retinal', 'spirometry', 'ticwatch'
+];
 
 require_once( __DIR__.'/../settings.ini.php' );
 require_once( __DIR__.'/../lib/util.class.php' );
