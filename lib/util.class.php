@@ -8,9 +8,8 @@ function output( $message ) { printf( "%s> %s\n", date( 'Y-m-d (D) H:i:s' ), $me
 function fatal_error( $message, $code ) { output( sprintf( 'ERROR: %s', $message ) ); exit( $code ); }
 
 /**
- * TODO: document
+ * Utilities calss used throughout the software
  */
-
 class util
 {
   public static function get_cenozo_db()

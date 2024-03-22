@@ -237,8 +237,6 @@ class cimt extends base
       if( is_dir( $dirname ) ) self::remove_dir( $dirname );
     }
 
-    // TODO call self::generate_supplementary()
-
     output( sprintf(
       'Done, %d files %stransferred',
       $file_count,
