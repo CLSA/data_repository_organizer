@@ -221,7 +221,7 @@ class cimt extends base
           if( self::process_file( $pf['dir'], $pf['source'], $pf['dest'], $pf['link'] ) )
           {
             // generate supplementary data for SR reports
-            if( preg_match( '#/SR_[0-9]+\.dcm#', $pf['dest'] ) )
+            if( !TEST_ONLY && preg_match( '#/SR_[0-9]+\.dcm#', $pf['dest'] ) )
               self::generate_supplementary( $pf['dest'], $pf['link'] );
             $file_count++;
           }
