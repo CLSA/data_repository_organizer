@@ -219,6 +219,11 @@ abstract class base
     if( VERBOSE ) output( sprintf( 'cd %s', $directory ) );
     if( !TEST_ONLY ) chdir( $directory );
 
+    if( file_exists( $link ) )
+    {
+      if( VERBOSE ) output( sprintf( 'rm %s', $link ) );
+      if( !TEST_ONLY ) unlink( $link );
+    }
     if( VERBOSE ) output( sprintf( 'link -s %s %s', $filename, $link ) );
     if( !TEST_ONLY ) symlink( $filename, $link );
 
