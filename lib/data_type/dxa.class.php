@@ -39,7 +39,7 @@ class dxa extends base
       $lateral_re = '#nosite/Follow-up ([0-9]) Site/DXA2/([^/]+)/SEL_DICOM_(MEASURE|OT|PR).dcm$#';
       $spine_re = '#nosite/Follow-up ([0-9]) Site/DXA2/([^/]+)/SP_DICOM_([0-9]+).dcm$#';
       $wbody_re = '#nosite/Follow-up ([0-9]) Site/DXA2/([^/]+)/WB_DICOM_([0-9]+).dcm$#';
-      $forearm_re = '#nosite/Follow-up ([0-9]) Site/DXA2/([^/]+)/FA_[LR]_DICOM_([0-9]+).dcm$#';
+      $forearm_re = '#nosite/Follow-up ([0-9]) Site/DXA2/([^/]+)/FA_([LR])_DICOM.dcm$#';
       $matches = [];
       if( preg_match( $hip_re, $filename, $matches ) )
       {
@@ -118,7 +118,7 @@ class dxa extends base
 
         $destination = sprintf(
           '%s/dxa_forearm_%s.dcm',
-          $destination_directory.
+          $destination_directory,
           'L' == $matches[3] ? 'left' : 'right'
         );
       }
