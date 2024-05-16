@@ -19,11 +19,19 @@ $arguments->add_option(
   'c',
   'data_category',
   'Must be one of the following:'.
-    "\n       dxa_forearm_bl, dxa_forearm_f1, dxa_forearm_f2, dxa_forearm_f3 (jpeg images, right and left)".
-    "\n       dxa_hip_bl, dxa_hip_f1 (reanalysed jpeg images, right and left)".
-    "\n       dxa_lateral_bl, dxa_lateral_f1, dxa_lateral_f2, dxa_lateral_f3 (original dcm file)".
-    "\n       dxa_wbody_bl (reanalysed jpeg images, BCA and BMD)".
-    "\n       retinal_bl, retinal_f1, retinal_f2, retinal_f3 (original jpeg images, right and left)",
+    "\n       DXA".
+    "\n         dxa_forearm_bl, dxa_forearm_f1, dxa_forearm_f2, dxa_forearm_f3 (jpeg images, right and left)".
+    "\n         dxa_hip_bl, dxa_hip_f1 (reanalysed jpeg images, right and left)".
+    "\n         dxa_lateral_bl, dxa_lateral_f1, dxa_lateral_f2, dxa_lateral_f3 (original dcm file)".
+    "\n         dxa_wbody_bl (reanalysed jpeg images, BCA and BMD)".
+    "\n       ECG".
+    "\n         ecg_bl, ecg_f1, ecg_f2, ecg_f3 (automatically generated jpeg image)".
+    "\n         ecg_raw_bl, ecg_raw_f1, ecg_raw_f2, ecg_raw_f3 (original xml raw data)".
+    "\n       RETINAL".
+    "\n         retinal_bl, retinal_f1, retinal_f2, retinal_f3 (original jpeg images, right and left)".
+    "\n       SPIROMETRY".
+    "\n         spirometry_bl, spirometry_f1, spirometry_f2, spirometry_f3 (original pdf image)".
+    "\n         spirometry_raw_bl, spirometry_raw_f1, spirometry_raw_f2, spirometry_raw_f3 (original txt raw data)",
   true
 );
 $arguments->add_input( 'RELEASE_NAME', 'The name of the release where files will be copied to' );
@@ -52,10 +60,26 @@ else if( 'dxa_lateral_f1' == $data_category ) { $type = 'lateral'; $phase = 2; }
 else if( 'dxa_lateral_f2' == $data_category ) { $type = 'lateral'; $phase = 3; }
 else if( 'dxa_lateral_f3' == $data_category ) { $type = 'lateral'; $phase = 4; }
 else if( 'dxa_wbody_bl' == $data_category ) { $type = 'wbody'; $phase = 1; }
+else if( 'ecg_bl' == $data_category ) { $type = 'ecg'; $phase = 1; }
+else if( 'ecg_f1' == $data_category ) { $type = 'ecg'; $phase = 2; }
+else if( 'ecg_f2' == $data_category ) { $type = 'ecg'; $phase = 3; }
+else if( 'ecg_f3' == $data_category ) { $type = 'ecg'; $phase = 4; }
+else if( 'ecg_raw_bl' == $data_category ) { $type = 'ecg_raw'; $phase = 1; }
+else if( 'ecg_raw_f1' == $data_category ) { $type = 'ecg_raw'; $phase = 2; }
+else if( 'ecg_raw_f2' == $data_category ) { $type = 'ecg_raw'; $phase = 3; }
+else if( 'ecg_raw_f3' == $data_category ) { $type = 'ecg_raw'; $phase = 4; }
 else if( 'retinal_bl' == $data_category ) { $type = 'retinal'; $phase = 1; }
 else if( 'retinal_f1' == $data_category ) { $type = 'retinal'; $phase = 2; }
 else if( 'retinal_f2' == $data_category ) { $type = 'retinal'; $phase = 3; }
 else if( 'retinal_f3' == $data_category ) { $type = 'retinal'; $phase = 4; }
+else if( 'spirometry_bl' == $data_category ) { $type = 'spirometry'; $phase = 1; }
+else if( 'spirometry_f1' == $data_category ) { $type = 'spirometry'; $phase = 2; }
+else if( 'spirometry_f2' == $data_category ) { $type = 'spirometry'; $phase = 3; }
+else if( 'spirometry_f3' == $data_category ) { $type = 'spirometry'; $phase = 4; }
+else if( 'spirometry_raw_bl' == $data_category ) { $type = 'spirometry_raw'; $phase = 1; }
+else if( 'spirometry_raw_f1' == $data_category ) { $type = 'spirometry_raw'; $phase = 2; }
+else if( 'spirometry_raw_f2' == $data_category ) { $type = 'spirometry_raw'; $phase = 3; }
+else if( 'spirometry_raw_f3' == $data_category ) { $type = 'spirometry_raw'; $phase = 4; }
 else
 {
   printf( "ERROR: Invalid data category \"%s\", aborting\n\n", $data_category );
@@ -135,11 +159,59 @@ else if( 'wbody' == $type )
     VERBOSE ? '-v' : ''
   ) );
 }
+else if( 'ecg' == $type )
+{
+  $data_path = sprintf( '%s/clsa/%d/ecg', SUPPLEMENTARY_DIR, $phase );
+  passthru( sprintf(
+    '%s/prepare_data %s %s %s -g "ecg.jpeg" %s',
+    __DIR__,
+    $release_name,
+    $data_path,
+    $identifier_filename,
+    VERBOSE ? '-v' : ''
+  ) );
+}
+else if( 'ecg_raw' == $type )
+{
+  $data_path = sprintf( '%s/clsa/%d/ecg', RAW_DIR, $phase );
+  passthru( sprintf(
+    '%s/prepare_data %s %s %s -g "ecg.xml" %s',
+    __DIR__,
+    $release_name,
+    $data_path,
+    $identifier_filename,
+    VERBOSE ? '-v' : ''
+  ) );
+}
 else if( 'retinal' == $type )
 {
   $data_path = sprintf( '%s/clsa/%d/retinal', RAW_DIR, $phase );
   passthru( sprintf(
     '%s/prepare_data %s %s %s -g "retinal_[lru]*.jpeg" %s',
+    __DIR__,
+    $release_name,
+    $data_path,
+    $identifier_filename,
+    VERBOSE ? '-v' : ''
+  ) );
+}
+else if( 'spirometry' == $type )
+{
+  $data_path = sprintf( '%s/clsa/%d/spirometry', RAW_DIR, $phase );
+  passthru( sprintf(
+    '%s/prepare_data %s %s %s -g "report.pdf" %s',
+    __DIR__,
+    $release_name,
+    $data_path,
+    $identifier_filename,
+    VERBOSE ? '-v' : ''
+  ) );
+}
+else if( 'spirometry_raw' == $type )
+{
+  $data_path = sprintf( '%s/clsa/%d/spirometry', RAW_DIR, $phase );
+  passthru( sprintf(
+    '%s/prepare_data %s %s %s -g "spirometry_*.txt" %s',
     __DIR__,
     $release_name,
     $data_path,
