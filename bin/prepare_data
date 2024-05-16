@@ -152,17 +152,17 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
         {
           if( preg_match( '#/carotid_intima/#', $source_filename ) )
           {
-            $result = \data_type\cimt::anonymize( $file_filename, $participant['identifier'] );
+            $result = \data_type\cimt::anonymize( $source_filename, $participant['identifier'] );
           }
           else if( preg_match( '#/dxa/#', $source_filename ) )
           {
-            $result = \data_type\dxa::anonymize( $file_filename, $participant['identifier'] );
+            $result = \data_type\dxa::anonymize( $source_filename, $participant['identifier'] );
           }
           else throw new Exception( sprintf( 'Tried to prepare unknown DICOM file "%s"', $source_filename ) );
         }
         else if( true == preg_match( '/.xml$/', $final_filename ) )
         {
-          $result = \data_type\ecg::anonymize( $file_filename, $participant['identifier'] );
+          $result = \data_type\ecg::anonymize( $source_filename, $participant['identifier'] );
         }
 
         if( !is_null( $result ) )
