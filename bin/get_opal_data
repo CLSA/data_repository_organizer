@@ -12,9 +12,8 @@ require_once( __DIR__.'/../lib/util.class.php' );
 require_once( __DIR__.'/../lib/arguments.class.php' );
 require_once( __DIR__.'/../lib/opal_category_list.vars.php' );
 
-function get_side( $uid, $params )
+function get_side( $uid, $params, $alt_opal = false )
 {
-  $alt_opal = preg_match( '/\.wav$/', $params['filename'] );
   $opal_params = [
     'datasource' => $params['datasource'],
     'table' => $params['table'],
@@ -45,9 +44,8 @@ function get_side( $uid, $params )
   return strtolower( $response );
 }
 
-function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db )
+function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db, $alt_opal = false )
 {
-  $alt_opal = preg_match( '/\.wav$/', $params['filename'] );
   $directory = sprintf( '%s/%s', $base_dir, $uid );
 
   // Ignore if the destination file already exists
@@ -114,7 +112,7 @@ function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db )
     // if a side is included in the parameters then first get the side data from opal
     if( array_key_exists( 'side', $params ) )
     {
-      $side_list = array_key_exists( 'side', $params ) ? get_side( $uid, $params ) : NULL;
+      $side_list = array_key_exists( 'side', $params ) ? get_side( $uid, $params, $alt_opal ) : NULL;
       $side_total = [ 'left' => 0, 'right' => 0, 'unknown' => 0 ];
       $side_number = [ 'left' => 0, 'right' => 0, 'unknown' => 0 ];
       foreach( $side_list as $side )
@@ -265,7 +263,7 @@ function download_file( $uid, $base_dir, $params, &$count_list, $cenozo_db )
     // if a side exists then create a symlink with the side for all files that have been created
     if( array_key_exists( 'side', $params ) )
     {
-      $side = get_side( $uid, $params );
+      $side = get_side( $uid, $params, $alt_opal );
       $cwd = getcwd();
 
       foreach( $new_filename_list as $new_filename )
@@ -305,6 +303,7 @@ $arguments->add_option( 'v', 'verbose', 'Shows more details when running the scr
 $arguments->add_option( 'o', 'offset', 'Start the download at a particular offset', true, 0 );
 $arguments->add_option( 'u', 'uid', 'Download data for a specific participant by UID', true, false );
 $arguments->add_option( 'p', 'phase', 'The phase of the study the data belongs to', true, 1 );
+$arguments->add_option( 'a', 'alt_opal', 'Force download from the alternate Opal server', false, false );
 $arguments->add_input( 'CATEGORY', 'Which data category to download (eg: cdtt, ecg, frax, etc...)' );
 
 $args = $arguments->parse_arguments( $argv );
@@ -315,6 +314,7 @@ define( 'VERBOSE', array_key_exists( 'verbose', $args['option_list'] ) );
 $initial_offset = $args['option_list']['offset'];
 $uid = $args['option_list']['uid'];
 $phase = $args['option_list']['phase'];
+$alt_opal = $args['option_list']['alt_opal'];
 $category = $args['input_list']['CATEGORY'];
 
 // make sure the category and phase is valid
@@ -348,7 +348,6 @@ $params = array_key_exists( 'all', $category_list[$category] )
 if( 1 < $phase ) $params['datasource'] .= sprintf( '-f%d', $phase-1 );
 
 // Download binary data from Opal
-$alt_opal = preg_match( '/\.wav$/', $params['filename'] );
 $count_list = [ 'skipped' => 0, 'download' => 0, 'missing' => 0 ];
 $base_dir = sprintf( '%s/%s/clsa/%d/%s', DATA_DIR, RAW_DIR, $phase, $params['name'] );
 
@@ -374,7 +373,7 @@ catch( \Exception $e )
 if( $uid )
 {
   output( sprintf( 'Downloading %s data from Opal to %s (for UID %s only)', $category, $base_dir, $uid ) );
-  download_file( $uid, $base_dir, $params, $count_list, $cenozo_db );
+  download_file( $uid, $base_dir, $params, $count_list, $cenozo_db, $alt_opal );
 }
 else
 {
@@ -408,7 +407,7 @@ else
     foreach( $object->valueSets as $value_set )
     {
       if( !file_exists( $opal_enabled_filename ) ) break;
-      download_file( $value_set->identifier, $base_dir, $params, $count_list, $cenozo_db );
+      download_file( $value_set->identifier, $base_dir, $params, $count_list, $cenozo_db, $alt_opal );
     }
 
     if( !file_exists( $opal_enabled_filename ) )

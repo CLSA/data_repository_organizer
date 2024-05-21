@@ -24,5 +24,6 @@ $category_list = [
 
 foreach( $category_list as $category )
 {
-  passthru( sprintf( '%s/get_opal_data -p %d %s', __DIR__, $phase, $category ) );
+  // use the -a option to download from alternate opal (LIVE Opal)
+  passthru( sprintf( '%s/get_opal_data -a -p %d %s', __DIR__, $phase, $category ) );
 }
