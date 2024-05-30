@@ -24,6 +24,10 @@ $arguments->add_option(
     "\n         dxa_hip_bl, dxa_hip_f1 (reanalysed jpeg images, right and left)".
     "\n         dxa_lateral_bl, dxa_lateral_f1, dxa_lateral_f2, dxa_lateral_f3 (original dcm file)".
     "\n         dxa_wbody_bl (reanalysed jpeg images, BCA and BMD)".
+    "\n       CAROTID INTIMA".
+    "\n        cimt_cineloop_bl, cimt_cineloop_f1, cimt_cineloop_f2, cimt_cineloop_f3 (original dcm file)".
+    "\n        cimt_report_bl, cimt_report_f1, cimt_report_f2, cimt_report_f3 (original dcm file)".
+    "\n        cimt_still_bl, cimt_still_f1, cimt_still_f2, cimt_still_f3 (original dcm file)".
     "\n       ECG".
     "\n         ecg_bl, ecg_f1, ecg_f2, ecg_f3 (automatically generated jpeg image)".
     "\n         ecg_raw_bl, ecg_raw_f1, ecg_raw_f2, ecg_raw_f3 (original xml raw data)".
@@ -55,11 +59,23 @@ else if( 'dxa_forearm_f2' == $data_category ) { $type = 'forearm'; $phase = 3; }
 else if( 'dxa_forearm_f3' == $data_category ) { $type = 'forearm'; $phase = 4; }
 else if( 'dxa_hip_bl' == $data_category ) { $type = 'hip'; $phase = 1; }
 else if( 'dxa_hip_f1' == $data_category ) { $type = 'hip'; $phase = 2; }
-else if( 'dxa_lateral_bl' == $data_category ) { $type = ''; $phase = 1; }
+else if( 'dxa_lateral_bl' == $data_category ) { $type = 'lateral'; $phase = 1; }
 else if( 'dxa_lateral_f1' == $data_category ) { $type = 'lateral'; $phase = 2; }
 else if( 'dxa_lateral_f2' == $data_category ) { $type = 'lateral'; $phase = 3; }
 else if( 'dxa_lateral_f3' == $data_category ) { $type = 'lateral'; $phase = 4; }
 else if( 'dxa_wbody_bl' == $data_category ) { $type = 'wbody'; $phase = 1; }
+else if( 'cimt_cineloop_bl' == $data_category ) { $type = 'cimt_cineloop'; $phase = 1; }
+else if( 'cimt_cineloop_f1' == $data_category ) { $type = 'cimt_cineloop'; $phase = 2; }
+else if( 'cimt_cineloop_f2' == $data_category ) { $type = 'cimt_cineloop'; $phase = 3; }
+else if( 'cimt_cineloop_f3' == $data_category ) { $type = 'cimt_cineloop'; $phase = 4; }
+else if( 'cimt_report_bl' == $data_category ) { $type = 'cimt_report'; $phase = 1; }
+else if( 'cimt_report_f1' == $data_category ) { $type = 'cimt_report'; $phase = 2; }
+else if( 'cimt_report_f2' == $data_category ) { $type = 'cimt_report'; $phase = 3; }
+else if( 'cimt_report_f3' == $data_category ) { $type = 'cimt_report'; $phase = 4; }
+else if( 'cimt_still_bl' == $data_category ) { $type = 'cimt_still'; $phase = 1; }
+else if( 'cimt_still_f1' == $data_category ) { $type = 'cimt_still'; $phase = 2; }
+else if( 'cimt_still_f2' == $data_category ) { $type = 'cimt_still'; $phase = 3; }
+else if( 'cimt_still_f3' == $data_category ) { $type = 'cimt_still'; $phase = 4; }
 else if( 'ecg_bl' == $data_category ) { $type = 'ecg'; $phase = 1; }
 else if( 'ecg_f1' == $data_category ) { $type = 'ecg'; $phase = 2; }
 else if( 'ecg_f2' == $data_category ) { $type = 'ecg'; $phase = 3; }
@@ -152,6 +168,42 @@ else if( 'wbody' == $type )
   ) );
   passthru( sprintf(
     '%s/prepare_data %s %s %s -g "dxa_wbody_bmd.reanalysed.jpeg" %s',
+    __DIR__,
+    $release_name,
+    $data_path,
+    $identifier_filename,
+    VERBOSE ? '-v' : ''
+  ) );
+}
+else if( 'cimt_cineloop' == $type )
+{
+  $data_path = sprintf( '%s/clsa/%d/carotid_intima', RAW_DIR, $phase );
+  passthru( sprintf(
+    '%s/prepare_data %s %s %s -g "cineloop[0-9]_[lru]*.dcm.gz" %s',
+    __DIR__,
+    $release_name,
+    $data_path,
+    $identifier_filename,
+    VERBOSE ? '-v' : ''
+  ) );
+}
+else if( 'cimt_report' == $type )
+{
+  $data_path = sprintf( '%s/clsa/%d/carotid_intima', RAW_DIR, $phase );
+  passthru( sprintf(
+    '%s/prepare_data %s %s %s -g "report_[lru]*.dcm.gz" %s',
+    __DIR__,
+    $release_name,
+    $data_path,
+    $identifier_filename,
+    VERBOSE ? '-v' : ''
+  ) );
+}
+else if( 'cimt_still' == $type )
+{
+  $data_path = sprintf( '%s/clsa/%d/carotid_intima', RAW_DIR, $phase );
+  passthru( sprintf(
+    '%s/prepare_data %s %s %s -g "still_[lru]*.dcm.gz" %s',
     __DIR__,
     $release_name,
     $data_path,
