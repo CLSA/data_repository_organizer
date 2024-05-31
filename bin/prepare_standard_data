@@ -203,11 +203,12 @@ else if( 'cimt_still' == $type )
 {
   $data_path = sprintf( '%s/clsa/%d/carotid_intima', RAW_DIR, $phase );
   passthru( sprintf(
-    '%s/prepare_data %s %s %s -g "still_[lru]*.dcm.gz" %s',
+    '%s/prepare_data %s %s %s -g "%s_[lru]*.dcm.gz" %s',
     __DIR__,
     $release_name,
     $data_path,
     $identifier_filename,
+    1 == $phase ? 'still' : 'still[123]',
     VERBOSE ? '-v' : ''
   ) );
 }
