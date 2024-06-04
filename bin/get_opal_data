@@ -300,10 +300,10 @@ $arguments->set_description(
 $arguments->add_option( 'd', 'debug', 'Runs in test mode, no files will be affected.' );
 $arguments->add_option( 'k', 'keep_files', 'Do not delete any files from the temporary directory.' );
 $arguments->add_option( 'v', 'verbose', 'Shows more details when running the script.' );
+$arguments->add_option( 'a', 'alt_opal', 'Force download from the alternate Opal server.' );
 $arguments->add_option( 'o', 'offset', 'Start the download at a particular offset', true, 0 );
 $arguments->add_option( 'u', 'uid', 'Download data for a specific participant by UID', true, false );
 $arguments->add_option( 'p', 'phase', 'The phase of the study the data belongs to', true, 1 );
-$arguments->add_option( 'a', 'alt_opal', 'Force download from the alternate Opal server', false, false );
 $arguments->add_input( 'CATEGORY', 'Which data category to download (eg: cdtt, ecg, frax, etc...)' );
 
 $args = $arguments->parse_arguments( $argv );
@@ -311,10 +311,10 @@ $args = $arguments->parse_arguments( $argv );
 define( 'TEST_ONLY', array_key_exists( 'debug', $args['option_list'] ) );
 define( 'KEEP_FILES', array_key_exists( 'keep_files', $args['option_list'] ) );
 define( 'VERBOSE', array_key_exists( 'verbose', $args['option_list'] ) );
+$alt_opal = array_key_exists( 'alt_opal', $args['option_list'] );
 $initial_offset = $args['option_list']['offset'];
 $uid = $args['option_list']['uid'];
 $phase = $args['option_list']['phase'];
-$alt_opal = $args['option_list']['alt_opal'];
 $category = $args['input_list']['CATEGORY'];
 
 // make sure the category and phase is valid
