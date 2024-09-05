@@ -40,87 +40,72 @@ class dxa extends base
       $spine_re = '#nosite/Follow-up ([0-9]) Site/DXA2/([^/]+)/SP_DICOM_([0-9]+).dcm$#';
       $wbody_re = '#nosite/Follow-up ([0-9]) Site/DXA2/([^/]+)/WB_DICOM_([0-9]+).dcm$#';
       $forearm_re = '#nosite/Follow-up ([0-9]) Site/DXA2/([^/]+)/FA_([LR])_DICOM.dcm$#';
+
+      $phase = NULL;
+      $uid = NULL;
+      $question = NULL;
+      $type = NULL;
+      $side = NULL;
+      $new_filename = NULL;
+
       $matches = [];
       if( preg_match( $hip_re, $filename, $matches ) )
       {
         // hip scan (left or right)
-        $destination_directory = sprintf(
-          '%s/%s/clsa/%s/dxa/%s',
-          DATA_DIR,
-          RAW_DIR,
-          $matches[1] + 1, //phase
-          $matches[2] // UID
-        );
+        $phase = $matches[1] + 1;
+        $uid = $matches[2];
+        $question = 'DXA1';
+        $type = 'hip';
+        $side = 'L' == $matches[3] ? 'left' : 'right';
 
-        $destination = sprintf(
-          '%s/dxa_hip_%s.dcm',
-          $destination_directory,
-          'L' == $matches[3] ? 'left' : 'right'
-        );
+        $new_filename = sprintf( 'dxa_hip_%s.dcm', $side );
       }
       else if( preg_match( $lateral_re, $filename, $matches ) )
       {
         // lateral scans (base, OT or PR)
-        $destination_directory = sprintf(
-          '%s/%s/clsa/%s/dxa/%s',
-          DATA_DIR,
-          RAW_DIR,
-          $matches[1] + 1, //phase
-          $matches[2] // UID
-        );
+        $phase = $matches[1] + 1;
+        $uid = $matches[2];
+        $question = 'DXA2';
+        $type = 'lateral';
+        $side = 'MEASURE' == $matches[3] ? 'none' : NULL;
 
-        $destination = sprintf(
-          '%s/dxa_lateral%s.dcm',
-          $destination_directory,
-          'MEASURE' == $matches[3] ? '' : ('_'.strtolower( $matches[3] ))
+        $new_filename = sprintf(
+          'dxa_lateral%s.dcm',
+          'MEASURE' == $matches[3] ? '' : ( '_'.strtolower( $matches[3] ) )
         );
       }
       else if( preg_match( $spine_re, $filename, $matches ) )
       {
         // spine scan
-        $destination_directory = sprintf(
-          '%s/%s/clsa/%s/dxa/%s',
-          DATA_DIR,
-          RAW_DIR,
-          $matches[1] + 1, //phase
-          $matches[2] // UID
-        );
+        $phase = $matches[1] + 1;
+        $uid = $matches[2];
+        $question = 'DXA2';
+        $type = 'spine';
+        $side = 'none';
 
-        $destination = sprintf( '%s/dxa_spine.dcm', $destination_directory );
+        $new_filename = sprintf( 'dxa_spine.dcm', $destination_directory );
       }
       else if( preg_match( $wbody_re, $filename, $matches ) )
       {
         // wbody scan (BCA or BMD)
-        $destination_directory = sprintf(
-          '%s/%s/clsa/%s/dxa/%s',
-          DATA_DIR,
-          RAW_DIR,
-          $matches[1] + 1, //phase
-          $matches[2] // UID
-        );
+        $phase = $matches[1] + 1;
+        $uid = $matches[2];
+        $question = 'DXA2';
+        $type = 'wbody';
+        $side = '2' == $matches[3] ? 'none' : NULL;
 
-        $destination = sprintf(
-          '%s/dxa_wbody_%s.dcm',
-          $destination_directory,
-          '1' == $matches[3] ? 'bmd' : 'bca' // TODO: bmd vs bca needs confirmation
-        );
+        $new_filename = sprintf( 'dxa_wbody_%s.dcm', '1' == $matches[3] ? 'bmd' : 'bca' );
       }
       else if( preg_match( $forearm_re, $filename, $matches ) )
       {
         // forearm scan (left or right)
-        $destination_directory = sprintf(
-          '%s/%s/clsa/%s/dxa/%s',
-          DATA_DIR,
-          RAW_DIR,
-          $matches[1] + 1, //phase
-          $matches[2] // UID
-        );
+        $phase = $matches[1] + 1;
+        $uid = $matches[2];
+        $question = 'DXA2';
+        $type = 'forearm';
+        $side = 'L' == $matches[3] ? 'left' : 'right';
 
-        $destination = sprintf(
-          '%s/dxa_forearm_%s.dcm',
-          $destination_directory,
-          'L' == $matches[3] ? 'left' : 'right'
-        );
+        $new_filename = sprintf( 'dxa_forearm_%s.dcm', $side );
       }
       else
       {
@@ -131,11 +116,71 @@ class dxa extends base
         continue;
       }
 
+      $destination_directory = sprintf( '%s/%s/clsa/%s/dxa/%s', DATA_DIR, RAW_DIR, $phase, $uid );
+      $destination = sprintf( '%s/%s', $destination_directory, $new_filename );
       if( self::process_file( $destination_directory, $filename, $destination ) )
       {
         // generate supplementary data from the xml file
         if( !TEST_ONLY ) self::generate_supplementary( $destination, $cenozo_db );
         $file_count++;
+
+        // register the interview, exam and images in alder (if the alder db exists)
+        if( !defined( 'ALDER_DB_DATABASE' ) ) continue;
+
+        // only include hip/forearm (left/right) and lateral/wbody/spine (none)
+        if( !(
+          ( in_array( $type, ['hip', 'forearm'] ) && in_array( $side, ['left', 'right'] ) ) ||
+          ( in_array( $type, ['lateral', 'wbody', 'spine'] ) && 'none' == $side )
+        ) ) continue;
+
+        $metadata = static::get_pine_metadata( $cenozo_db, $phase, $uid, $question );
+        if( is_null( $metadata ) ) continue;
+
+        $obj = json_decode( $metadata['value'] );
+        if(
+          !is_object( $obj ) ||
+          !property_exists( $obj, 'session' ) ||
+          !property_exists( $obj->session, 'barcode' ) ||
+          !property_exists( $obj->session, 'interviewer' ) ||
+          !property_exists( $obj->session, 'end_time' )
+        ) {
+          output( sprintf( 'No result data in %s metadata from Pine for %s', $question, $uid ) );
+          continue;
+        }
+
+        $interview_id = static::assert_alder_interview(
+          $cenozo_db,
+          $metadata['participant_id'],
+          $metadata['study_phase_id'],
+          $metadata['site_id'],
+          $obj->session->barcode,
+          $metadata['start_datetime'],
+          $metadata['end_datetime']
+        );
+        if( false === $interview_id )
+        {
+          output( sprintf( 'Unable to read or create interview data from Alder for %s', $uid ) );
+          continue;
+        }
+
+        $exam_id = static::assert_alder_exam(
+          $cenozo_db,
+          $interview_id,
+          $type,
+          $side,
+          $obj->session->interviewer,
+          preg_replace( '/(.+)T(.+)\.[0-9]+Z/', '\1 \2', $obj->session->end_time ) // convert to YYYY-MM-DD HH:mm:SS
+        );
+        if( false === $exam_id )
+        {
+          output( sprintf( 'Unable to read or create exam data from Alder for %s', $uid ) );
+          continue;
+        }
+
+        if( false === static::assert_alder_image( $cenozo_db, $exam_id, $new_filename ) )
+        {
+          output( sprintf( 'Unable to read or create image "%s" from Alder for %s', $new_filename, $uid ) );
+        }
       }
     }
 

@@ -34,8 +34,8 @@ class cimt extends base
       fatal_error( 'Failed to open required connection to cenozo database.', 12 );
     }
 
-    $pine_db = str_replace( 'cenozo', 'pine', CENOZO_DB_DATABASE );
     $link_list = [];
+    $respondent_list = [];
 
     // This data only comes from the Pine Site interview
     $file_count = 0;
@@ -43,15 +43,12 @@ class cimt extends base
     $mismatch_list = [];
     foreach( glob( sprintf( '%s/nosite/Follow-up * Site/CIMT/*/*.dcm', $base_dir ) ) as $filename )
     {
-      // move any unexepcted filenames to the invalid directory
+      // move any unexpected filenames to the invalid directory
       $re = '#nosite/Follow-up ([0-9]) Site/CIMT/([^/]+)/(CINELOOP|SR|STILL_IMAGE)_([0-9]+)\.dcm$#';
       $matches = [];
       if( !preg_match( $re, $filename, $matches ) )
       {
-        self::move_from_temporary_to_invalid(
-          $filename,
-          sprintf( 'Invalid filename: "%s"', $filename )
-        );
+        self::move_from_temporary_to_invalid( $filename, sprintf( 'Invalid filename: "%s"', $filename ) );
         continue;
       }
 
@@ -65,41 +62,35 @@ class cimt extends base
       if( !array_key_exists( $uid, $link_list ) )
       {
         $link_list[$uid] = NULL;
-        $result = $cenozo_db->query( sprintf(
-          'SELECT value '.
-          'FROM participant '.
-          'JOIN %s.respondent ON participant.id = respondent.participant_id '.
-          'JOIN %s.response ON respondent.id = response.respondent_id '.
-          'JOIN %s.answer ON response.id = answer.response_id '.
-          'JOIN %s.question on answer.question_id = question.id '.
-          'WHERE participant.uid = "%s" '.
-          'AND question.name = "CIMT"',
-          $pine_db,
-          $pine_db,
-          $pine_db,
-          $pine_db,
-          $cenozo_db->real_escape_string( $uid )
-        ) );
-        if( false === $result )
-        {
-          output( sprintf( 'Unable to get Pine data needed to sort CIMT files for %s (1)', $uid ) );
+
+        $metadata = static::get_pine_metadata( $cenozo_db, $phase, $uid, 'CIMT' );
+        if( is_null( $metadata ) ) continue;
+
+        $obj = json_decode( $metadata['value'] );
+        if(
+          !is_object( $obj ) ||
+          !property_exists( $obj, 'session' ) ||
+          !property_exists( $obj->session, 'barcode' ) ||
+          !property_exists( $obj->session, 'interviewer' ) ||
+          !property_exists( $obj->session, 'end_time' ) ||
+          !property_exists( $obj, 'results' ) ||
+          !is_array( $obj->results )
+        ) {
+          output( sprintf( 'No result data in CIMT metadata from Pine for %s', $uid ) );
           continue;
         }
 
-        $row = $result->fetch_assoc();
-        $result->free();
-        if( is_null( $row ) )
-        {
-          output( sprintf( 'Unable to get Pine data needed to sort CIMT files for %s (2)', $uid ) );
-          continue;
-        }
+        // store the respondent data to load data into alder
+        $metadata['interview_id'] = NULL; // used for caching
+        $metadata['exam_list'] = []; // used for caching
+        $respondent_list[$uid] = $metadata;
 
-        $obj = json_decode( $row['value'] );
-        if( !is_object( $obj ) || !property_exists( $obj, 'results' ) || !is_array( $obj->results ) )
-        {
-          output( sprintf( 'Unable to get Pine data needed to sort CIMT files for %s (3)', $uid ) );
-          continue;
-        }
+        // finish getting all of the raw data we need for the alder database
+        $session = $obj->session;
+        $respondent_list[$uid]['token'] = $session->barcode;
+        $respondent_list[$uid]['interviewer'] = $session->interviewer;
+        // convert to YYYY-MM-DD HH:mm:SS
+        $respondent_list[$uid]['datetime'] = preg_replace( '/(.+)T(.+)\.[0-9]+Z/', '\1 \2', $session->end_time );
 
         foreach( $obj->results as $side_obj )
         {
@@ -110,20 +101,31 @@ class cimt extends base
             is_array( $side_obj->files )
           ) {
             $list = [];
-            $json_side = $side_obj->side;
+
+            // add the exam to the respondent list (for the alder database)
+            $respondent_list[$uid]['exam_list'][$side_obj->side] = NULL;
+
             foreach( $side_obj->files as $file_obj_index => $file_obj )
             {
               if( is_object( $file_obj ) && property_exists( $file_obj, 'name' ) )
               {
-                $json_name = $file_obj->name;
                 $matches = [];
-                preg_match( '/(CINELOOP|SR|STILL_IMAGE)_([0-9]+)/', $json_name, $matches );
+                preg_match( '/(CINELOOP|SR|STILL_IMAGE)_([0-9]+)/', $file_obj->name, $matches );
                 $json_type = $matches[1];
                 $json_number = $matches[2];
 
-                $list[$json_name] = 'STILL_IMAGE' == $json_type ?
-                  sprintf( 'still%d_%s.dcm', $json_number, $json_side ) :
-                  sprintf( '%s_%s.dcm', strtolower( 'SR' == $json_type ? 'report' : $json_type ), $json_side );
+                if( 'STILL_IMAGE' == $json_type )
+                {
+                  $list[$file_obj->name] = sprintf( 'still%d_%s.dcm', $json_number, $side_obj->side );
+                }
+                else
+                {
+                  $list[$file_obj->name] = sprintf(
+                    '%s_%s.dcm',
+                    strtolower( 'SR' == $json_type ? 'report' : $json_type ),
+                    $side_obj->side
+                  );
+                }
               }
             }
 
@@ -146,7 +148,7 @@ class cimt extends base
             if( preg_match( '/still([0-9]+)_right/', $link, $m ) && $right_min > $m[1] ) $right_min = $m[1];
             if( preg_match( '/still([0-9]+)_left/', $link, $m ) && $left_min > $m[1] ) $left_min = $m[1];
           }
-          
+
           if( $right_min > 1 )
           {
             foreach( $list as $name => $link )
@@ -158,7 +160,7 @@ class cimt extends base
               }
             }
           }
-          
+
           if( $left_min > 1 )
           {
             foreach( $list as $name => $link )
@@ -195,7 +197,7 @@ class cimt extends base
         'dir' => $destination_directory,
         'source' => $filename,
         'dest' => $destination,
-        'link' => $link
+        'link' => $link,
       ];
     }
 
@@ -215,7 +217,7 @@ class cimt extends base
       else
       {
         // process each file, one at a time
-        foreach( $pf_list as $pf )
+        foreach( $pf_list as $pf_index => $pf )
         {
           if( self::process_file( $pf['dir'], $pf['source'], $pf['dest'], $pf['link'] ) )
           {
@@ -223,6 +225,71 @@ class cimt extends base
             if( !TEST_ONLY && preg_match( '#/SR_[0-9]+\.dcm#', $pf['dest'] ) )
               self::generate_supplementary( $pf['dest'], $pf['link'] );
             $file_count++;
+
+            // register the interview, exam and still images in alder (if the alder db exists)
+            if( !defined( 'ALDER_DB_DATABASE' ) ) continue;
+
+            $image_side = preg_match( '/right/', $pf['link'] ) ? 'right' : 'left';
+            $respondent = $respondent_list[$uid];
+
+            // if the interview_id is false then there was an error trying to get or create it
+            if( false === $respondent['interview_id'] ) continue;
+
+            if( is_null( $respondent['interview_id'] ) )
+            {
+              $respondent['interview_id'] = static::assert_alder_interview(
+                $cenozo_db,
+                $respondent['participant_id'],
+                $respondent['study_phase_id'],
+                $respondent['site_id'],
+                $respondent['token'],
+                $respondent['start_datetime'],
+                $respondent['end_datetime']
+              );
+              if( false === $respondent['interview_id'] )
+              {
+                output( sprintf( 'Unable to read or create interview data from Alder for %s', $uid ) );
+                continue;
+              }
+            }
+
+            foreach( $respondent['exam_list'] AS $side => $exam_id )
+            {
+              // only create the exam that the image belongs to
+              if( !is_null( $exam_id ) || $side != $image_side ) continue;
+
+              $respondent['exam_list'][$side] = static::assert_alder_exam(
+                $cenozo_db,
+                $respondent['interview_id'],
+                'carotid_intima',
+                $side,
+                $respondent['interviewer'],
+                $respondent['datetime']
+              );
+              
+              if( false === $respondent['exam_list'][$side] )
+              {
+                output( sprintf( 'Unable to read or create exam data from Alder for %s', $uid ) );
+                continue;
+              }
+            }
+
+            // only insert still images
+            if( !TEST_ONLY && preg_match( '/still/', $pf['link'] ) )
+            {
+              $image_id = static::assert_alder_image(
+                $cenozo_db,
+                $respondent['exam_list'][$image_side],
+                $pf['link']
+              );
+              if( false === $image_id )
+              {
+                output( sprintf( 'Unable to read or create image "%s" from Alder for %s', $pf['link'], $uid ) );
+              }
+            }
+
+            // store the respondent back into the list
+            $respondent_list[$uid] = $respondent;
           }
         }
       }
@@ -282,7 +349,6 @@ class cimt extends base
     return $result_code;
   }
 
-
   /**
    * Generates all supplementary files
    * 
@@ -295,12 +361,15 @@ class cimt extends base
     // determine the report summary filename
     $matches = [];
     if( !preg_match( sprintf( '#%s/([^/]+/[0-9]+)/carotid_intima#', RAW_DIR ), $filename, $matches ) ) return;
-    $summary_filename = sprintf(
-      '%s/%s/%s/carotid_intima/report_summary.csv',
-      DATA_DIR,
-      SUPPLEMENTARY_DIR,
-      $matches[1]
-    );
+    $summary_directory = sprintf( '%s/%s/%s/carotid_intima', DATA_DIR, SUPPLEMENTARY_DIR, $matches[1] );
+    $summary_filename = sprintf( '%s/report_summary.csv', $summary_directory, $matches[1] );
+
+    // create the summary file if it doesn't already exist
+    if( !file_exists( $summary_filename ) )
+    {
+      static::mkdir( $summary_directory );
+      file_put_contents( $summary_filename, 'uid,side,rank,Average,Max,Min,SD,nMeas' );
+    }
 
     // get the UID from the filename
     $matches = [];

@@ -107,6 +107,223 @@ abstract class base
     return $data;
   }
 
+  /** 
+   * Returns interview, exam and image based metadata from Pine
+   * @param integer $phase The phase of the study
+   * @param string $uid The participant UID
+   * @param string $question The name of the question to get data from (CIMT, DXA1, DXA2, RET_L, RET_R, etc)
+   * @return associative array [study_phase_id, participant_id, start_datetime, end_datetime, site_id, value]
+   */
+  public static function get_pine_metadata( $cenozo_db, $phase, $uid, $question )
+  {
+    $result = $cenozo_db->query( sprintf(
+      'SELECT '.
+        'study_phase.id AS study_phase_id, participant.id AS participant_id, '.
+        'respondent.start_datetime, respondent.end_datetime, response.site_id, answer.value '.
+      'FROM participant '.
+      'JOIN %s.respondent ON participant.id = respondent.participant_id '.
+      'JOIN %s.qnaire ON respondent.qnaire_id = qnaire.id '.
+      'JOIN study_phase ON qnaire.name = CONCAT( study_phase.name, " Site" ) '.
+      'JOIN study ON study_phase.study_id = study.id '.
+      'JOIN %s.response ON respondent.id = response.respondent_id '.
+      'JOIN %s.answer ON response.id = answer.response_id '.
+      'JOIN %s.question on answer.question_id = question.id '.
+      'WHERE participant.uid = "%s" '.
+      'AND study_phase.rank = %d '.
+      'AND study.name = "clsa" '.
+      'AND question.name = "%s" '.
+      'ORDER BY study_phase.id, participant.id',
+      PINE_DB_DATABASE,
+      PINE_DB_DATABASE,
+      PINE_DB_DATABASE,
+      PINE_DB_DATABASE,
+      PINE_DB_DATABASE,
+      $cenozo_db->real_escape_string( $uid ),
+      $phase,
+      $cenozo_db->real_escape_string( $question )
+    ) );
+
+    $metadata = NULL;
+    if( false === $result )
+    {
+      output( sprintf( 'Unable to get %s data from Pine for %s (1)', $question, $uid ) );
+    }
+    else
+    {
+      $metadata = $result->fetch_assoc();
+      $result->free();
+      if( is_null( $metadata ) )
+      {
+        output( sprintf( 'Unable to get %s data from Pine for %s (2)', $question, $uid ) );
+      }
+    }
+
+    return $metadata;
+  }
+
+  /** 
+   * Inserts an interview record into alder (if it doesn't exist), returning the interview ID
+   * @param resource $cenozo_db
+   * @param integer $participant_id
+   * @param integer $study_phase_id
+   * @param integer $site_id
+   * @param string $token
+   * @param string $start_datetime
+   * @param string $end_datetime
+   * @return integer (NULL if record cannot be created, false if there is an error)
+   */
+  public static function assert_alder_interview(
+    $cenozo_db, $participant_id, $study_phase_id, $site_id, $token, $start_datetime, $end_datetime
+  ) {
+    if( !defined( 'ALDER_DB_DATABASE' ) ) return NULL;
+
+    // see if the interview already exists
+    $result = $cenozo_db->query( sprintf(
+      'SELECT id '.
+      'FROM %s.interview '.
+      'WHERE participant_id = "%s" '.
+      'AND study_phase_id = %d',
+      ALDER_DB_DATABASE,
+      $participant_id,
+      $study_phase_id
+    ) );
+    if( false === $result ) return false;
+
+    $row = $result->fetch_assoc();
+    $result->free();
+    if( !is_null( $row ) ) 
+    {
+      // the interview already exists, take note of the id
+      return $row['id'];
+    }
+
+    if( !TEST_ONLY )
+    {
+      // the interview doesn't exist, create it and return the new id
+      $result = $cenozo_db->query( sprintf(
+        'INSERT IGNORE INTO %s.interview SET '.
+          'participant_id = %d, '.
+          'study_phase_id = %d, '.
+          'site_id = %d, '.
+          'token = "%s", '.
+          'start_datetime = "%s", '.
+          'end_datetime = "%s"',
+        ALDER_DB_DATABASE,
+        $participant_id,
+        $study_phase_id,
+        $site_id,
+        $cenozo_db->real_escape_string( $token ),
+        $cenozo_db->real_escape_string( $start_datetime ),
+        $cenozo_db->real_escape_string( $end_datetime )
+      ) );
+      return false === $result ? false : $cenozo_db->insert_id;
+    }
+
+    return NULL;
+  }
+
+  /** 
+   * Inserts an exam record into alder (if it doesn't exist), returning the exam ID
+   * @param resource $cenozo_db
+   * @param integer $interview_id
+   * @param string $type
+   * @param string $side
+   * @param string $interviewer
+   * @param string $datetime
+   * @return integer (NULL if record cannot be created, false if there is an error)
+   */
+  public static function assert_alder_exam( $cenozo_db, $interview_id, $type, $side, $interviewer, $datetime )
+  {
+    if( !defined( 'ALDER_DB_DATABASE' ) ) return NULL;
+
+    // see if the exam already exists
+    $result = $cenozo_db->query( sprintf(
+      'SELECT exam.id '.
+      'FROM %s.exam '.
+      'JOIN %s.scan_type ON exam.scan_type_id = scan_type.id '.
+      'WHERE exam.interview_id = %d '.
+      'AND scan_type.name = "%s" '.
+      'AND scan_type.side = "%s"',
+      ALDER_DB_DATABASE,
+      ALDER_DB_DATABASE,
+      $interview_id,
+      $cenozo_db->real_escape_string( $type ),
+      $cenozo_db->real_escape_string( $side )
+    ) );
+    if( false === $result ) return false;
+
+    $row = $result->fetch_assoc();
+    $result->free();
+    if( !is_null( $row ) )
+    {
+      return $row['id'];
+    }
+    else if( !TEST_ONLY )
+    {
+      // the exam doesn't exist, create it and return the new id
+      $result = $cenozo_db->query( sprintf(
+        'INSERT IGNORE INTO %s.exam (interview_id, scan_type_id, interviewer, datetime) '.
+        'SELECT %d, scan_type.id, "%s", "%s" '.
+        'FROM %s.scan_type '.
+        'WHERE scan_type.name = "%s" '.
+        'AND scan_type.side = "%s"',
+        ALDER_DB_DATABASE,
+        $interview_id,
+        $cenozo_db->real_escape_string( $interviewer ),
+        $cenozo_db->real_escape_string( $datetime ),
+        ALDER_DB_DATABASE,
+        $cenozo_db->real_escape_string( $type ),
+        $cenozo_db->real_escape_string( $side )
+      ) );
+      return false === $result ? false : $cenozo_db->insert_id;
+    }
+
+    return NULL;
+  }
+
+  /** 
+   * Inserts an image record into alder (if it doesn't exist), returning the image ID
+   * @param integer $exam_id
+   * @param string $filename
+   * @return integer (NULL if record cannot be created, false if there is an error)
+   */
+  public static function assert_alder_image( $cenozo_db, $exam_id, $filename )
+  {
+    if( !defined( 'ALDER_DB_DATABASE' ) ) return NULL;
+
+    // see if the image already exists
+    $result = $cenozo_db->query( sprintf(
+      'SELECT image.id '.
+      'FROM %s.image '.
+      'WHERE image.exam_id = %d '.
+      'AND image.filename = "%s"',
+      ALDER_DB_DATABASE,
+      $exam_id,
+      $cenozo_db->real_escape_string( $filename )
+    ) );
+    if( false === $result ) return false;
+
+    $row = $result->fetch_assoc();
+    $result->free();
+    if( !is_null( $row ) )
+    {
+      return $row['id'];
+    }
+    else if( !TEST_ONLY )
+    {
+      // the image doesn't exist, create it and return the new id
+      $result = $cenozo_db->query( sprintf(
+        'INSERT IGNORE INTO %s.image SET exam_id = %d, filename = "%s"',
+        ALDER_DB_DATABASE,
+        $exam_id,
+        $cenozo_db->real_escape_string( $filename )
+      ) );
+      return false === $result ? false : $cenozo_db->insert_id;
+    }
+
+    return NULL;
+  }
+
   /**
    * Find and remove all empty directories
    */

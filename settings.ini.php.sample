@@ -1,9 +1,11 @@
 <?php
-// The connection details for the CENOZO database
+// The connection details for the CENOZO, ALDER, and PINE databases
 define( 'CENOZO_DB_HOSTNAME', '' );
 define( 'CENOZO_DB_USERNAME', '' );
 define( 'CENOZO_DB_PASSWORD', '' );
 define( 'CENOZO_DB_DATABASE', '' );
+define( 'ALDER_DB_DATABASE', '' );
+define( 'PINE_DB_DATABASE', '' );
 
 // Opal settings
 define( 'OPAL_USERNAME', '' );
