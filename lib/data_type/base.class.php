@@ -10,6 +10,45 @@ require_once( __DIR__.'/../util.class.php' );
 abstract class base
 {
   /**
+   * Returns a participant's identifier by UID and identifier name
+   * @param resource $cenozo_db
+   * @param string $identifier_name The name of the identifier
+   * @param string $uid The participant UID
+   */
+  public static function get_participant_identifier( $cenozo_db, $identifier_name, $uid )
+  {
+    $result = $cenozo_db->query( sprintf(
+      'SELECT participant_identifier.value '.
+      'FROM participant_identifier '.
+      'JOIN identifier ON participant_identifier.identifier_id = identifier.id '.
+      'JOIN participant ON participant_identifier.participant_id = participant.id '.
+      'WHERE identifier.name = "%s" '.
+      'AND participant.uid = "%s"',
+      $cenozo_db->real_escape_string( $identifier_name ),
+      $cenozo_db->real_escape_string( $uid )
+    ) );
+
+    if( false === $result )
+    {
+      throw new Exception( sprintf(
+        'Unable to get "%s" participant identifier for UID "%s".',
+        $identifier_name,
+        $uid
+      ) );
+    }
+
+    $identifier = NULL;
+    while( $row = $result->fetch_assoc() )
+    {
+      $identifier = $row['value'];
+      break;
+    }
+    $result->free();
+
+    return $identifier;
+  }
+
+  /**
    * Reads the id_lookup file and returns an array containing Study ID => UID pairs
    */
   public static function get_study_uid_lookup( $identifier_name, $events = false, $consents = false )
@@ -107,8 +146,9 @@ abstract class base
     return $data;
   }
 
-  /** 
+  /**
    * Returns interview, exam and image based metadata from Pine
+   * @param resource $cenozo_db
    * @param integer $phase The phase of the study
    * @param string $uid The participant UID
    * @param string $question The name of the question to get data from (CIMT, DXA1, DXA2, RET_L, RET_R, etc)
@@ -161,7 +201,7 @@ abstract class base
     return $metadata;
   }
 
-  /** 
+  /**
    * Inserts an interview record into alder (if it doesn't exist), returning the interview ID
    * @param resource $cenozo_db
    * @param integer $participant_id
@@ -191,7 +231,7 @@ abstract class base
 
     $row = $result->fetch_assoc();
     $result->free();
-    if( !is_null( $row ) ) 
+    if( !is_null( $row ) )
     {
       // the interview already exists, take note of the id
       return $row['id'];
@@ -222,7 +262,7 @@ abstract class base
     return NULL;
   }
 
-  /** 
+  /**
    * Inserts an exam record into alder (if it doesn't exist), returning the exam ID
    * @param resource $cenozo_db
    * @param integer $interview_id
@@ -281,7 +321,7 @@ abstract class base
     return NULL;
   }
 
-  /** 
+  /**
    * Inserts an image record into alder (if it doesn't exist), returning the image ID
    * @param integer $exam_id
    * @param string $filename
@@ -457,7 +497,7 @@ abstract class base
   public static function mkdir( $dir )
   {
     // make sure the directory exists (recursively)
-    if( !is_dir( $dir ) ) 
+    if( !is_dir( $dir ) )
     {
       if( VERBOSE ) output( sprintf( 'mkdir -m 0755 %s', $dir ) );
       if( !TEST_ONLY ) mkdir( $dir, 0755, true );
@@ -473,16 +513,17 @@ abstract class base
    * @param string $source The file to process
    * @param string $destination The destination filename
    * @param string $link A link to create (none if left empty)
+   * @param boolean $remove_source Whether to delete the source file after it has been processed
    * @return boolean
    */
-  public static function process_file( $directory, $source, $destination, $link = NULL )
+  public static function process_file( $directory, $source, $destination, $link = NULL, $remove_source = true )
   {
     $success = false;
     self::mkdir( $directory );
-    if( self::copy( $source, $destination ) ) 
+    if( self::copy( $source, $destination ) )
     {
       if( !is_null( $link ) ) self::symlink( $directory, $source, $link );
-      self::unlink( $source );
+      if( $remove_source ) self::unlink( $source );
       $success = true;
     }
 
