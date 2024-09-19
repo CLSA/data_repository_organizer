@@ -280,34 +280,9 @@ class dxa extends base
       if( !is_dir( $directory ) ) mkdir( $directory, 0755, true );
 
       // get the Results Correspondence identifier
-      $identifier = NULL;
       if( !preg_match( '/^[A-Z][0-9][0-9][0-9][0-9][0-9][0-9]$/', $uid ) )
         throw new Exception( sprintf( 'Invalid UID "%s" found while creating participant DXA image.', $uid ) );
-
-      $result = $cenozo_db->query( sprintf(
-        'SELECT participant_identifier.value '.
-        'FROM participant_identifier '.
-        'JOIN identifier ON participant_identifier.identifier_id = identifier.id '.
-        'JOIN participant ON participant_identifier.participant_id = participant.id '.
-        'WHERE identifier.name = "Results Correspondence" '.
-        'AND participant.uid = "%s"',
-        $uid
-      ) );
-
-      if( false === $result )
-      {
-        throw new Exception( sprintf(
-          'Unable to get participant identifier for UID "%s" while creating participant DXA image.',
-          $uid
-        ) );
-      }
-
-      while( $row = $result->fetch_assoc() )
-      {
-        $identifier = $row['value'];
-        break;
-      }
-      $result->free();
+      $identifier = self::get_participant_identifier( $cenozo_db, 'Results Correspondence', $uid );
 
       // convert from dcm to participant jpeg
       $output = [];
