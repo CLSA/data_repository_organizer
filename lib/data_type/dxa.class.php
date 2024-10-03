@@ -228,7 +228,7 @@ class dxa extends base
     $modify_list = [];
     foreach( $tag_list as $tag => $value )
     {
-      $modify_list[] = sprintf( '-m "(%s)%s"', $tag, is_null( $value ) ? '' : sprintf( '=%s', $value ) );
+      $modify_list[] = sprintf( '-ma "(%s)%s"', $tag, is_null( $value ) ? '' : sprintf( '=%s', $value ) );
     }
 
     $command = sprintf(
