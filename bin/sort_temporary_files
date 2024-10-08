@@ -1,7 +1,17 @@
 #!/usr/bin/php
 <?php
 $data_type_list = [
-  'actigraph', 'audio', 'cdtt', 'choice_rt', 'cimt', 'dxa', 'ecg', 'retinal', 'spirometry', 'ticwatch'
+  'actigraph',
+  'audio',
+  'cdtt',
+  'choice_rt',
+  'cimt',
+  'dxa',
+  'ecg',
+  'retinal',
+  'spirometry',
+  'ticwatch',
+  'us_echo'
 ];
 
 require_once( __DIR__.'/../settings.ini.php' );

@@ -19,7 +19,8 @@ class us_echo extends base
     $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
 
     // Process all us_echo recordings
-    // We expect the following files: TODO
+    // We expect the following files:
+    //   One SRc file, multiple US files and multiple USm files
     output( sprintf( 'Processing us_echo files in "%s"', $base_dir ) );
 
     try
@@ -38,7 +39,7 @@ class us_echo extends base
     foreach( glob( sprintf( '%s/nosite/Follow-up * Site/ECHO/*/*.dcm', $base_dir ) ) as $filename )
     {
       // move any unexpected filenames to the invalid directory
-      $re = '#nosite/Follow-up ([0-9]) Site/ECHO/([^/]+)/(Src|US|USm)_(.+)\.dcm$#';
+      $re = '#nosite/Follow-up ([0-9]) Site/ECHO/([^/]+)/(Src|USm|US)_(.+)\.dcm$#';
       $matches = [];
       if( !preg_match( $re, $filename, $matches ) )
       {
@@ -60,17 +61,12 @@ class us_echo extends base
         $uid
       );
 
-      // TODO: name files based on expected output
       $destination = sprintf( '%s/%s', $destination_directory, basename( $filename ) );
-
-      $name = sprintf( '%s_%d', $type, $number );
-      $link = '???'; // TODO: determine link names for ECHO files
 
       $process_file_list[$uid][] = [
         'dir' => $destination_directory,
         'source' => $filename,
-        'dest' => $destination,
-        'link' => $link,
+        'dest' => $destination
       ];
 
       // get the identifier for sending files to UBC
@@ -85,15 +81,21 @@ class us_echo extends base
       // process each file, one at a time
       foreach( $pf_list as $pf_index => $pf )
       {
-        // process file without deleting the source
-        if( self::process_file( $pf['dir'], $pf['source'], $pf['dest'], $pf['link'], false ) )
-        {
-          // now anonymize and send the source file to UBC
-          self::anonymize( $pf['source'], $identifier_list[$uid], TEST_ONLY );
-          self::pacs_transfer( $pf['source'], TEST_ONLY );
-          self::unlink( $pf['source'] );
-          $file_count++;
-        }
+        // make a temporary copy of the file, anonymize it and send it to the remote PACS server
+        $anon_filename = sprintf(
+          '%s_%s.dcm',
+          bin2hex( openssl_random_pseudo_bytes( 2 ) ),
+          bin2hex( openssl_random_pseudo_bytes( 2 ) )
+        );
+        self::copy( $pf['source'], $anon_filename );
+        self::anonymize( $anon_filename, $identifier_list[$uid], TEST_ONLY );
+        $result_code = self::pacs_transfer( $anon_filename, TEST_ONLY );
+        if( 0 != $result_code )
+          output( 'Unable to transfer anonymized ECHO file "%s" to remote PACS server (code %d).', $result_code );
+        self::unlink( $anon_filename );
+
+        // now process the file
+        if( self::process_file( $pf['dir'], $pf['source'], $pf['dest'] ) ) $file_count++;
       }
     }
 
@@ -119,16 +121,14 @@ class us_echo extends base
    */
   public static function anonymize( $filename, $identifier = '', $debug = false )
   {
-    // TODO: determine if these are the correct tags
     $tag_list = [
       '0008,1010' => '',          // Station Name
       '0008,0080' => 'CLSA',      // Instituion Name
-      '0008,1040' => 'NCC',       // Instituion Department Name
       '0008,1070' => '',          // Operators Name
       '0010,0010' => '',          // Patient Name
       '0010,1000' => '',          // Other Patient IDs
       '0018,1000' => '',          // Device Serial Number
-      '0008,1010' => 'VIVID_I',   // Station Name
+      '0008,1010' => 'Vivid iq',  // Station Name
       '0010,0020' => $identifier, // Patient ID
     ];
 
@@ -154,11 +154,24 @@ class us_echo extends base
 
   /**
    * Anonymizes an ECHO DICOM file by removing identifying data
-   * @param string $filename The name of the file to anonymize
+   * @param string $filename The name of the file to send
    * @param string $identifier An optional value to set the identifier to (default is an empty string)
    */
   public static function pacs_transfer( $filename, $debug = false )
   {
-    // TODO: implement
+    $command = sprintf(
+      'dcmsend -aet %s -aec %s %s %d <PATH_TO_FILES>',
+      PACS_LOCAL_AE_TITLE,
+      PACS_REMOTE_AE_TITLE,
+      PACS_SERVER,
+      PACS_PORT
+    );
+
+    $result_code = 0;
+    $output = NULL;
+    $debug ? printf( "%s\n", $command ) : exec( $command, $output, $result_code );
+
+    if( 0 < $result_code ) printf( implode( "\n", $output ) );
+    return $result_code;
   }
 }

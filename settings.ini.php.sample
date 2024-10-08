@@ -36,3 +36,9 @@ define( 'RELEASE_DIR', 'release' );
 
 // The relative directory to write supplementary files
 define( 'SUPPLEMENTARY_DIR', 'supplementary' );
+
+// The connection details to a remote PACS server to send US ECHO files to
+define( 'PACS_LOCAL_AE_TITLE', '' );
+define( 'PACS_REMOTE_AE_TITLE', '' );
+define( 'PACS_SERVER', '' );
+define( 'PACS_PORT', '' );

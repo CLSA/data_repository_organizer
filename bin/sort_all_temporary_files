@@ -17,3 +17,4 @@ passthru( sprintf( '%s/sort_temporary_files dxa', __DIR__ ) );
 passthru( sprintf( '%s/sort_temporary_files ecg', __DIR__ ) );
 passthru( sprintf( '%s/sort_temporary_files retinal', __DIR__ ) );
 passthru( sprintf( '%s/sort_temporary_files spirometry', __DIR__ ) );
+passthru( sprintf( '%s/sort_temporary_files us_echo', __DIR__ ) );

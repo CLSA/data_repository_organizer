@@ -6,6 +6,7 @@ require_once( __DIR__.'/../lib/arguments.class.php' );
 require_once( __DIR__.'/../lib/data_type/cimt.class.php' );
 require_once( __DIR__.'/../lib/data_type/dxa.class.php' );
 require_once( __DIR__.'/../lib/data_type/ecg.class.php' );
+require_once( __DIR__.'/../lib/data_type/us_echo.class.php' );
 
 set_time_limit( 60 ); // one minute
 
@@ -22,6 +23,7 @@ function anonymize( $data_type, $filename, $identifier )
   if( 'cimt' == $data_type ) \data_type\cimt::anonymize( $working_filename, $identifier, DEBUG );
   else if( 'dxa' == $data_type ) \data_type\dxa::anonymize( $working_filename, $identifier, DEBUG );
   else if( 'ecg' == $data_type ) \data_type\ecg::anonymize( $working_filename, $identifier, DEBUG );
+  else if( 'us_echo' == $data_type ) \data_type\us_echo::anonymize( $working_filename, $identifier, DEBUG );
 
   // if we decompressed the file then recompress and move it to the destination
   if( $decompressed ) rename( util::compress_file( $decompressed_filename ), $filename );
@@ -35,7 +37,7 @@ $arguments->set_description(
   "WARNING: the target file will be overwritten so make sure a backup exists before running this utility."
 );
 $arguments->add_option( 'd', 'debug', 'Outputs the script\'s commands without executing them' );
-$arguments->add_option( 't', 'data_type', 'The type of file being anonymized', true );
+$arguments->add_option( 't', 'data_type', 'The type of file being anonymized (cimt, dxa, ecg or us_echo)', true );
 $arguments->add_input( 'FILENAME', 'The name of the file to anonymize' );
 $arguments->add_input( 'IDENTIFIER', 'The identifier to write to the file', true );
 
@@ -52,7 +54,7 @@ $data_type = $args['option_list']['data_type'];
 $filename = $args['input_list']['FILENAME'];
 $identifier = array_key_exists( 'IDENTIFIER', $args['input_list'] ) ? $args['input_list']['IDENTIFIER'] : '';
 
-if( !in_array( $data_type, ['cimt', 'dxa', 'ecg'] ) )
+if( !in_array( $data_type, ['cimt', 'dxa', 'ecg', 'us_echo'] ) )
 {
   fatal_error(
     sprintf( "Invalid DATA_TYPE \"%s\", aborting", $data_type ),

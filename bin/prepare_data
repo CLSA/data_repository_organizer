@@ -6,6 +6,7 @@ require_once( __DIR__.'/../lib/arguments.class.php' );
 require_once( __DIR__.'/../lib/data_type/cimt.class.php' );
 require_once( __DIR__.'/../lib/data_type/dxa.class.php' );
 require_once( __DIR__.'/../lib/data_type/ecg.class.php' );
+require_once( __DIR__.'/../lib/data_type/us_echo.class.php' );
 
 /**
  * Prepares data for a particular study, phase and category using identifiers in the provided file
@@ -157,6 +158,10 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
           else if( preg_match( '#/dxa/#', $source_filename ) )
           {
             $result = \data_type\dxa::anonymize( $final_filename, $participant['identifier'] );
+          }
+          else if( preg_match( '#/us_echo/#', $source_filename ) )
+          {
+            $result = \data_type\us_echo::anonymize( $final_filename, $participant['identifier'] );
           }
           else throw new Exception( sprintf( 'Tried to prepare unknown DICOM file "%s"', $source_filename ) );
         }

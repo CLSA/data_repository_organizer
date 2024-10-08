@@ -19,14 +19,14 @@ class ecg extends base
     $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
 
     // Process all ecg recordings
-    // There is a single file named Ecg.xml for each participant
+    // One file named Ecg.xml for each participant, and possibly two others: Ecg.pdf and Ecg.ecg
     output( sprintf( 'Processing ecg files in "%s"', $base_dir ) );
 
     // This data only comes from the Pine Site interview
     $file_count = 0;
     foreach( glob( sprintf( '%s/nosite/Follow-up * Site/ECG/*/*', $base_dir ) ) as $filename )
     {
-      $re = '#nosite/Follow-up ([0-9]) Site/ECG/([^/]+)/Ecg\.xml$#';
+      $re = '#nosite/Follow-up ([0-9]) Site/ECG/([^/]+)/Ecg\.(xml|pdf|ecg)$#';
       $matches = [];
       if( !preg_match( $re, $filename, $matches ) )
       {
@@ -37,19 +37,27 @@ class ecg extends base
         continue;
       }
 
+      $phase = $matches[1] + 1;
+      $uid = $matches[2];
+      $extension = strtolower( $matches[3] );
+
       $destination_directory = sprintf(
         '%s/%s/clsa/%s/ecg/%s',
         DATA_DIR,
         RAW_DIR,
-        $matches[1] + 1, // phase
-        $matches[2] // UID
+        $phase,
+        $uid
       );
-      $destination = sprintf( '%s/ecg.xml', $destination_directory );
+      $destination = sprintf(
+        '%s/ecg.%s',
+        $destination_directory,
+        $extension
+      );
 
       if( self::process_file( $destination_directory, $filename, $destination ) )
       {
         // generate supplementary data from the xml file
-        if( !TEST_ONLY ) self::generate_supplementary( $destination );
+        if( 'xml' == $extension && !TEST_ONLY ) self::generate_supplementary( $destination );
         $file_count++;
       }
     }
