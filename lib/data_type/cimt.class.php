@@ -266,7 +266,7 @@ class cimt extends base
                 $respondent['interviewer'],
                 $respondent['datetime']
               );
-              
+
               if( false === $respondent['exam_list'][$side] )
               {
                 output( sprintf( 'Unable to read or create exam data from Alder for %s', $uid ) );

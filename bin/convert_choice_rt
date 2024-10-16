@@ -74,7 +74,7 @@ function parse_result_file( $filename )
     if( $valid ) $valid_count++;
     $last_index = $index;
   }
-  
+
   // now print the missing lines
   for( $index = $last_index; 60 > $index; $index++ )
   {
@@ -110,12 +110,12 @@ if( 0 == count( $file_list ) )
 {
   printf( "No files found in %s\n", $path );
 }
-else 
+else
 {
   foreach( glob( sprintf( '%s/*/result_file.csv', $path ) ) as $index => $filename )
   {
     $data = parse_result_file( $filename );
-    
+
     // print the header the first time only
     if( 0 == $index ) printf( "%s\n", implode( ",", array_keys( $data ) ) );
     printf( "%s\n", implode( ",", array_values( $data ) ) );

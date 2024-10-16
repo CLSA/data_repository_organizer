@@ -32,10 +32,10 @@ function parse_cimt_sr_file( $filename )
     sprintf(
       'dcmdump +T %s | strings | grep "CodeMeaning\|NumericValue"',
       util::format_filename( $working_filename )
-    ),  
+    ),
     $output,
     $result_code
-  );  
+  );
 
   // delete the decompressed file
   if( !is_null( $decompressed_filename ) && $decompressed_filename != $filename )
@@ -58,23 +58,23 @@ function parse_cimt_sr_file( $filename )
   foreach( $output as $line )
   {
     // data headings are always 8 children deep and named "CodeMeaning"
-    $matches = []; 
-    if( preg_match( '/^\| \| \| \| \| \| \| \| CodeMeaning +\[IMT Posterior (.+)\]/', $line, $matches ) ) 
-    {   
+    $matches = [];
+    if( preg_match( '/^\| \| \| \| \| \| \| \| CodeMeaning +\[IMT Posterior (.+)\]/', $line, $matches ) )
+    {
       $key = $matches[1];
       continue;
-    }   
+    }
 
     // data values are always 9 children deep and named "NumericValue"
-    $matches = []; 
-    if( preg_match( '/^\| \| \| \| \| \| \| \| NumericValue +\[(.+)\]/', $line, $matches ) ) 
-    {   
-      if( !is_null( $key ) ) 
-      {   
+    $matches = [];
+    if( preg_match( '/^\| \| \| \| \| \| \| \| NumericValue +\[(.+)\]/', $line, $matches ) )
+    {
+      if( !is_null( $key ) )
+      {
         $data[$key][] = $matches[1];
         $key = NULL;
-      }   
-    }   
+      }
+    }
   }
 
   return $data;

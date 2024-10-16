@@ -33,7 +33,7 @@ class cdtt extends base
         self::move_from_temporary_to_invalid(
           $filename,
           sprintf( 'Invalid filename: "%s"', $filename )
-        );  
+        );
         continue;
       }
 
