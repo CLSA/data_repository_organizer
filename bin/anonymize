@@ -13,17 +13,21 @@ set_time_limit( 60 ); // one minute
 /**
  * Anonymizes a file (gzipped or not) based on the data_type
  */
-function anonymize( $data_type, $filename, $identifier )
+function anonymize( $data_type, $filename, $organization, $identifier )
 {
   // unzip the file if needed
   $decompressed_filename = util::decompress_file( $filename );
   $decompressed = !is_null( $decompressed_filename );
   $working_filename = $decompressed ? $decompressed_filename : $filename;
 
-  if( 'cimt' == $data_type ) \data_type\cimt::anonymize( $working_filename, $identifier, DEBUG );
-  else if( 'dxa' == $data_type ) \data_type\dxa::anonymize( $working_filename, $identifier, DEBUG );
-  else if( 'ecg' == $data_type ) \data_type\ecg::anonymize( $working_filename, $identifier, DEBUG );
-  else if( 'us_echo' == $data_type ) \data_type\us_echo::anonymize( $working_filename, $identifier, DEBUG );
+  if( 'cimt' == $data_type )
+    \data_type\cimt::anonymize( $working_filename, $organization, $identifier, DEBUG );
+  else if( 'dxa' == $data_type )
+    \data_type\dxa::anonymize( $working_filename, $organization, $identifier, DEBUG );
+  else if( 'ecg' == $data_type )
+    \data_type\ecg::anonymize( $working_filename, $organization, $identifier, DEBUG );
+  else if( 'us_echo' == $data_type )
+    \data_type\us_echo::anonymize( $working_filename, $organization, $identifier, DEBUG );
 
   // if we decompressed the file then recompress and move it to the destination
   if( $decompressed ) rename( util::compress_file( $decompressed_filename ), $filename );
@@ -39,6 +43,7 @@ $arguments->set_description(
 $arguments->add_option( 'd', 'debug', 'Outputs the script\'s commands without executing them' );
 $arguments->add_option( 't', 'data_type', 'The type of file being anonymized (cimt, dxa, ecg or us_echo)', true );
 $arguments->add_input( 'FILENAME', 'The name of the file to anonymize' );
+$arguments->add_input( 'ORGANIZATION', 'The organization to write to the file', true );
 $arguments->add_input( 'IDENTIFIER', 'The identifier to write to the file', true );
 
 $args = $arguments->parse_arguments( $argv );
@@ -52,6 +57,7 @@ if( !array_key_exists( 'data_type', $args['option_list'] ) )
 
 $data_type = $args['option_list']['data_type'];
 $filename = $args['input_list']['FILENAME'];
+$organization = array_key_exists( 'ORGANIZATION', $args['input_list'] ) ? $args['input_list']['ORGANIZATION'] : '';
 $identifier = array_key_exists( 'IDENTIFIER', $args['input_list'] ) ? $args['input_list']['IDENTIFIER'] : '';
 
 if( !in_array( $data_type, ['cimt', 'dxa', 'ecg', 'us_echo'] ) )
@@ -63,4 +69,4 @@ if( !in_array( $data_type, ['cimt', 'dxa', 'ecg', 'us_echo'] ) )
 }
 
 out( sprintf( 'Anonymizing file "%s"', $filename ) );
-anonymize( $data_type, $filename, $identifier );
+anonymize( $data_type, $filename, $organization, $identifier );

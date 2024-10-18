@@ -202,19 +202,20 @@ class dxa extends base
   /**
    * Anonymizes an DXA DICOM file by removing identifying data
    * @param string $filename The name of the file to anonymize
+   * @param string $organization An optional value to set the organization to (default is an empty string)
    * @param string $identifier An optional value to set the identifier to (default is an empty string)
    */
-  public static function anonymize( $filename, $identifier = '', $debug = false )
+  public static function anonymize( $filename, $organization = '', $identifier = '', $debug = false )
   {
     $tag_list = [
-      '0008,1010' => '',          // Station Name
-      '0008,0080' => 'CLSA',      // Instituion Name
-      '0008,1040' => 'NCC',       // Instituion Department Name
-      '0008,1070' => '',          // Operators Name
-      '0010,0010' => '',          // Patient Name
-      '0010,1000' => '',          // Other Patient IDs
-      '0018,1000' => '',          // Device Serial Number
-      '0010,0020' => $identifier, // Patient ID
+      '0008,1010' => '',            // Station Name
+      '0008,0080' => $organization, // Instituion Name
+      '0008,1040' => 'NCC',         // Instituion Department Name
+      '0008,1070' => '',            // Operators Name
+      '0010,0010' => '',            // Patient Name
+      '0010,1000' => '',            // Other Patient IDs
+      '0018,1000' => '',            // Device Serial Number
+      '0010,0020' => $identifier,   // Patient ID
       // Unknown Tags & Data
       '0019,1000' => NULL,
       '0023,1000' => NULL,

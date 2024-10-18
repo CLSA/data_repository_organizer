@@ -159,7 +159,8 @@ abstract class base
     $result = $cenozo_db->query( sprintf(
       'SELECT '.
         'study_phase.id AS study_phase_id, participant.id AS participant_id, '.
-        'respondent.start_datetime, respondent.end_datetime, response.site_id, answer.value '.
+        'respondent.start_datetime, respondent.end_datetime, response.site_id, '.
+        'site.name AS site, answer.value '.
       'FROM participant '.
       'JOIN %s.respondent ON participant.id = respondent.participant_id '.
       'JOIN %s.qnaire ON respondent.qnaire_id = qnaire.id '.
@@ -168,6 +169,7 @@ abstract class base
       'JOIN %s.response ON respondent.id = response.respondent_id '.
       'JOIN %s.answer ON response.id = answer.response_id '.
       'JOIN %s.question on answer.question_id = question.id '.
+      'LEFT JOIN site ON response.site_id = site.id '.
       'WHERE participant.uid = "%s" '.
       'AND study_phase.rank = %d '.
       'AND study.name = "clsa" '.
@@ -528,5 +530,17 @@ abstract class base
     }
 
     return $success;
+  }
+
+  /**
+   * Anonymizes the file by removing identifying data (must be implemented by extending class
+   * @param string $filename The name of the file to anonymize
+   * @param string $organization An option value to set the organization to (default is an empty string)
+   * @param string $identifier An optional value to set the identifier to (default is an empty string)
+   * @return result code (0 if normal)
+   */
+  public static function anonymize( $filename, $organization = '', $identifier = '', $debug = false )
+  {
+    return 0;
   }
 }

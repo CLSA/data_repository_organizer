@@ -56,8 +56,8 @@ class ecg extends base
 
       if( self::process_file( $destination_directory, $filename, $destination ) )
       {
-        // generate supplementary data from the xml file
-        if( 'xml' == $extension && !TEST_ONLY ) self::generate_supplementary( $destination );
+        // generate supplementary data from the xml file (only needed for up to phase 4)
+        if( 4 >= $phase && 'xml' == $extension && !TEST_ONLY ) self::generate_supplementary( $destination );
         $file_count++;
       }
     }
@@ -78,9 +78,10 @@ class ecg extends base
   /**
    * Anonymizes an ECG XML file by removing identifying data
    * @param string $filename The name of the file to anonymize
+   * @param string $organization (not used)
    * @param string $identifier An optional value to set the identifier to (default is an empty string)
    */
-  public static function anonymize( $filename, $identifier = '', $debug = false )
+  public static function anonymize( $filename, $organization = '', $identifier = '', $debug = false )
   {
     // remove the body of the Facility element
     $command = sprintf(

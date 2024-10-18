@@ -20,7 +20,7 @@ class us_echo extends base
 
     // Process all us_echo recordings
     // We expect the following files:
-    //   One SRc file, multiple US files and multiple USm files
+    //   One SRc file, multiple US files and multiple USm files (all numbered)
     output( sprintf( 'Processing us_echo files in "%s"', $base_dir ) );
 
     try
@@ -39,7 +39,7 @@ class us_echo extends base
     foreach( glob( sprintf( '%s/nosite/Follow-up * Site/ECHO/*/*.dcm', $base_dir ) ) as $filename )
     {
       // move any unexpected filenames to the invalid directory
-      $re = '#nosite/Follow-up ([0-9]) Site/ECHO/([^/]+)/(Src|USm|US)_(.+)\.dcm$#';
+      $re = '#nosite/Follow-up ([0-9]) Site/ECHO/([^/]+)/(SRc|USm|US).*\.dcm$#';
       $matches = [];
       if( !preg_match( $re, $filename, $matches ) )
       {
@@ -49,8 +49,7 @@ class us_echo extends base
 
       $phase = $matches[1] + 1;
       $uid = $matches[2];
-      $type = $matches[3];
-      $dcm_code = $matches[4];
+      $type = $matches[3]; // not used
       if( !array_key_exists( $uid, $process_file_list ) ) $process_file_list[$uid] = [];
 
       $destination_directory = sprintf(
@@ -83,16 +82,34 @@ class us_echo extends base
       {
         // make a temporary copy of the file, anonymize it and send it to the remote PACS server
         $anon_filename = sprintf(
-          '%s_%s.dcm',
+          '%s/temp_%s_%s.dcm',
+          DATA_DIR,
           bin2hex( openssl_random_pseudo_bytes( 2 ) ),
           bin2hex( openssl_random_pseudo_bytes( 2 ) )
         );
         self::copy( $pf['source'], $anon_filename );
-        self::anonymize( $anon_filename, $identifier_list[$uid], TEST_ONLY );
+
+        // get the site name from the pine metadata and include it in anonymization
+        $metadata = static::get_pine_metadata( $cenozo_db, $phase, $uid, 'ECHO' );
+        $organization = sprintf(
+          'CLSA (%s)',
+          !is_null( $metadata ) && array_key_exists( 'site', $metadata ) ? $metadata['site'] : 'unknown'
+        );
+
+        self::anonymize( $anon_filename, $organization, $identifier_list[$uid], TEST_ONLY );
         $result_code = self::pacs_transfer( $anon_filename, TEST_ONLY );
         if( 0 != $result_code )
-          output( 'Unable to transfer anonymized ECHO file "%s" to remote PACS server (code %d).', $result_code );
-        self::unlink( $anon_filename );
+        {
+          output( sprintf(
+            'Unable to transfer anonymized ECHO file "%s" to remote PACS server (code %d).',
+            $anon_filename,
+            $result_code
+          ) );
+        }
+        else
+        {
+          self::unlink( $anon_filename );
+        }
 
         // now process the file
         if( self::process_file( $pf['dir'], $pf['source'], $pf['dest'] ) ) $file_count++;
@@ -117,19 +134,19 @@ class us_echo extends base
   /**
    * Anonymizes an ECHO DICOM file by removing identifying data
    * @param string $filename The name of the file to anonymize
+   * @param string $organization An optional value to set the organization to (default is an empty string)
    * @param string $identifier An optional value to set the identifier to (default is an empty string)
    */
-  public static function anonymize( $filename, $identifier = '', $debug = false )
+  public static function anonymize( $filename, $organization = '', $identifier = '', $debug = false )
   {
     $tag_list = [
-      '0008,1010' => '',          // Station Name
-      '0008,0080' => 'CLSA',      // Instituion Name
-      '0008,1070' => '',          // Operators Name
-      '0010,0010' => '',          // Patient Name
-      '0010,1000' => '',          // Other Patient IDs
-      '0018,1000' => '',          // Device Serial Number
-      '0008,1010' => 'Vivid iq',  // Station Name
-      '0010,0020' => $identifier, // Patient ID
+      '0008,1010' => '',            // Station Name
+      '0008,0080' => $organization, // Institution Name
+      '0010,0010' => '',            // Patient Name
+      '0010,1000' => '',            // Other Patient IDs
+      '0018,1000' => '',            // Device Serial Number
+      '0008,1010' => 'Vivid iq',    // Station Name
+      '0010,0020' => $identifier,   // Patient ID
     ];
 
     $modify_list = [];
@@ -143,6 +160,7 @@ class us_echo extends base
       implode( ' ', $modify_list ),
       \util::format_filename( $filename )
     );
+    printf( "%s\n", $command ); // TODO: remove
 
     $result_code = 0;
     $output = NULL;
@@ -160,11 +178,12 @@ class us_echo extends base
   public static function pacs_transfer( $filename, $debug = false )
   {
     $command = sprintf(
-      'dcmsend -aet %s -aec %s %s %d <PATH_TO_FILES>',
+      'dcmsend -aet %s -aec %s %s %d %s',
       PACS_LOCAL_AE_TITLE,
       PACS_REMOTE_AE_TITLE,
       PACS_SERVER,
-      PACS_PORT
+      PACS_PORT,
+      $filename
     );
 
     $result_code = 0;
