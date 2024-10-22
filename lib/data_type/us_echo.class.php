@@ -39,7 +39,7 @@ class us_echo extends base
     foreach( glob( sprintf( '%s/nosite/Follow-up * Site/ECHO/*/*.dcm', $base_dir ) ) as $filename )
     {
       // move any unexpected filenames to the invalid directory
-      $re = '#nosite/Follow-up ([0-9]) Site/ECHO/([^/]+)/(SRc|USm|US).*\.dcm$#';
+      $re = '#nosite/Follow-up ([0-9]) Site/ECHO/([^/]+)/(SRc|USm|US|SC).*\.dcm$#';
       $matches = [];
       if( !preg_match( $re, $filename, $matches ) )
       {
@@ -160,7 +160,6 @@ class us_echo extends base
       implode( ' ', $modify_list ),
       \util::format_filename( $filename )
     );
-    printf( "%s\n", $command ); // TODO: remove
 
     $result_code = 0;
     $output = NULL;
