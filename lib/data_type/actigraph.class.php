@@ -20,7 +20,7 @@ class actigraph extends base
   public static function process_files( $identifier_name, $study )
   {
     $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
-    $study_uid_lookup = self::get_study_uid_lookup( $identifier_name, true, true ); // include event and consent data
+    $study_uid_lookup = self::get_study_uid_lookup( $identifier_name, true ); // include event data
 
     // Each site has their own directory, and in each site directory there are sub-directories for
     // each modality (actigraph, ticwatch, etc).  Within the actigraph directory there is one file
@@ -58,8 +58,6 @@ class actigraph extends base
         continue;
       }
       $uid = $study_uid_lookup[$study_id]['uid'];
-      $sleep_consent = $study_uid_lookup[$study_id]['sleep_consent'];
-      $mobility_consent = $study_uid_lookup[$study_id]['mobility_consent'];
       $home_date = $study_uid_lookup[$study_id]['home_date'];
       $site_date = $study_uid_lookup[$study_id]['site_date'];
 
@@ -75,33 +73,7 @@ class actigraph extends base
         }
       }
 
-      if( 'wrist' == $type )
-      {
-        // make sure the participant has consented to sleep trackers
-        if( !$sleep_consent )
-        {
-          $reason = sprintf(
-            'Wrist actigraph data without sleep consent, "%s".',
-            $filename
-          );
-          self::move_from_temporary_to_invalid( $filename, $reason );
-          continue;
-        }
-      }
-      else if( 'thigh' == $type )
-      {
-        // make sure the participant has consented to mobility trackers
-        if( !$mobility_consent )
-        {
-          $reason = sprintf(
-            'Thigh actigraph data without mobility consent, "%s".',
-            $filename
-          );
-          self::move_from_temporary_to_invalid( $filename, $reason );
-          continue;
-        }
-      }
-      else
+      if( !in_array( $type, ['thigh', 'wrist'] ) )
       {
         $reason = sprintf(
           'No limb defined in actigraph file, "%s".',

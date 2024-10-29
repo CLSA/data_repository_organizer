@@ -20,7 +20,7 @@ class ticwatch extends base
   public static function process_files( $identifier_name, $study )
   {
     $base_dir = sprintf( '%s/%s', DATA_DIR, TEMPORARY_DIR );
-    $study_uid_lookup = self::get_study_uid_lookup( $identifier_name, false, true ); // include consent data
+    $study_uid_lookup = self::get_study_uid_lookup( $identifier_name );
 
     // Process all Ticwatch files
     // Each site has their own directory, and in each site directory there are sub-directories for
@@ -52,17 +52,6 @@ class ticwatch extends base
         continue;
       }
       $uid = $study_uid_lookup[$study_id]['uid'];
-      $mobility_consent = $study_uid_lookup[$study_id]['mobility_consent'];
-
-      // make sure the participant has consented to mobility trackers
-      if( !$mobility_consent )
-      {
-        self::move_from_temporary_to_invalid(
-          $study_dirname,
-          sprintf( 'Ticwatch data without mobility consent, "%s".', $study_dirname )
-        );
-        continue;
-      }
 
       $destination_directory = sprintf(
         '%s/%s/%s/%s/ticwatch/%s',

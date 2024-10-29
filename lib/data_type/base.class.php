@@ -51,7 +51,7 @@ abstract class base
   /**
    * Reads the id_lookup file and returns an array containing Study ID => UID pairs
    */
-  public static function get_study_uid_lookup( $identifier_name, $events = false, $consents = false )
+  public static function get_study_uid_lookup( $identifier_name, $events = false )
   {
     $cenozo_db = \util::get_cenozo_db();
 
@@ -94,11 +94,6 @@ abstract class base
       $select_list[] = 'home_event.date AS home_date';
       $select_list[] = 'site_event.date AS site_date';
     }
-    if( $consents )
-    {
-      $select_list[] = 'IFNULL( sleep_consent.accept, false ) AS sleep_consent';
-      $select_list[] = 'IFNULL( mobility_consent.accept, false ) AS mobility_consent';
-    }
 
     $sql = sprintf(
       'SELECT %s '.
@@ -117,19 +112,6 @@ abstract class base
         'LEFT JOIN site_event ON participant.id = site_event.participant_id ';
     }
 
-    if( $consents )
-    {
-      $sql .=
-        'JOIN participant_last_consent AS sleep_plc ON participant.id = sleep_plc.participant_id '.
-        'JOIN consent_type AS sleep_consent_type ON sleep_plc.consent_type_id = sleep_consent_type.id '.
-          'AND sleep_consent_type.name = "F3 Sleep Trackers" '.
-        'LEFT JOIN consent AS sleep_consent ON sleep_plc.consent_id = sleep_consent.id '.
-        'JOIN participant_last_consent AS mobility_plc ON participant.id = mobility_plc.participant_id '.
-        'JOIN consent_type AS mobility_consent_type ON mobility_plc.consent_type_id = mobility_consent_type.id '.
-          'AND mobility_consent_type.name = "F3 Mobility Trackers" '.
-        'LEFT JOIN consent AS mobility_consent ON mobility_plc.consent_id = mobility_consent.id ';
-    }
-
     $sql .= sprintf( 'WHERE identifier.name = "%s"', $cenozo_db->real_escape_string( $identifier_name ) );
 
     $result = $cenozo_db->query( $sql );
@@ -140,7 +122,7 @@ abstract class base
     if( false === $result ) throw new Exception( 'Unable to get study UID lookup data.' );
 
     $data = [];
-    while( $row = $result->fetch_assoc() ) $data[$row['value']] = ( $events || $consents ) ? $row : $row['uid'];
+    while( $row = $result->fetch_assoc() ) $data[$row['value']] = $events ? $row : $row['uid'];
     $result->free();
 
     return $data;
