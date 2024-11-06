@@ -51,7 +51,7 @@ class ticwatch extends base
         );
         continue;
       }
-      $uid = $study_uid_lookup[$study_id]['uid'];
+      $uid = $study_uid_lookup[$study_id];
 
       $destination_directory = sprintf(
         '%s/%s/%s/%s/ticwatch/%s',
