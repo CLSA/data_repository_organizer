@@ -141,7 +141,7 @@ class us_echo extends base
   {
     $tag_list = [
       '0008,1010' => '',            // Station Name
-      '0008,0080' => $organization, // Institution Name
+      '0008,0050' => $organization, // Accession Number (because Institution Name can't be seen by end users)
       '0010,0010' => '',            // Patient Name
       '0010,1000' => '',            // Other Patient IDs
       '0018,1000' => '',            // Device Serial Number
