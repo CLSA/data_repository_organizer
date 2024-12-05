@@ -45,7 +45,7 @@ class actigraph extends base
 
       $phase = $matches[1];
       $study_id = strtoupper( trim( $matches[2] ) );
-      $date = str_replace( '-', '', $matches[3] );
+      $date = $matches[3];
       $type = 5 <= count( $matches ) ? trim( $matches[4], '_' ) : 'unknown';
 
       if( !array_key_exists( $study_id, $study_uid_lookup ) )
@@ -58,8 +58,8 @@ class actigraph extends base
         continue;
       }
       $uid = $study_uid_lookup[$study_id]['uid'];
-      $home_date = $study_uid_lookup[$study_id]['home_date'];
-      $site_date = $study_uid_lookup[$study_id]['site_date'];
+      $home_date = $study_uid_lookup[$study_id][sprintf( 'home_date_%d', $phase )];
+      $site_date = $study_uid_lookup[$study_id][sprintf( 'site_date_%d', $phase )];
 
       // if the thigh/wrist type wasn't in the filename, look in the file's data instead
       if( 'unknown' == $type )
@@ -88,17 +88,27 @@ class actigraph extends base
       $diff = NULL;
 
       // the thigh is done after the home interview
-      if( 'thigh' == $type && $home_date ) $diff = $date_object->diff( new \DateTime( $home_date ) );
+      if( 'thigh' == $type && $home_date )
+      {
+        $diff = $date_object->diff( new \DateTime( $home_date ) );
+      }
       // the wrist is done after the site interview
-      else if( 'wrist' == $type && $site_date ) $diff = $date_object->diff( new \DateTime( $site_date ) );
+      else if( 'wrist' == $type && $site_date )
+      {
+        $diff = $date_object->diff( new \DateTime( $site_date ) );
+      }
 
       // only allow up to two days before or after
       if( is_null( $diff ) || 2 < $diff->days )
       {
         $reason = sprintf(
-          'Invalid date found in %s actigraph file, "%s".',
+          'Invalid date found in %s actigraph file, "%s" (%s interview %s).',
           $type,
-          $filename
+          $filename,
+          'thigh' == $type ? 'home' : 'site',
+          is_null( $diff ) ?
+            'not completed' :
+            sprintf( 'completed on %s', 'thigh' == $type ? $home_date : $site_date )
         );
         self::move_from_temporary_to_invalid( $filename, $reason );
         continue;

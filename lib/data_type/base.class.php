@@ -56,43 +56,89 @@ abstract class base
     $cenozo_db = \util::get_cenozo_db();
 
     $select_list = ['participant.uid', 'participant_identifier.value'];
+    $extra_sql = '';
     if( $events )
     {
-      // create a temporary table for home and site events
-      $cenozo_db->query( 'SELECT id INTO @home_id FROM event_type WHERE name = "completed (Follow-Up 3 Home)"' );
-      $cenozo_db->query( 'DROP TABLE IF EXISTS home_event' );
-      $cenozo_db->query(
-        'CREATE TEMPORARY TABLE home_event '.
-        'SELECT '.
-          'participant.id AS participant_id, '.
-          'DATE( CONVERT_TZ( event.datetime, "UTC", "Canada/Eastern" ) ) AS date '.
-        'FROM participant '.
-        'JOIN participant_last_event AS ple '.
-          'ON participant.id = ple.participant_id '.
-          'AND ple.event_type_id = @home_id '.
-        'JOIN event AS event '.
-          'ON ple.event_id = event.id'
+      // create temporary tables for home and site events for all completed event types (from F3 onward)
+      $result = $cenozo_db->query(
+        'SELECT study_phase.rank, event_type.id '.
+        'FROM study '.
+        'JOIN study_phase ON study.id = study_phase.study_id '.
+        'JOIN event_type ON CONCAT( "completed (", study_phase.name, " Home)" ) = event_type.name '.
+        'WHERE study.name = "clsa" '.
+        'AND study_phase.rank >= 4'
       );
-      $cenozo_db->query( 'ALTER TABLE home_event ADD PRIMARY KEY (participant_id)' );
 
-      $cenozo_db->query( 'SELECT id INTO @site_id FROM event_type WHERE name = "completed (Follow-Up 3 Site)"' );
-      $cenozo_db->query( 'DROP TABLE IF EXISTS site_event' );
-      $cenozo_db->query(
-        'CREATE TEMPORARY TABLE site_event '.
-        'SELECT '.
-          'participant.id AS participant_id, '.
-          'DATE( CONVERT_TZ( event.datetime, "UTC", "Canada/Eastern" ) ) AS date '.
-        'FROM participant '.
-        'JOIN participant_last_event AS ple '.
-          'ON participant.id = ple.participant_id '.
-         'AND ple.event_type_id = @site_id '.
-        'JOIN event AS event '.
-          'ON ple.event_id = event.id'
+      if( false == $result )
+      {
+        throw new Exception( 'Unable to get event types while collecting study UID lookup data.' );
+      }
+
+      while( $row = $result->fetch_assoc() )
+      {
+        $temp_table_name = sprintf( 'home_event_%d', $row['rank'] );
+        $cenozo_db->query( sprintf( 'DROP TABLE IF EXISTS %s', $temp_table_name ) );
+        $cenozo_db->query( sprintf(
+          'CREATE TEMPORARY TABLE %s '.
+          'SELECT '.
+            'participant.id AS participant_id, '.
+            'DATE( CONVERT_TZ( event.datetime, "UTC", "Canada/Eastern" ) ) AS date '.
+          'FROM participant '.
+          'JOIN participant_last_event '.
+            'ON participant.id = participant_last_event.participant_id '.
+            'AND participant_last_event.event_type_id = %d '.
+          'JOIN event ON participant_last_event.event_id = event.id',
+          $temp_table_name,
+          $row['id']
+        ) );
+        $cenozo_db->query( sprintf(  'ALTER TABLE %s ADD PRIMARY KEY (participant_id)', $temp_table_name ) );
+        $select_list[] = sprintf( '%s.date AS home_date_%d', $temp_table_name, $row['rank'] );
+        $extra_sql .= sprintf(
+          'LEFT JOIN %s ON participant.id = %s.participant_id ',
+          $temp_table_name,
+          $temp_table_name
+        );
+      }
+
+      $result = $cenozo_db->query(
+        'SELECT study_phase.rank, event_type.id '.
+        'FROM study '.
+        'JOIN study_phase ON study.id = study_phase.study_id '.
+        'JOIN event_type ON CONCAT( "completed (", study_phase.name, " Site)" ) = event_type.name '.
+        'WHERE study.name = "clsa" '.
+        'AND study_phase.rank >= 4'
       );
-      $cenozo_db->query( 'ALTER TABLE site_event ADD PRIMARY KEY (participant_id)' );
 
-      $select_list[] = 'home_event.date AS home_date';
-      $select_list[] = 'site_event.date AS site_date';
+      if( false == $result )
+      {
+        throw new Exception( 'Unable to get event types while collecting study UID lookup data.' );
+      }
+
+      while( $row = $result->fetch_assoc() )
+      {
+        $temp_table_name = sprintf( 'site_event_%d', $row['rank'] );
+        $cenozo_db->query( sprintf( 'DROP TABLE IF EXISTS %s', $temp_table_name ) );
+        $cenozo_db->query( sprintf(
+          'CREATE TEMPORARY TABLE %s '.
+          'SELECT '.
+            'participant.id AS participant_id, '.
+            'DATE( CONVERT_TZ( event.datetime, "UTC", "Canada/Eastern" ) ) AS date '.
+          'FROM participant '.
+          'JOIN participant_last_event '.
+            'ON participant.id = participant_last_event.participant_id '.
+            'AND participant_last_event.event_type_id = %d '.
+          'JOIN event ON participant_last_event.event_id = event.id',
+          $temp_table_name,
+          $row['id']
+        ) );
+        $cenozo_db->query( sprintf(  'ALTER TABLE %s ADD PRIMARY KEY (participant_id)', $temp_table_name ) );
+        $select_list[] = sprintf( '%s.date AS site_date_%d', $temp_table_name, $row['rank'] );
+        $extra_sql .= sprintf(
+          'LEFT JOIN %s ON participant.id = %s.participant_id ',
+          $temp_table_name,
+          $temp_table_name
+        );
+      }
     }
 
     $sql = sprintf(
@@ -101,18 +147,12 @@ abstract class base
       'JOIN identifier '.
       'JOIN participant_identifier '.
         'ON identifier.id = participant_identifier.identifier_id '.
-        'AND participant.id = participant_identifier.participant_id ',
-      implode( ', ', $select_list )
+        'AND participant.id = participant_identifier.participant_id %s '.
+      'WHERE identifier.name = "%s"',
+      implode( ', ', $select_list ),
+      $extra_sql,
+      $cenozo_db->real_escape_string( $identifier_name )
     );
-
-    if( $events )
-    {
-      $sql .=
-        'LEFT JOIN home_event ON participant.id = home_event.participant_id '.
-        'LEFT JOIN site_event ON participant.id = site_event.participant_id ';
-    }
-
-    $sql .= sprintf( 'WHERE identifier.name = "%s"', $cenozo_db->real_escape_string( $identifier_name ) );
 
     $result = $cenozo_db->query( $sql );
     $cenozo_db->query( 'DROP TABLE IF EXISTS home_event' );
