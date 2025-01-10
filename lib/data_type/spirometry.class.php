@@ -22,6 +22,18 @@ class spirometry extends base
     // There are two files, report.pdf and data.xml  Raw data must be extracted from the data.xml file.
     output( sprintf( 'Processing spirometry files in "%s"', $base_dir ) );
 
+    if( defined( 'ALDER_DB_DATABASE' ) )
+    {
+      try
+      {
+        $cenozo_db = \util::get_cenozo_db();
+      }
+      catch( \Exception $e )
+      {
+        fatal_error( 'Failed to open required connection to cenozo database.', 12 );
+      }
+    }
+
     // This data only comes from the Pine Site interview
     $file_count = 0;
     foreach( glob( sprintf( '%s/nosite/Follow-up * Site/SP_AUTO/*/*', $base_dir ) ) as $filename )
@@ -31,26 +43,33 @@ class spirometry extends base
       $matches = [];
       if( preg_match( $re1, $filename, $matches ) )
       {
-        $destination_directory = sprintf(
-          '%s/%s/clsa/%s/spirometry/%s',
-          DATA_DIR,
-          RAW_DIR,
-          $matches[1] + 1, // phase
-          $matches[2] // UID
-        );
-        $destination = sprintf( '%s/report.pdf', $destination_directory );
+        $phase = $matches[1] + 1;
+        $uid = $matches[2];
 
-        if( self::process_file( $destination_directory, $filename, $destination ) ) $file_count++;
+        $destination_directory = sprintf( '%s/%s/clsa/%s/spirometry/%s', DATA_DIR, RAW_DIR, $phase, $uid );
+        $new_filename = 'report.pdf';
+        $destination = sprintf( '%s/%s', $destination_directory, $new_filename );
+
+        if( self::process_file( $destination_directory, $filename, $destination ) )
+        {
+          $file_count++;
+          static::write_data_to_alder(
+            $phase,
+            $uid,
+            'SP_AUTO',
+            'spirometry',
+            'none',
+            $new_filename,
+            $cenozo_db
+          );
+        }
       }
       else if( preg_match( $re2, $filename, $matches ) )
       {
-        $destination_directory = sprintf(
-          '%s/%s/clsa/%s/spirometry/%s',
-          DATA_DIR,
-          RAW_DIR,
-          $matches[1] + 1, // phase
-          $matches[2] // UID
-        );
+        $phase = $matches[1] + 1;
+        $uid = $matches[2];
+
+        $destination_directory = sprintf( '%s/%s/clsa/%s/spirometry/%s', DATA_DIR, RAW_DIR, $phase, $uid );
         $destination = sprintf( '%s/data.xml', $destination_directory );
 
         self::mkdir( $destination_directory );

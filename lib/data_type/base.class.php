@@ -226,6 +226,73 @@ abstract class base
   }
 
   /**
+   * Reads interview, exam and image data from Pine and loads it into Alder
+   * 
+   * @param resource $cenozo_db
+   * @param string $phase The phase of the study to write (1, 2, 3, etc)
+   * @param string $uid The participant UID to write
+   * @param string $question The Pine question name containing the interview metadata
+   * @param string $type The type of image (hip, forearm, lateral, wbody, spine, retinal, etc)
+   * @param string $side The anotomical side (left, right, none)
+   * @param string $filename The name of the image file to write to Alder
+   * @return boolean
+   */
+  public static function write_data_to_alder( $cenozo_db, $phase, $uid, $question, $type, $side, $filename )
+  {
+    $metadata = self::get_pine_metadata( $cenozo_db, $phase, $uid, $question );
+    if( is_null( $metadata ) ) return false;
+
+    $obj = json_decode( $metadata['value'] );
+    if(
+      !is_object( $obj ) ||
+      !property_exists( $obj, 'session' ) ||
+      !property_exists( $obj->session, 'barcode' ) ||
+      !property_exists( $obj->session, 'interviewer' ) ||
+      !property_exists( $obj->session, 'end_time' )
+    ) {
+      output( sprintf( 'No result data in %s metadata from Pine for %s', $question, $uid ) );
+      return false;
+    }
+
+    $interview_id = self::assert_alder_interview(
+      $cenozo_db,
+      $metadata['participant_id'],
+      $metadata['study_phase_id'],
+      $metadata['site_id'],
+      $obj->session->barcode,
+      $metadata['start_datetime'],
+      $metadata['end_datetime']
+    );
+    if( false === $interview_id )
+    {
+      output( sprintf( 'Unable to read or create interview data from Alder for %s', $uid ) );
+      return false;
+    }
+
+    $exam_id = self::assert_alder_exam(
+      $cenozo_db,
+      $interview_id,
+      $type,
+      $side,
+      $obj->session->interviewer,
+      preg_replace( '/(.+)T(.+)\.[0-9]+Z/', '\1 \2', $obj->session->end_time ) // convert to YYYY-MM-DD HH:mm:SS
+    );
+    if( false === $exam_id )
+    {
+      output( sprintf( 'Unable to read or create exam data from Alder for %s', $uid ) );
+      return false;
+    }
+
+    if( false === self::assert_alder_image( $cenozo_db, $exam_id, $filename ) )
+    {
+      output( sprintf( 'Unable to read or create image "%s" from Alder for %s', $filename, $uid ) );
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
    * Inserts an interview record into alder (if it doesn't exist), returning the interview ID
    * @param resource $cenozo_db
    * @param integer $participant_id

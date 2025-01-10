@@ -127,60 +127,11 @@ class dxa extends base
         // register the interview, exam and images in alder (if the alder db exists)
         if( !defined( 'ALDER_DB_DATABASE' ) ) continue;
 
-        // only include hip/forearm (left/right) and lateral/wbody/spine (none)
-        if( !(
+        // only write alder data for hip/forearm (left/right) and lateral/wbody/spine (none)
+        if(
           ( in_array( $type, ['hip', 'forearm'] ) && in_array( $side, ['left', 'right'] ) ) ||
           ( in_array( $type, ['lateral', 'wbody', 'spine'] ) && 'none' == $side )
-        ) ) continue;
-
-        $metadata = static::get_pine_metadata( $cenozo_db, $phase, $uid, $question );
-        if( is_null( $metadata ) ) continue;
-
-        $obj = json_decode( $metadata['value'] );
-        if(
-          !is_object( $obj ) ||
-          !property_exists( $obj, 'session' ) ||
-          !property_exists( $obj->session, 'barcode' ) ||
-          !property_exists( $obj->session, 'interviewer' ) ||
-          !property_exists( $obj->session, 'end_time' )
-        ) {
-          output( sprintf( 'No result data in %s metadata from Pine for %s', $question, $uid ) );
-          continue;
-        }
-
-        $interview_id = static::assert_alder_interview(
-          $cenozo_db,
-          $metadata['participant_id'],
-          $metadata['study_phase_id'],
-          $metadata['site_id'],
-          $obj->session->barcode,
-          $metadata['start_datetime'],
-          $metadata['end_datetime']
-        );
-        if( false === $interview_id )
-        {
-          output( sprintf( 'Unable to read or create interview data from Alder for %s', $uid ) );
-          continue;
-        }
-
-        $exam_id = static::assert_alder_exam(
-          $cenozo_db,
-          $interview_id,
-          $type,
-          $side,
-          $obj->session->interviewer,
-          preg_replace( '/(.+)T(.+)\.[0-9]+Z/', '\1 \2', $obj->session->end_time ) // convert to YYYY-MM-DD HH:mm:SS
-        );
-        if( false === $exam_id )
-        {
-          output( sprintf( 'Unable to read or create exam data from Alder for %s', $uid ) );
-          continue;
-        }
-
-        if( false === static::assert_alder_image( $cenozo_db, $exam_id, $new_filename ) )
-        {
-          output( sprintf( 'Unable to read or create image "%s" from Alder for %s', $new_filename, $uid ) );
-        }
+        ) static::write_data_to_alder( $phase, $uid, $question, $type, $side, $new_filename, $cenozo_db );
       }
     }
 
