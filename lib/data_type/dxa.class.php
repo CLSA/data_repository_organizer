@@ -32,6 +32,7 @@ class dxa extends base
     }
 
     // This data only comes from the Pine Site interview
+    $processed_uid_list = [];
     $file_count = 0;
     foreach( glob( sprintf( '%s/nosite/Follow-up * Site/DXA[12]/*/*', $base_dir ) ) as $filename )
     {
@@ -122,6 +123,8 @@ class dxa extends base
       {
         // generate supplementary data from the xml file
         if( !TEST_ONLY ) self::generate_supplementary( $destination, $cenozo_db );
+
+        $processed_uid_list[] = $uid;
         $file_count++;
 
         // register the interview, exam and images in alder (if the alder db exists)
@@ -131,7 +134,7 @@ class dxa extends base
         if(
           ( in_array( $type, ['hip', 'forearm'] ) && in_array( $side, ['left', 'right'] ) ) ||
           ( in_array( $type, ['lateral', 'wbody', 'spine'] ) && 'none' == $side )
-        ) static::write_data_to_alder( $phase, $uid, $question, $type, $side, $new_filename, $cenozo_db );
+        ) static::write_data_to_alder( $cenozo_db, $phase, $uid, $question, $type, $side, $new_filename );
       }
     }
 
@@ -144,8 +147,9 @@ class dxa extends base
     }
 
     output( sprintf(
-      'Done, %d files %stransferred',
+      'Done, %d files from %d participants %stransferred',
       $file_count,
+      count( array_unique( $processed_uid_list ) ),
       TEST_ONLY ? 'would be ' : ''
     ) );
   }

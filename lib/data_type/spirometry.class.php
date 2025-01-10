@@ -35,11 +35,12 @@ class spirometry extends base
     }
 
     // This data only comes from the Pine Site interview
+    $re1 = '#nosite/Follow-up ([0-9]) Site/SP_AUTO/([^/]+)/report\.pdf$#';
+    $re2 = '#nosite/Follow-up ([0-9]) Site/SP_AUTO/([^/]+)/data\.xml$#';
+    $processed_uid_list = [];
     $file_count = 0;
     foreach( glob( sprintf( '%s/nosite/Follow-up * Site/SP_AUTO/*/*', $base_dir ) ) as $filename )
     {
-      $re1 = '#nosite/Follow-up ([0-9]) Site/SP_AUTO/([^/]+)/report\.pdf$#';
-      $re2 = '#nosite/Follow-up ([0-9]) Site/SP_AUTO/([^/]+)/data\.xml$#';
       $matches = [];
       if( preg_match( $re1, $filename, $matches ) )
       {
@@ -52,15 +53,17 @@ class spirometry extends base
 
         if( self::process_file( $destination_directory, $filename, $destination ) )
         {
+          $processed_uid_list[] = $uid;
           $file_count++;
+
           static::write_data_to_alder(
+            $cenozo_db,
             $phase,
             $uid,
             'SP_AUTO',
             'spirometry',
             'none',
-            $new_filename,
-            $cenozo_db
+            $new_filename
           );
         }
       }
@@ -97,8 +100,9 @@ class spirometry extends base
     }
 
     output( sprintf(
-      'Done, %d files %stransferred',
+      'Done, %d files from %d participants %stransferred',
       $file_count,
+      count( array_unique( $processed_uid_list ) ),
       TEST_ONLY ? 'would be ' : ''
     ) );
   }

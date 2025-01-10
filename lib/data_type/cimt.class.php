@@ -38,6 +38,7 @@ class cimt extends base
     $respondent_list = [];
 
     // This data only comes from the Pine Site interview
+    $processed_uid_list = [];
     $file_count = 0;
     $process_file_list = [];
     $mismatch_list = [];
@@ -221,6 +222,8 @@ class cimt extends base
         {
           if( self::process_file( $pf['dir'], $pf['source'], $pf['dest'], $pf['link'] ) )
           {
+            $processed_uid_list[] = $uid;
+
             // generate supplementary data for SR reports
             if( !TEST_ONLY && preg_match( '#/SR_[0-9]+\.dcm#', $pf['dest'] ) )
               self::generate_supplementary( $pf['dest'], $pf['link'] );
@@ -304,8 +307,9 @@ class cimt extends base
     }
 
     output( sprintf(
-      'Done, %d files %stransferred',
+      'Done, %d files from %d participants %stransferred',
       $file_count,
+      count( array_unique( $processed_uid_list ) ),
       TEST_ONLY ? 'would be ' : ''
     ) );
   }

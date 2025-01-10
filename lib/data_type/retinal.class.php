@@ -35,6 +35,7 @@ class retinal extends base
     }
 
     // This data only comes from the Pine Site interview
+    $processed_uid_list = [];
     $file_count = 0;
     foreach( glob( sprintf( '%s/nosite/Follow-up * Site/RET_[RL]/*/*', $base_dir ) ) as $filename )
     {
@@ -75,19 +76,20 @@ class retinal extends base
 
       if( self::process_file( $destination_directory, $filename, $destination ) )
       {
+        $processed_uid_list[] = $uid;
         $file_count++;
 
         // only write alder data for eye images
         if( 'EYE' == $image_type )
         {
           static::write_data_to_alder(
+            $cenozo_db,
             $phase,
             $uid,
             $question,
             'retinal',
             $side,
-            $new_filename,
-            $cenozo_db
+            $new_filename
           );
         }
       }
@@ -100,8 +102,9 @@ class retinal extends base
     }
 
     output( sprintf(
-      'Done, %d files %stransferred',
+      'Done, %d files from %d participants %stransferred',
       $file_count,
+      count( array_unique( $processed_uid_list ) ),
       TEST_ONLY ? 'would be ' : ''
     ) );
   }

@@ -265,7 +265,7 @@ abstract class base
     );
     if( false === $interview_id )
     {
-      output( sprintf( 'Unable to read or create interview data from Alder for %s', $uid ) );
+      output( sprintf( 'Unable to read, update or create interview data from Alder for %s', $uid ) );
       return false;
     }
 
@@ -279,13 +279,13 @@ abstract class base
     );
     if( false === $exam_id )
     {
-      output( sprintf( 'Unable to read or create exam data from Alder for %s', $uid ) );
+      output( sprintf( 'Unable to read, update or create exam data from Alder for %s', $uid ) );
       return false;
     }
 
     if( false === self::assert_alder_image( $cenozo_db, $exam_id, $filename ) )
     {
-      output( sprintf( 'Unable to read or create image "%s" from Alder for %s', $filename, $uid ) );
+      output( sprintf( 'Unable to read, update or create image "%s" from Alder for %s', $filename, $uid ) );
       return false;
     }
 
@@ -324,8 +324,26 @@ abstract class base
     $result->free();
     if( !is_null( $row ) )
     {
-      // the interview already exists, take note of the id
-      return $row['id'];
+      // update the interview details
+      $result = TEST_ONLY ? true : $cenozo_db->query( sprintf(
+        'UPDATE %s.interview SET '.
+          'site_id = %d, '.
+          'token = "%s", '.
+          'start_datetime = "%s", '.
+          'end_datetime = "%s" '.
+        'WHERE participant_id = %d '.
+        'AND study_phase_id = %d',
+        ALDER_DB_DATABASE,
+        $site_id,
+        $cenozo_db->real_escape_string( $token ),
+        $cenozo_db->real_escape_string( $start_datetime ),
+        $cenozo_db->real_escape_string( $end_datetime ),
+        $participant_id,
+        $study_phase_id
+      ) );
+
+      // now return the interview ID if the update succeeded
+      return false === $result ? false : $row['id'];
     }
 
     if( !TEST_ONLY )
@@ -387,7 +405,25 @@ abstract class base
     $result->free();
     if( !is_null( $row ) )
     {
-      return $row['id'];
+      $result = TEST_ONLY ? true : $cenozo_db->query( sprintf(
+        'UPDATE %s.exam '.
+        'JOIN %s.scan_type ON exam.scan_type_id = scan_type.id '.
+        'SET '.
+          'exam.interviewer = "%s", '.
+          'exam.datetime = "%s" '.
+        'WHERE interview_id = %d '.
+        'AND scan_type.name = "%s" '.
+        'AND scan_type.side = "%s"',
+        ALDER_DB_DATABASE,
+        ALDER_DB_DATABASE,
+        $cenozo_db->real_escape_string( $interviewer ),
+        $cenozo_db->real_escape_string( $datetime ),
+        $interview_id,
+        $cenozo_db->real_escape_string( $type ),
+        $cenozo_db->real_escape_string( $side )
+      ) );
+
+      return false === $result ? false : $row['id'];
     }
     else if( !TEST_ONLY )
     {

@@ -28,7 +28,7 @@ class ticwatch extends base
     // named after the participant's study_id, and another sub-directory with the serial number.
     // For example: "temporary/XXX/ticwatch/<study_id>/<serial>"
     output( sprintf( 'Processing ticwatch directories in "%s"', $base_dir ) );
-    $dir_count = 0;
+    $processed_uid_list = [];
     $file_count = 0;
     $glob = sprintf( '%s/[A-Z][A-Z][A-Z]/[0-9]/ticwatch/*/*', $base_dir );
     foreach( glob( $glob, GLOB_ONLYDIR ) as $serial_dirname )
@@ -143,6 +143,8 @@ class ticwatch extends base
           }
         }
 
+        if( $success ) $processed_uid_list[] = $uid;
+
         if( !TEST_ONLY && !KEEP_FILES )
         {
           if( $success )
@@ -160,13 +162,12 @@ class ticwatch extends base
           }
         }
       }
-      $dir_count++;
     }
     output( sprintf(
-      'Done, %d files %stransferred from %d directories',
+      'Done, %d files from %d participants %stransferred',
       $file_count,
-      TEST_ONLY ? 'would be ' : '',
-      $dir_count
+      count( array_unique( $processed_uid_list ) ),
+      TEST_ONLY ? 'would be ' : ''
     ) );
   }
 }

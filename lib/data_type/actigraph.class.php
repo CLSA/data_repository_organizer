@@ -27,6 +27,7 @@ class actigraph extends base
     // per participant named after the participant's study_id and the date of the data:
     // For example: "temporary/XXX/4/actigraph/<study_id> <date>.gt3x" (where 4 is the phase)
     output( sprintf( 'Processing actigraph files in "%s"', $base_dir ) );
+    $processed_uid_list = [];
     $file_count = 0;
 
     $glob = sprintf( '%s/[A-Z][A-Z][A-Z]/[0-9]/actigraph/*', $base_dir );
@@ -124,12 +125,17 @@ class actigraph extends base
       );
       $destination = sprintf( '%s/%s_%s.gt3x', $destination_directory, $type, $date );
 
-      if( self::process_file( $destination_directory, $filename, $destination ) ) $file_count++;
+      if( self::process_file( $destination_directory, $filename, $destination ) )
+      {
+        $processed_uid_list[] = $uid;
+        $file_count++;
+      }
     }
 
     output( sprintf(
-      'Done, %d files %stransferred',
+      'Done, %d files from %d participants %stransferred',
       $file_count,
+      count( array_unique( $processed_uid_list ) ),
       TEST_ONLY ? 'would be ' : ''
     ) );
   }

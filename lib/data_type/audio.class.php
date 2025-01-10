@@ -48,6 +48,7 @@ class audio extends base
     }
 
     // now go through files that are labelled by UID (valid audio recordings)
+    $processed_uid_list = [];
     $file_count = 0;
 
     $filename_list = array_merge(
@@ -197,7 +198,11 @@ class audio extends base
         );
         $destination = sprintf( '%s/%s.wav', $destination_directory, $destination_filename );
 
-        if( self::process_file( $destination_directory, $filename, $destination ) ) $file_count++;
+        if( self::process_file( $destination_directory, $filename, $destination ) )
+        {
+          $processed_uid_list[] = $uid;
+          $file_count++;
+        }
       }
       else
       {
@@ -225,8 +230,9 @@ class audio extends base
     }
 
     output( sprintf(
-      'Done, %d files %stransferred',
+      'Done, %d files from %d participants %stransferred',
       $file_count,
+      count( array_unique( $processed_uid_list ) ),
       TEST_ONLY ? 'would be ' : ''
     ) );
   }

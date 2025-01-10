@@ -34,6 +34,7 @@ class us_echo extends base
 
     // This data only comes from the Pine Site interview
     $identifier_list = [];
+    $processed_uid_list = [];
     $file_count = 0;
     $process_file_list = [];
     foreach( glob( sprintf( '%s/nosite/Follow-up * Site/ECHO/*/*.dcm', $base_dir ) ) as $filename )
@@ -112,7 +113,11 @@ class us_echo extends base
         }
 
         // now process the file
-        if( self::process_file( $pf['dir'], $pf['source'], $pf['dest'] ) ) $file_count++;
+        if( self::process_file( $pf['dir'], $pf['source'], $pf['dest'] ) )
+        {
+          $processed_uid_list[] = $uid;
+          $file_count++;
+        }
       }
     }
 
@@ -125,8 +130,9 @@ class us_echo extends base
     }
 
     output( sprintf(
-      'Done, %d files %stransferred',
+      'Done, %d files %stransferred from %d directories',
       $file_count,
+      count( array_unique( $processed_uid_list ) ),
       TEST_ONLY ? 'would be ' : ''
     ) );
   }

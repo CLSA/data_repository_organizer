@@ -23,6 +23,7 @@ class choice_rt extends base
     output( sprintf( 'Processing choice_rt files in "%s"', $base_dir ) );
 
     // This data only comes from the Pine Site interview
+    $processed_uid_list = [];
     $file_count = 0;
     foreach( glob( sprintf( '%s/nosite/Follow-up * Site/CRT/*/*', $base_dir ) ) as $filename )
     {
@@ -38,16 +39,23 @@ class choice_rt extends base
         continue;
       }
 
+      $phase = $matches[1] + 1;
+      $uid = $matches[2];
+
       $destination_directory = sprintf(
         '%s/%s/clsa/%s/choice_rt/%s',
         DATA_DIR,
         RAW_DIR,
-        $matches[1] + 1, // phase
-        $matches[2] // UID
+        $phase,
+        $uid
       );
       $destination = sprintf( '%s/result_file.csv', $destination_directory );
 
-      if( self::process_file( $destination_directory, $filename, $destination ) ) $file_count++;
+      if( self::process_file( $destination_directory, $filename, $destination ) )
+      {
+        $processed_uid_list[] = $uid;
+        $file_count++;
+      }
     }
 
     // now remove all empty directories
@@ -57,8 +65,9 @@ class choice_rt extends base
     }
 
     output( sprintf(
-      'Done, %d files %stransferred',
+      'Done, %d files from %d participants %stransferred',
       $file_count,
+      count( array_unique( $processed_uid_list ) ),
       TEST_ONLY ? 'would be ' : ''
     ) );
   }

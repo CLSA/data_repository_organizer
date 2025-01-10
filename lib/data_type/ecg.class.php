@@ -23,6 +23,7 @@ class ecg extends base
     output( sprintf( 'Processing ecg files in "%s"', $base_dir ) );
 
     // This data only comes from the Pine Site interview
+    $processed_uid_list = [];
     $file_count = 0;
     foreach( glob( sprintf( '%s/nosite/Follow-up * Site/ECG/*/*', $base_dir ) ) as $filename )
     {
@@ -58,6 +59,8 @@ class ecg extends base
       {
         // generate supplementary data from the xml file (only needed for up to phase 4)
         if( 4 >= $phase && 'xml' == $extension && !TEST_ONLY ) self::generate_supplementary( $destination );
+
+        $processed_uid_list[] = $uid;
         $file_count++;
       }
     }
@@ -69,8 +72,9 @@ class ecg extends base
     }
 
     output( sprintf(
-      'Done, %d files %stransferred',
+      'Done, %d files from %d participants %stransferred',
       $file_count,
+      count( array_unique( $processed_uid_list ) ),
       TEST_ONLY ? 'would be ' : ''
     ) );
   }
