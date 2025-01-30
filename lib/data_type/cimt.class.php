@@ -328,8 +328,6 @@ class cimt extends base
       '0008,1040' => 'NCC',         // Instituion Department Name
       '0008,1070' => '',            // Operators Name
       '0010,0010' => '',            // Patient Name
-      '0010,1000' => '',            // Other Patient IDs
-      '0018,1000' => '',            // Device Serial Number
       '0008,1010' => 'VIVID_I',     // Station Name
       '0010,0020' => $identifier,   // Patient ID
     ];
