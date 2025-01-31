@@ -184,11 +184,11 @@ class dxa extends base
     $modify_list = [];
     foreach( $tag_list as $tag => $value )
     {
-      $modify_list[] = sprintf( '-ma "(%s)%s"', $tag, is_null( $value ) ? '' : sprintf( '=%s', $value ) );
+      $modify_list[] = sprintf( '-i "(%s)%s"', $tag, is_null( $value ) ? '' : sprintf( '=%s', $value ) );
     }
 
     $command = sprintf(
-      'dcmodify -nb -nrc -imt %s %s',
+      'dcmodify -nb -nrc %s %s',
       implode( ' ', $modify_list ),
       \util::format_filename( $filename )
     );

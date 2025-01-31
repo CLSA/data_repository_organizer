@@ -179,11 +179,9 @@ function prepare_data( $release_name, $data_path, $file_glob, $keep_files, $iden
 
           if( 0 < $result )
           {
-            // delete the invalid file and stop
-            unlink( $final_filename );
             fatal_error(
               sprintf(
-                'Failed to anonymize and set identifier in "%s", error code "%s" (file removed from release)',
+                'Failed to anonymize and set identifier in "%s", error code "%s"',
                 $final_filename,
                 $result
               ),
